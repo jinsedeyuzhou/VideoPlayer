@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_video_bottom_box"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:padding="8dp"
+    android:visibility="visible">
+
+    <ImageView
+        android:id="@+id/app_video_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_play_arrow_white_24dp" />
+
+    <TextView
+        android:id="@+id/app_video_currentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/app_video_play"
+        android:text="06:21"
+        android:textColor="@android:color/white"
+        android:textSize="12dp" />
+
+    <SeekBar
+        android:id="@+id/app_video_seekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_toLeftOf="@+id/app_video_endTime"
+        android:layout_toRightOf="@+id/app_video_currentTime" />
+
+    <TextView
+        android:id="@+id/app_video_endTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/app_video_fullscreen"
+        android:text="10:10"
+        android:textColor="@android:color/white"
+        android:textSize="12dp" />
+
+    <ImageView
+        android:id="@+id/app_video_fullscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="8dp"
+        android:src="@drawable/ic_fullscreen_white_24dp" />
+
+</RelativeLayout>
