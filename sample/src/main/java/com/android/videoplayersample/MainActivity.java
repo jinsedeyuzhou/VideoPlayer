@@ -23,12 +23,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.android.videoplayer.R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
         initView();
 
 //        Settings settings = new Settings(getApplicationContext());
-        mVideoView = (IjkVideoView) findViewById(com.android.videoplayer.R.id.videoView);
+        mVideoView = (IjkVideoView) findViewById(R.id.videoView);
 
         AndroidMediaController mMediaController = new AndroidMediaController(this, false);
 
@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
 
-        mBtnIJK = (Button) findViewById(com.android.videoplayer.R.id.btn_ijk);
+        mBtnIJK = (Button) findViewById(R.id.btn_ijk);
         mBtnIJK.setOnClickListener(this);
 
-        mBtnSurface = (Button) findViewById(com.android.videoplayer.R.id.btn_surfaceview);
+        mBtnSurface = (Button) findViewById(R.id.btn_surfaceview);
         mBtnSurface.setOnClickListener(this);
     }
 
@@ -62,11 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         System.out.print("执行了没");
         int i = view.getId();
-        if (i == com.android.videoplayer.R.id.btn_ijk) {
+        if (i == R.id.btn_ijk) {
             intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
 
-        } else if (i == com.android.videoplayer.R.id.btn_surfaceview) {
+        } else if (i == R.id.btn_surfaceview) {
             System.out.print("执行了没");
             intent = new Intent(getApplicationContext(), SurfaceActivity.class);
             startActivity(intent);

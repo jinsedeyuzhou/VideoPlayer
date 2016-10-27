@@ -13,8 +13,11 @@ import com.android.videoplayer.media.VPlayPlayer;
 
 import java.util.ArrayList;
 
+
+
 /**
  * Created by Berkeley on 10/24/16.
+ *
  */
 public class SurfaceActivity extends FragmentActivity implements OnClickListener {
     private ArrayList<VideoIjkBean> videoBeens;
@@ -25,7 +28,7 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.android.videoplayer.R.layout.activity_surface);
+        setContentView(R.layout.activity_surface);
         videoBeens = new ArrayList<>();
 
         VideoIjkBean videoBean = new VideoIjkBean();
@@ -64,14 +67,14 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
         });
 
 
-        findViewById(com.android.videoplayer.R.id.play).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.pause).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.forward).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.back).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.fullscreen).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.toggleratis).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.start).setOnClickListener(this);
-        findViewById(com.android.videoplayer.R.id.source).setOnClickListener(this);
+        findViewById(R.id.play).setOnClickListener(this);
+        findViewById(R.id.pause).setOnClickListener(this);
+        findViewById(R.id.forward).setOnClickListener(this);
+        findViewById(R.id.back).setOnClickListener(this);
+        findViewById(R.id.fullscreen).setOnClickListener(this);
+        findViewById(R.id.toggleratis).setOnClickListener(this);
+        findViewById(R.id.start).setOnClickListener(this);
+        findViewById(R.id.source).setOnClickListener(this);
 
 
     }
@@ -79,33 +82,33 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
     @Override
     public void onClick(View view) {
         int i = view.getId();
-        if (i == com.android.videoplayer.R.id.play) {
+        if (i == R.id.play) {
             vPlayPlayer.play(url);
             vPlayPlayer.setTitle(url);
             vPlayPlayer.setShowNavIcon(true);
 
 
-        } else if (i == com.android.videoplayer.R.id.start) {
+        } else if (i == R.id.start) {
             vPlayPlayer.start();
 
 
-        } else if (i == com.android.videoplayer.R.id.pause) {
+        } else if (i == R.id.pause) {
             vPlayPlayer.pause();
 
-        } else if (i == com.android.videoplayer.R.id.forward) {
+        } else if (i == R.id.forward) {
             vPlayPlayer.forward(+0.2f);
 
-        } else if (i == com.android.videoplayer.R.id.back) {
+        } else if (i == R.id.back) {
             vPlayPlayer.forward(-0.2f);
 
-        } else if (i == com.android.videoplayer.R.id.toggleratis) {
+        } else if (i == R.id.toggleratis) {
             vPlayPlayer.toggleAspectRatio();
 
 
-        } else if (i == com.android.videoplayer.R.id.fullscreen) {
+        } else if (i == R.id.fullscreen) {
             vPlayPlayer.toggleFullScreen();
 
-        } else if (i == com.android.videoplayer.R.id.source) {
+        } else if (i == R.id.source) {
             url = "http://119.90.25.48/record2.a8.com/mp4/1476440343435698.mp4";
 
         }
