@@ -20,6 +20,7 @@
         <activity android:name=".SurfaceActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensor"/>
+        <activity android:name=".VideoLiveActivity"/>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.android.videoplayersample;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -75,6 +76,7 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
         findViewById(R.id.toggleratis).setOnClickListener(this);
         findViewById(R.id.start).setOnClickListener(this);
         findViewById(R.id.source).setOnClickListener(this);
+        findViewById(R.id.videolive).setOnClickListener(this);
 
 
     }
@@ -89,6 +91,7 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
 
 
         } else if (i == R.id.start) {
+            vPlayPlayer.setUrl(url);
             vPlayPlayer.start();
 
 
@@ -111,6 +114,10 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
         } else if (i == R.id.source) {
             url = "http://119.90.25.48/record2.a8.com/mp4/1476440343435698.mp4";
 
+        }
+        else if (i==R.id.videolive)
+        {
+            startActivity(new Intent(this,VideoLiveActivity.class));
         }
     }
 
