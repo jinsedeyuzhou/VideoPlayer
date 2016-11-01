@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.android.videoplayer.config.VideoIjkBean;
-import com.android.videoplayer.media.VPlayPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.config.VideoIjkBean;
+import com.github.jinsedeyuzhou.ijkplayer.media.VPlayPlayer;
 
 import java.util.ArrayList;
 
@@ -48,7 +48,9 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
         videoBeens.add(videoBean2);
 
 
+
         vPlayPlayer = new VPlayPlayer(this);
+        vPlayPlayer.setUrl(url);
         vPlayPlayer.onError(new VPlayPlayer.OnErrorListener() {
             @Override
             public void onError(int what, int extra) {
@@ -91,7 +93,7 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
 
 
         } else if (i == R.id.start) {
-            vPlayPlayer.setUrl(url);
+
             vPlayPlayer.start();
 
 
@@ -112,7 +114,10 @@ public class SurfaceActivity extends FragmentActivity implements OnClickListener
             vPlayPlayer.toggleFullScreen();
 
         } else if (i == R.id.source) {
-            url = "http://119.90.25.48/record2.a8.com/mp4/1476440343435698.mp4";
+            url = "http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4";
+
+            vPlayPlayer.setUrl(url);
+            vPlayPlayer.play(url);
 
         }
         else if (i==R.id.videolive)

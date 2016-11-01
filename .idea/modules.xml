@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/VideoPlayer.iml" filepath="$PROJECT_DIR$/VideoPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/videoplay/app.iml" filepath="$PROJECT_DIR$/videoplay/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/videoplay/videoplay.iml" filepath="$PROJECT_DIR$/videoplay/videoplay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/videoplayer/videoplayer.iml" filepath="$PROJECT_DIR$/videoplayer/videoplayer.iml" />
     </modules>
   </component>
 </project>

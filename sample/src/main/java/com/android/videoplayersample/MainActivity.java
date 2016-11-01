@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.android.videoplayer.media.AndroidMediaController;
-import com.android.videoplayer.media.IjkVideoView;
+import com.github.jinsedeyuzhou.ijkplayer.media.AndroidMediaController;
+import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mBtnSurface = (Button) findViewById(R.id.btn_surfaceview);
         mBtnSurface.setOnClickListener(this);
+
+        findViewById(R.id.videolist).setOnClickListener(this);
     }
 
     @Override
@@ -64,13 +66,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int i = view.getId();
         if (i == R.id.btn_ijk) {
             intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
 
         } else if (i == R.id.btn_surfaceview) {
             System.out.print("执行了没");
             intent = new Intent(getApplicationContext(), SurfaceActivity.class);
-            startActivity(intent);
+
+        } else if (i == R.id.videolist) {
+            intent = new Intent(getApplicationContext(), ListActivity.class);
 
         }
+        startActivity(intent);
+
+
     }
 }

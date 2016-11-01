@@ -21,6 +21,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensor"/>
         <activity android:name=".VideoLiveActivity"/>
+        <activity android:name=".ListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensor"
+            />
     </application>
 
 </manifest>

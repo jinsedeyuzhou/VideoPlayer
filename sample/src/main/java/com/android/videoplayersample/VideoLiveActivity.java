@@ -10,10 +10,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
-import com.android.videoplayer.media.VPlayPlayer;
-import com.android.videoplayer.media.VideoStateParams;
 import com.android.videoplayersample.bean.LiveBean;
 import com.android.videoplayersample.net.ApiServiceUtils;
+import com.github.jinsedeyuzhou.ijkplayer.media.PlayStateParams;
+import com.github.jinsedeyuzhou.ijkplayer.media.VPlayPlayer;
 
 import java.util.List;
 
@@ -82,7 +82,7 @@ public class VideoLiveActivity extends FragmentActivity {
         player.setShowNavIcon(false);
 
 
-        player.setScaleType(VideoStateParams.SCALETYPE_FILLPARENT);
+        player.setScaleType(PlayStateParams.SCALETYPE_FILLPARENT);
 //        player.play(liveUrl);
 
         new Thread() {
