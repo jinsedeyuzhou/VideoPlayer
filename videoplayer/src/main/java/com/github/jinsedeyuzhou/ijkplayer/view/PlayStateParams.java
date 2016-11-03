@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.media;
+package com.github.jinsedeyuzhou.ijkplayer.view;
 
 /**
  * Created by Berkeley on 10/26/16.
@@ -57,15 +57,8 @@ public class PlayStateParams {
     /**
      * 完成
      */
-    public static final int STATE_COMPLETED = 5;
+    public static final int STATE_PLAYBACK_COMPLETED = 5;
 
-
-//    public static final int STATUS_ERROR = -1;
-//    public static final int STATUS_IDLE = 0;
-//    public static final int STATUS_LOADING = 1;
-//    public static final int STATUS_PLAYING = 2;
-//    public static final int STATUS_PAUSE = 3;
-//    public static final int STATUS_COMPLETED = 4;
 
     public static final int MESSAGE_SHOW_PROGRESS = 1;
     public static final int MESSAGE_FADE_OUT = 2;

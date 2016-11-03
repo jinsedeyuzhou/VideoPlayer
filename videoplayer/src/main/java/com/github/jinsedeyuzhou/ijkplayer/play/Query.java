@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.media;
+package com.github.jinsedeyuzhou.ijkplayer.play;
 
 import android.app.Activity;
 import android.content.Context;

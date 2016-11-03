@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.media;
+package com.github.jinsedeyuzhou.ijkplayer.play;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,6 +21,10 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
+import com.github.jinsedeyuzhou.ijkplayer.media.IRenderView;
+import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
+import com.github.jinsedeyuzhou.ijkplayer.media.PlayStateParams;
+import com.github.jinsedeyuzhou.ijkplayer.media.Query;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -29,7 +33,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  */
 public class VPlayPlayer {
     private static final String TAG = "VPlayPlayer";
-    private final Activity activity;
+    private  Activity activity;
     private View view;
     private final IjkVideoView videoView;
     private final SeekBar seekBar;
@@ -52,7 +56,15 @@ public class VPlayPlayer {
     }
 
 
-
+//    public void setView(View view)
+//    {
+//        this.view=view;
+//    }
+//
+//    public void setActivity(Activity activity)
+//    {
+//        this.activity=activity;
+//    }
 
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
