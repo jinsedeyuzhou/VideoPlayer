@@ -35,6 +35,7 @@
         </LinearLayout>
 
        <include layout="@layout/player_touch_gesture"
+           android:id="@+id/player_touch_gesture"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_centerInParent="true"
@@ -71,6 +72,7 @@
             android:visibility="gone"/>
 
        <include layout="@layout/player_controlbar"
+           android:id="@+id/player_controlbar"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_alignParentBottom="true"
@@ -80,7 +82,9 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/player_toolbar"/>
+    <include layout="@layout/player_toolbar"
+        android:id="@+id/player_toolbar"
+        />
 
 
 

@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.github.jinsedeyuzhou.ijkplayer.config.VideoIjkBean;
-import com.github.jinsedeyuzhou.ijkplayer.media.VPlayPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
 
 import java.util.ArrayList;
 

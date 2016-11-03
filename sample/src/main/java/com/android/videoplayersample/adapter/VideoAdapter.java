@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 
 import com.android.videoplayersample.R;
 import com.android.videoplayersample.bean.LiveBean;
-import com.github.jinsedeyuzhou.ijkplayer.media.VPlayPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
 
 import java.util.List;
 

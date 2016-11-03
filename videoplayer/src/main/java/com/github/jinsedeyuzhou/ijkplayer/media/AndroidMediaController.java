@@ -27,7 +27,7 @@ import android.widget.MediaController;
 import java.util.ArrayList;
 
 public class AndroidMediaController extends MediaController implements IMediaController {
-//    private ActionBar mActionBar;
+    private ActionBar mActionBar;
 
     public AndroidMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,32 +45,31 @@ public class AndroidMediaController extends MediaController implements IMediaCon
     }
 
     private void initView(Context context) {
-
     }
 
     public void setSupportActionBar(@Nullable ActionBar actionBar) {
-//        mActionBar = actionBar;
-//        if (isShowing()) {
-//            actionBar.show();
-//        } else {
-//            actionBar.hide();
-//        }
+        mActionBar = actionBar;
+        if (isShowing()) {
+            actionBar.show();
+        } else {
+            actionBar.hide();
+        }
     }
 
     @Override
     public void show() {
-//        super.show();
-//        if (mActionBar != null)
-//            mActionBar.show();
+        super.show();
+        if (mActionBar != null)
+            mActionBar.show();
     }
 
     @Override
     public void hide() {
         super.hide();
-//        if (mActionBar != null)
-//            mActionBar.hide();
-//        for (View view : mShowOnceArray)
-//            view.setVisibility(View.GONE);
+        if (mActionBar != null)
+            mActionBar.hide();
+        for (View view : mShowOnceArray)
+            view.setVisibility(View.GONE);
         mShowOnceArray.clear();
     }
 
@@ -84,6 +83,4 @@ public class AndroidMediaController extends MediaController implements IMediaCon
         view.setVisibility(View.VISIBLE);
         show();
     }
-
-
 }

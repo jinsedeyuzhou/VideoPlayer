@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.github.jinsedeyuzhou.R;
+import com.github.jinsedeyuzhou.ijkplayer.R;
 
 
 public class TableLayoutBinder {

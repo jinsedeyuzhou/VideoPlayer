@@ -12,8 +12,8 @@ import android.view.View;
 
 import com.android.videoplayersample.bean.LiveBean;
 import com.android.videoplayersample.net.ApiServiceUtils;
-import com.github.jinsedeyuzhou.ijkplayer.media.PlayStateParams;
-import com.github.jinsedeyuzhou.ijkplayer.media.VPlayPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.view.PlayStateParams;
+import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class VideoLiveActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rootView = getLayoutInflater().from(this).inflate(R.layout.giraffe_player, null);
+        rootView = getLayoutInflater().from(this).inflate(R.layout.view_player, null);
         setContentView(rootView);
 
 

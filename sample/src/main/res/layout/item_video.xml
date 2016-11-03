@@ -5,7 +5,7 @@
     >
 
 
-    <include layout="@layout/giraffe_player"
+    <include layout="@layout/view_player"
         android:layout_width="match_parent"
         android:layout_height="210dp"
         />

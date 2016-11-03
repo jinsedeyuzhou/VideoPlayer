@@ -23,8 +23,7 @@ import android.widget.SeekBar;
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IRenderView;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
-import com.github.jinsedeyuzhou.ijkplayer.media.PlayStateParams;
-import com.github.jinsedeyuzhou.ijkplayer.media.Query;
+import com.github.jinsedeyuzhou.ijkplayer.view.PlayStateParams;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -151,7 +150,7 @@ public class VPlayPlayer {
 
 
     private void doPauseResume() {
-        if (status == PlayStateParams.STATE_COMPLETED) {
+        if (status == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             qr.id(R.id.app_video_replay).gone();
             videoView.seekTo(0);
             videoView.start();
@@ -317,7 +316,7 @@ public class VPlayPlayer {
         videoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer mp) {
-                statusChange(PlayStateParams.STATE_COMPLETED);
+                statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
                 oncomplete.run();
             }
         });
@@ -430,7 +429,7 @@ public class VPlayPlayer {
 
     private void statusChange(int newStatus) {
         status = newStatus;
-        if (!isLive && newStatus == PlayStateParams.STATE_COMPLETED) {
+        if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             hideAll();
             qr.id(R.id.app_video_replay).visible();
