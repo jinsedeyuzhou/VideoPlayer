@@ -7,7 +7,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.TableLayout;
 
-import com.github.jinsedeyuzhou.R;
+import com.github.jinsedeyuzhou.ijkplayer.R;
 
 import java.util.Locale;
 

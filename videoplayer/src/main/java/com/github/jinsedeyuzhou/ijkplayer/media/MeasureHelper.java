@@ -20,7 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.github.jinsedeyuzhou.R;
+import com.github.jinsedeyuzhou.ijkplayer.R;
 
 import java.lang.ref.WeakReference;
 

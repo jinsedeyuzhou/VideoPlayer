@@ -25,6 +25,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensor"
             />
+        <activity android:name=".VideoViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensor"
+            />
+
+
     </application>
 
 </manifest>

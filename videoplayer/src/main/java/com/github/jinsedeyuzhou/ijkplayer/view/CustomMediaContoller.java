@@ -12,7 +12,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,11 +33,12 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  */
 public class CustomMediaContoller implements IMediaController {
 
+    private static final String TAG ="CustomMediaContoller" ;
     private Context mContext;
     private Activity activity;
     private View rootView;
     private final View controlbar;
-    private final View toolbar;
+//    private final View toolbar;
     private final View gesture;
     private SeekBar seekBar;
     private View liveBox;
@@ -101,6 +101,8 @@ public class CustomMediaContoller implements IMediaController {
     private ImageView volume_icon;
     private TextView video_volume;
     private TextView video_brightness;
+    private TextView topTitle;
+    private long pauseTime;
 
     public int getStatus() {
         return status;
@@ -109,7 +111,7 @@ public class CustomMediaContoller implements IMediaController {
     private boolean playerSupport;
 
 
-    private OrientationEventListener orientationEventListener;
+//    private OrientationEventListener orientationEventListener;
 
     @SuppressWarnings("HandlerLeak")
     private Handler handler = new Handler(Looper.getMainLooper()) {
@@ -155,9 +157,13 @@ public class CustomMediaContoller implements IMediaController {
         this.mContext = context;
         activity = (Activity) context;
         this.rootView = rootView;
+        this.playerSupport = true;
 
+        //播放控制
         controlbar = rootView.findViewById(R.id.player_controlbar);
-        toolbar = rootView.findViewById(R.id.player_toolbar);
+        //toolbar
+//        toolbar = rootView.findViewById(R.id.player_toolbar);
+        //触摸上下亮度和音量
         gesture = rootView.findViewById(R.id.player_touch_gesture);
 
 
@@ -169,19 +175,21 @@ public class CustomMediaContoller implements IMediaController {
     }
 
     private void initView() {
+        //屏幕宽度
         screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
+        //布局高度
         initHeight = rootView.findViewById(R.id.app_video_box).getLayoutParams().height;
 
 
         mVideoView = (IjkVideoView) rootView.findViewById(R.id.video_view);
         mVideoReplay = (ImageView) rootView.findViewById(R.id.app_video_replay_icon);
+
         liveBox = rootView.findViewById(R.id.app_video_box);
+        //进度条
         loading = (ProgressBar) rootView.findViewById(R.id.app_video_loading);
         //控制播放
         mVideoPlay = (ImageView) rootView.findViewById(R.id.app_video_play);
-
         mVideoFullscreen = (ImageView) rootView.findViewById(R.id.app_video_fullscreen);
-
         seekBar = (SeekBar) rootView.findViewById(R.id.app_video_seekBar);
         currentTime = (TextView) rootView.findViewById(R.id.app_video_currentTime);
         endTime = (TextView) rootView.findViewById(R.id.app_video_endTime);
@@ -201,7 +209,6 @@ public class CustomMediaContoller implements IMediaController {
         video_brightness = (TextView) rootView.findViewById(R.id.app_video_brightness);
 
 
-
 //        $.id(R.id.app_video_brightness).text(((int) (lpa.screenBrightness * 100)) + "%");
 
 //        $.id(R.id.app_video_volume_icon).image(i == 0 ? R.drawable.ic_volume_off_white_36dp : R.drawable.ic_volume_up_white_36dp);
@@ -212,8 +219,10 @@ public class CustomMediaContoller implements IMediaController {
 
 
         //topbox
-        mVideoFinish = (ImageView) rootView.findViewById(R.id.app_video_finish);
         top_box = (LinearLayout) rootView.findViewById(R.id.app_video_top_box);
+        mVideoFinish = (ImageView) rootView.findViewById(R.id.app_video_finish);
+        topTitle = (TextView) rootView.findViewById(R.id.app_video_title);
+
         //status
         mVideoStaus = (LinearLayout) rootView.findViewById(R.id.app_video_status);
         mStatusText = (TextView) rootView.findViewById(R.id.app_video_status_text);
@@ -248,6 +257,7 @@ public class CustomMediaContoller implements IMediaController {
                 return false;
             }
         });
+
         mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer mp) {
@@ -289,23 +299,23 @@ public class CustomMediaContoller implements IMediaController {
 
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
-        orientationEventListener = new OrientationEventListener(activity) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
-                    //竖屏
-                    if (portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                        orientationEventListener.disable();
-                    }
-                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
-                    if (!portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                        orientationEventListener.disable();
-                    }
-                }
-            }
-        };
+//        orientationEventListener = new OrientationEventListener(activity) {
+//            @Override
+//            public void onOrientationChanged(int orientation) {
+//                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
+//                    //竖屏
+//                    if (portrait) {
+//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+//                        orientationEventListener.disable();
+//                    }
+//                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
+//                    if (!portrait) {
+//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+//                        orientationEventListener.disable();
+//                    }
+//                }
+//            }
+//        };
         if (fullScreenOnly) {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
@@ -313,10 +323,19 @@ public class CustomMediaContoller implements IMediaController {
         portrait = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
         hideAll();
-//        if (!playerSupport) {
-//            showStatus(activity.getResources().getString(R.string.not_support));
-//        }
+        if (!playerSupport) {
+            showStatus(activity.getResources().getString(R.string.not_support));
+        }
     }
+
+    public boolean onBackPressed() {
+        if (!fullScreenOnly && getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            return true;
+        }
+        return false;
+    }
+
 
     public void play(String url) {
         if (playerSupport) {
@@ -325,6 +344,82 @@ public class CustomMediaContoller implements IMediaController {
             mVideoView.setVideoPath(url);
             mVideoView.start();
         }
+    }
+    public void start()
+    {
+        mVideoView.start();
+    }
+
+    public void setTopTitle(String str)
+    {
+        topTitle.setText(str);
+    }
+
+    public void onPause() {
+        Log.d(TAG,"onPause"+status);
+
+        pauseTime = System.currentTimeMillis();
+        show(0);//把系统状态栏显示出来
+        if (status==PlayStateParams.STATE_PLAYING) {
+            mVideoView.pause();
+            if (!isLive) {
+                currentPosition = mVideoView.getCurrentPosition();
+            }
+        }
+        statusChange(PlayStateParams.STATE_PAUSED);
+    }
+    public void onDestroy() {
+        Log.d(TAG,"onDestroy"+status);
+//        orientationEventListener.disable();
+        handler.removeCallbacksAndMessages(null);
+        mVideoView.stopPlayback();
+    }
+    public void onResume() {
+        Log.d(TAG,"onResume"+status);
+
+       pauseTime=0;
+        if (status==PlayStateParams.STATE_PAUSED) {
+            if (isLive) {
+                mVideoView.seekTo(0);
+            } else {
+                if (currentPosition>0) {
+                    mVideoView.seekTo(currentPosition);
+                }
+            }
+            mVideoView.start();
+        }
+        statusChange(PlayStateParams.STATE_PLAYING);
+    }
+
+    /**
+     * @param isLive
+     * 设置是否直播
+     */
+    public void isLive(boolean isLive)
+    {
+        this.isLive=isLive;
+    }
+
+    /**
+     * 快进
+     * @param percent
+     */
+    public void forward(float percent) {
+        if (isLive || percent>1 || percent<-1) {
+            return ;
+        }
+        onProgressSlide(percent);
+        showBottomControl(true);
+        handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        endGesture();
+    }
+
+    /**
+     * 右上角图片
+     * @param show
+     */
+    public void setShowNavIcon(boolean show) {
+        mVideoFinish.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void updatePausePlay() {
@@ -336,6 +431,7 @@ public class CustomMediaContoller implements IMediaController {
             mVideoPlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         }
     }
+
     private void showStatus(String statusText) {
         mVideoStaus.setVisibility(View.VISIBLE);
         mStatusText.setText(statusText);
@@ -390,18 +486,8 @@ public class CustomMediaContoller implements IMediaController {
             if (v.getId() == R.id.app_video_fullscreen) {
                 toggleFullScreen();
             } else if (v.getId() == R.id.app_video_play) {
-
-//                if (getStatus()> PlayStateParams.STATE_IDLE) {
-//                    doPauseResume();
-//                    show(defaultTimeout);
-//                }else
-//                {
-//                    System.out.println("VPlayPlayer===Url:"+url);
-//                    play(url);
-//
-//                }
-
-
+                doPauseResume();
+                show(defaultTimeout);
             } else if (v.getId() == R.id.app_video_replay_icon) {
                 mVideoView.seekTo(0);
                 mVideoView.start();
@@ -429,7 +515,7 @@ public class CustomMediaContoller implements IMediaController {
          */
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            mVideoView.toggleAspectRatio();
+//            mVideoView.toggleAspectRatio();
             return true;
         }
 
@@ -480,6 +566,7 @@ public class CustomMediaContoller implements IMediaController {
          */
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
+            Log.d(TAG,"onSingleTapUp:"+isShowing);
             if (isShowing || isLive) {
                 hide(false);
             } else {
@@ -500,7 +587,6 @@ public class CustomMediaContoller implements IMediaController {
             if (instantSeeking) {
                 mVideoView.seekTo(newPosition);
             }
-//            qr.id(R.id.app_video_currentTime).text(time);
             currentTime.setText(time);
         }
 
@@ -527,18 +613,21 @@ public class CustomMediaContoller implements IMediaController {
         }
     };
 
+    /**
+     * is player support this device
+     *
+     * @return
+     */
+    public boolean isPlayerSupport() {
+        return playerSupport;
+    }
+
 
     private void hideAll() {
-//        qr.id(R.id.app_video_replay).gone();
         mVideoReplay.setVisibility(View.GONE);
-//        qr.id(R.id.app_video_top_box).gone();
-
-        top_box.setVisibility(View.GONE);
-//        qr.id(R.id.app_video_loading).gone();
         loading.setVisibility(View.GONE);
-//        qr.id(R.id.app_video_fullscreen).invisible();
+        top_box.setVisibility(View.GONE);
         mVideoFullscreen.setVisibility(View.INVISIBLE);
-//        qr.id(R.id.app_video_status).gone();
         mVideoStaus.setVisibility(View.GONE);
         showBottomControl(false);
 //        onControlPanelVisibilityChangeListener.change(false);
@@ -554,6 +643,7 @@ public class CustomMediaContoller implements IMediaController {
 
     /**
      * 播放面板控制
+     *
      * @param show
      */
     private void showBottomControl(boolean show) {
@@ -604,12 +694,27 @@ public class CustomMediaContoller implements IMediaController {
 
     @Override
     public void hide() {
+        Log.d(TAG,"hide:"+isShowing);
 
+    }
+    public void hide(boolean force)
+    {
+        if (force||isShowing) {
+            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            showBottomControl(false);
+//            $.id(R.id.app_video_top_box).gone();
+//            $.id(R.id.app_video_fullscreen).invisible();
+//            toolbar.setVisibility(View.GONE);
+            top_box.setVisibility(View.GONE);
+            mVideoFullscreen.setVisibility(View.INVISIBLE);
+            isShowing = false;
+//            onControlPanelVisibilityChangeListener.change(false);
+        }
     }
 
     @Override
     public boolean isShowing() {
-        return false;
+        return isShowing;
     }
 
     @Override
@@ -629,7 +734,26 @@ public class CustomMediaContoller implements IMediaController {
 
     @Override
     public void show(int timeout) {
-
+        Log.d(TAG,"show timeout:"+isShowing);
+        if (!isShowing) {
+//            $.id(R.id.app_video_top_box).visible();
+            top_box.setVisibility(View.VISIBLE);
+            if (!isLive) {
+                showBottomControl(true);
+            }
+            if (!fullScreenOnly) {
+//                $.id(R.id.app_video_fullscreen).visible();
+                mVideoFullscreen.setVisibility(View.VISIBLE);
+            }
+            isShowing = true;
+//            onControlPanelVisibilityChangeListener.change(true);
+        }
+        updatePausePlay();
+        handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+        if (timeout != 0) {
+            handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT), timeout);
+        }
     }
 
     @Override
@@ -661,7 +785,7 @@ public class CustomMediaContoller implements IMediaController {
      *
      * @return
      */
-    private int getScreenOrientation() {
+    public int getScreenOrientation() {
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         DisplayMetrics dm = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -756,8 +880,9 @@ public class CustomMediaContoller implements IMediaController {
 //        $.id(R.id.app_video_volume_box).visible();
         volume_box.setVisibility(View.VISIBLE);
 //        $.id(R.id.app_video_volume_box).visible();
-        video_volume.setText(View.VISIBLE);
+
         video_volume.setText(s);
+        video_volume.setVisibility(View.VISIBLE);
 //        $.id(R.id.app_video_volume).text(s).visible();
     }
 
@@ -853,16 +978,16 @@ public class CustomMediaContoller implements IMediaController {
         return position;
     }
 
-    public void hide(boolean force) {
-        if (force || isShowing) {
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            showBottomControl(false);
-//            $.id(R.id.app_video_top_box).gone();
-            top_box.setVisibility(View.GONE);
-//            $.id(R.id.app_video_fullscreen).invisible();
-            mVideoFullscreen.setVisibility(View.INVISIBLE);
-            isShowing = false;
-//            onControlPanelVisibilityChangeListener.change(false);
-        }
-    }
+//    public void hide(boolean force) {
+//        if (force || isShowing) {
+//            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+//            showBottomControl(false);
+////            $.id(R.id.app_video_top_box).gone();
+////            top_box.setVisibility(View.GONE);
+////            $.id(R.id.app_video_fullscreen).invisible();
+//            mVideoFullscreen.setVisibility(View.INVISIBLE);
+//            isShowing = false;
+////            onControlPanelVisibilityChangeListener.change(false);
+//        }
+//    }
 }

@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnSurface.setOnClickListener(this);
 
         findViewById(R.id.videolist).setOnClickListener(this);
+        findViewById(R.id.videoview).setOnClickListener(this);
     }
 
     @Override
@@ -75,8 +76,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent = new Intent(getApplicationContext(), ListActivity.class);
 
         }
+        else if(i==R.id.videoview)
+        {
+            intent=new Intent(getApplicationContext(),VideoViewActivity.class);
+        }
         startActivity(intent);
 
 
     }
+
+
 }

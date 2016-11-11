@@ -83,9 +83,6 @@
     </RelativeLayout>
 
     <include layout="@layout/player_toolbar"
-        android:id="@+id/player_toolbar"
         />
-
-
 
 </RelativeLayout>

@@ -20,7 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.github.jinsedeyuzhou.R;
+import com.github.jinsedeyuzhou.ijkplayer.R;
 
 
 public class Settings {
