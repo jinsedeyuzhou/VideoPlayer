@@ -8,10 +8,13 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,15 +33,22 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by Berkeley on 11/2/16.
+ * <p/>
+ * 两种方式控制屏幕变化
+ * 1、设置view的宽高
+ * 传递布局参数，设置布局参数
+ * <p/>
+ * 2、设置父view的宽高
+ * 在用的activity中更改添加布局的宽高
  */
 public class CustomMediaContoller implements IMediaController {
 
-    private static final String TAG ="CustomMediaContoller" ;
+    private static final String TAG = "CustomMediaContoller";
     private Context mContext;
     private Activity activity;
     private View rootView;
     private final View controlbar;
-//    private final View toolbar;
+    //    private final View toolbar;
     private final View gesture;
     private SeekBar seekBar;
     private View liveBox;
@@ -51,7 +61,7 @@ public class CustomMediaContoller implements IMediaController {
     //屏幕宽度
     private int screenWidthPixels;
     //屏幕宽度
-    private int initHeight;
+    public static int initHeight;
     private String url;
 
     //最大音量
@@ -82,6 +92,7 @@ public class CustomMediaContoller implements IMediaController {
     private boolean isDragging;
 
     private boolean isLive = false;//是否为直播
+    private boolean hidden; //暂停时不隐藏
     //当前位置
     private int currentPosition;
     //是否是仅仅全屏
@@ -111,7 +122,7 @@ public class CustomMediaContoller implements IMediaController {
     private boolean playerSupport;
 
 
-//    private OrientationEventListener orientationEventListener;
+    private OrientationEventListener orientationEventListener;
 
     @SuppressWarnings("HandlerLeak")
     private Handler handler = new Handler(Looper.getMainLooper()) {
@@ -119,7 +130,9 @@ public class CustomMediaContoller implements IMediaController {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case PlayStateParams.MESSAGE_FADE_OUT:
-                    hide(false);
+                    if (!hidden)
+
+                        hide(false);
                     break;
                 case PlayStateParams.MESSAGE_HIDE_CENTER_BOX:
 //                    qr.id(R.id.app_video_volume_box).gone();
@@ -166,7 +179,7 @@ public class CustomMediaContoller implements IMediaController {
         //触摸上下亮度和音量
         gesture = rootView.findViewById(R.id.player_touch_gesture);
 
-
+//        initHeight = rootView.findViewById(R.id.app_video_box).getHeight();
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
@@ -178,7 +191,6 @@ public class CustomMediaContoller implements IMediaController {
         //屏幕宽度
         screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
         //布局高度
-        initHeight = rootView.findViewById(R.id.app_video_box).getLayoutParams().height;
 
 
         mVideoView = (IjkVideoView) rootView.findViewById(R.id.video_view);
@@ -299,23 +311,23 @@ public class CustomMediaContoller implements IMediaController {
 
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
-//        orientationEventListener = new OrientationEventListener(activity) {
-//            @Override
-//            public void onOrientationChanged(int orientation) {
-//                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
-//                    //竖屏
-//                    if (portrait) {
-//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-//                        orientationEventListener.disable();
-//                    }
-//                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
-//                    if (!portrait) {
-//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-//                        orientationEventListener.disable();
-//                    }
-//                }
-//            }
-//        };
+        orientationEventListener = new OrientationEventListener(activity) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
+                    //竖屏
+                    if (portrait) {
+                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        orientationEventListener.disable();
+                    }
+                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
+                    if (!portrait) {
+                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                        orientationEventListener.disable();
+                    }
+                }
+            }
+        };
         if (fullScreenOnly) {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
@@ -345,22 +357,21 @@ public class CustomMediaContoller implements IMediaController {
             mVideoView.start();
         }
     }
-    public void start()
-    {
+
+    public void start() {
         mVideoView.start();
     }
 
-    public void setTopTitle(String str)
-    {
+    public void setTopTitle(String str) {
         topTitle.setText(str);
     }
 
     public void onPause() {
-        Log.d(TAG,"onPause"+status);
+        Log.d(TAG, "onPause" + status);
 
         pauseTime = System.currentTimeMillis();
         show(0);//把系统状态栏显示出来
-        if (status==PlayStateParams.STATE_PLAYING) {
+        if (status == PlayStateParams.STATE_PLAYING) {
             mVideoView.pause();
             if (!isLive) {
                 currentPosition = mVideoView.getCurrentPosition();
@@ -368,21 +379,23 @@ public class CustomMediaContoller implements IMediaController {
         }
         statusChange(PlayStateParams.STATE_PAUSED);
     }
+
     public void onDestroy() {
-        Log.d(TAG,"onDestroy"+status);
-//        orientationEventListener.disable();
+        Log.d(TAG, "onDestroy" + status);
+        orientationEventListener.disable();
         handler.removeCallbacksAndMessages(null);
         mVideoView.stopPlayback();
     }
-    public void onResume() {
-        Log.d(TAG,"onResume"+status);
 
-       pauseTime=0;
-        if (status==PlayStateParams.STATE_PAUSED) {
+    public void onResume() {
+        Log.d(TAG, "onResume" + status);
+
+        pauseTime = 0;
+        if (status == PlayStateParams.STATE_PAUSED) {
             if (isLive) {
                 mVideoView.seekTo(0);
             } else {
-                if (currentPosition>0) {
+                if (currentPosition > 0) {
                     mVideoView.seekTo(currentPosition);
                 }
             }
@@ -392,21 +405,20 @@ public class CustomMediaContoller implements IMediaController {
     }
 
     /**
-     * @param isLive
-     * 设置是否直播
+     * @param isLive 设置是否直播
      */
-    public void isLive(boolean isLive)
-    {
-        this.isLive=isLive;
+    public void isLive(boolean isLive) {
+        this.isLive = isLive;
     }
 
     /**
      * 快进
+     *
      * @param percent
      */
     public void forward(float percent) {
-        if (isLive || percent>1 || percent<-1) {
-            return ;
+        if (isLive || percent > 1 || percent < -1) {
+            return;
         }
         onProgressSlide(percent);
         showBottomControl(true);
@@ -416,6 +428,7 @@ public class CustomMediaContoller implements IMediaController {
 
     /**
      * 右上角图片
+     *
      * @param show
      */
     public void setShowNavIcon(boolean show) {
@@ -426,9 +439,11 @@ public class CustomMediaContoller implements IMediaController {
         if (mVideoView.isPlaying()) {
 //            qr.id(R.id.app_video_play).image(R.drawable.ic_stop_white_24dp);
             mVideoPlay.setImageResource(R.drawable.ic_stop_white_24dp);
+            hidden = false;
         } else {
 //            qr.id(R.id.app_video_play).image(R.drawable.ic_play_arrow_white_24dp);
             mVideoPlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+            hidden = true;
         }
     }
 
@@ -502,6 +517,96 @@ public class CustomMediaContoller implements IMediaController {
         }
     };
 
+    /**
+     * 方法一
+     *
+     * @param portrait
+     */
+    public void doOnConfigurationChanged(final boolean portrait) {
+
+        if (mVideoView != null && !fullScreenOnly) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    tryFullScreen(!portrait);
+                    if (portrait) {
+                        Log.v(TAG, "initHeight" + initHeight);
+                        liveBox.getLayoutParams().height = initHeight;
+
+                    } else {
+                        int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
+                        int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
+                        liveBox.getLayoutParams().height = Math.min(heightPixels, widthPixels);
+//                        liveBox.getLayoutParams().width=widthPixels;
+                    }
+                    updateFullScreenButton();
+                }
+            });
+            orientationEventListener.enable();
+        }
+    }
+
+//方法二
+//    public void doOnConfigurationChanged(final boolean portrait) {
+//        if (mVideoView != null) {
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    tryFullScreen(!portrait);
+//                    if (portrait) {
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                        Log.e("handler", "400");
+//                        setLayoutParams(layoutParams);
+//                        requestLayout();
+//                    } else {
+//                        int heightPixels = ((Activity) mContext).getResources().getDisplayMetrics().heightPixels;
+//                        int widthPixels = ((Activity) mContext).getResources().getDisplayMetrics().widthPixels;
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        layoutParams.height = heightPixels;
+//                        layoutParams.width = widthPixels;
+//                        Log.e("handler", "height==" + heightPixels + "\nwidth==" + widthPixels);
+//                        setLayoutParams(layoutParams);
+//                    }
+//
+//                }
+//            });
+//            orientationEventListener.enable();
+//        }
+//    }
+
+    private void tryFullScreen(boolean fullScreen) {
+        if (activity instanceof AppCompatActivity) {
+            ActionBar supportActionBar = ((AppCompatActivity) activity).getSupportActionBar();
+            if (supportActionBar != null) {
+                if (fullScreen) {
+                    supportActionBar.hide();
+                } else {
+                    supportActionBar.show();
+                }
+            }
+        }
+        setFullScreen(fullScreen);
+    }
+
+    private void setFullScreen(boolean fullScreen) {
+        if (activity != null) {
+            WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
+            if (fullScreen) {
+                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                activity.getWindow().setAttributes(attrs);
+                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            } else {
+                attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                activity.getWindow().setAttributes(attrs);
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            }
+        }
+
+    }
+
+
     public class PlayerGestureListener extends GestureDetector.SimpleOnGestureListener {
         //点击
         private boolean firstTouch;
@@ -566,7 +671,7 @@ public class CustomMediaContoller implements IMediaController {
          */
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            Log.d(TAG,"onSingleTapUp:"+isShowing);
+            Log.d(TAG, "onSingleTapUp:" + isShowing);
             if (isShowing || isLive) {
                 hide(false);
             } else {
@@ -694,12 +799,13 @@ public class CustomMediaContoller implements IMediaController {
 
     @Override
     public void hide() {
-        Log.d(TAG,"hide:"+isShowing);
+        Log.d(TAG, "hide:" + isShowing);
 
     }
-    public void hide(boolean force)
-    {
-        if (force||isShowing) {
+
+    public void hide(boolean force) {
+
+        if (force || isShowing) {
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             showBottomControl(false);
 //            $.id(R.id.app_video_top_box).gone();
@@ -710,6 +816,7 @@ public class CustomMediaContoller implements IMediaController {
             isShowing = false;
 //            onControlPanelVisibilityChangeListener.change(false);
         }
+
     }
 
     @Override
@@ -734,7 +841,7 @@ public class CustomMediaContoller implements IMediaController {
 
     @Override
     public void show(int timeout) {
-        Log.d(TAG,"show timeout:"+isShowing);
+        Log.d(TAG, "show timeout:" + isShowing);
         if (!isShowing) {
 //            $.id(R.id.app_video_top_box).visible();
             top_box.setVisibility(View.VISIBLE);

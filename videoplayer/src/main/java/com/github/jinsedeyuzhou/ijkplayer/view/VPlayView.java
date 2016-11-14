@@ -7,12 +7,9 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
@@ -23,7 +20,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 /**
  * Created by Berkeley on 11/3/16.
  */
-public class VPlayView extends RelativeLayout  {
+public class VPlayView extends RelativeLayout {
 
     private Context mContext;
     private Activity activity;
@@ -32,18 +29,18 @@ public class VPlayView extends RelativeLayout  {
     private IjkVideoView mVideoView;
     private CustomMediaContoller customMediaContoller;
 
-    private Handler handler=new Handler();
+    private Handler handler = new Handler();
 
     private boolean portrait;
     private View toolbar;
-    private OrientationEventListener orientationEventListener;
+//    private OrientationEventListener orientationEventListener;
 
 
     public VPlayView(Context context) {
         super(context);
 
         mContext = context;
-        activity= (Activity) context;
+        activity = (Activity) context;
         initData();
         initView();
         initAction();
@@ -67,7 +64,7 @@ public class VPlayView extends RelativeLayout  {
         /**
          * 主要布局
          */
-        rootView = LayoutInflater.from(mContext).inflate(R.layout.view_player,this,true);
+        rootView = LayoutInflater.from(mContext).inflate(R.layout.view_player, this, true);
         /**
          * 播放控制布局
          */
@@ -79,7 +76,7 @@ public class VPlayView extends RelativeLayout  {
         toolbar = findViewById(R.id.app_video_top_box);
 
 
-        customMediaContoller = new CustomMediaContoller(mContext,rootView);
+        customMediaContoller = new CustomMediaContoller(mContext, rootView);
         mVideoView.setMediaController(customMediaContoller);
         mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
@@ -95,8 +92,7 @@ public class VPlayView extends RelativeLayout  {
                     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                     setLayoutParams(layoutParams);
                 }
-                if (oncomplete != null)
-                {
+                if (oncomplete != null) {
                     oncomplete.run();
                 }
             }
@@ -105,52 +101,56 @@ public class VPlayView extends RelativeLayout  {
         mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-                onErrorListener.onError(what,extra);
+                onErrorListener.onError(what, extra);
                 return true;
             }
         });
         mVideoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-                onInfoListener.onInfo(what,extra);
+                onInfoListener.onInfo(what, extra);
                 return true;
             }
         });
 
 
+    }
 
-
-
-
+    /**
+     * 方法一，传递参数更改布局宽高
+     * @param height
+     */
+    public void setViewHeight(int height)
+    {
+        findViewById(R.id.app_video_box).getLayoutParams().height=height;
+        customMediaContoller.initHeight=height;
     }
 
     private void initAction() {
-        orientationEventListener = new OrientationEventListener(mContext) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
-                    //竖屏
-                    if (portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                        orientationEventListener.disable();
-                    }
-                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
-                    if (!portrait) {
-                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-                        orientationEventListener.disable();
-                    }
-                }
-            }
-        };
+//        orientationEventListener = new OrientationEventListener(mContext) {
+//            @Override
+//            public void onOrientationChanged(int orientation) {
+//                if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
+//                    //竖屏
+//                    if (portrait) {
+//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+//                        orientationEventListener.disable();
+//                    }
+//                } else if ((orientation >= 90 && orientation <= 120) || (orientation >= 240 && orientation <= 300)) {
+//                    if (!portrait) {
+//                        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+//                        orientationEventListener.disable();
+//                    }
+//                }
+//            }
+//        };
     }
 
-    public void setTitle(String str)
-    {
+    public void setTitle(String str) {
         customMediaContoller.setTopTitle(str);
     }
 
-    public void hideNavIcon()
-    {
+    public void hideNavIcon() {
         customMediaContoller.setShowNavIcon(false);
     }
 
@@ -180,56 +180,54 @@ public class VPlayView extends RelativeLayout  {
         }
     }
 
-    public void start(){
-        if (mVideoView.isPlaying()){
+    public void start() {
+        if (mVideoView.isPlaying()) {
             mVideoView.start();
         }
     }
 
 
-
-
-    public void seekTo(int msec){
+    public void seekTo(int msec) {
         mVideoView.seekTo(msec);
     }
 
-    public void onChanged(Configuration configuration) {
-        portrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT;
-        doOnConfigurationChanged(portrait);
-    }
 
     public void onConfigurationChanged(final Configuration newConfig) {
         portrait = newConfig.orientation == Configuration.ORIENTATION_PORTRAIT;
-        doOnConfigurationChanged(portrait);
+        customMediaContoller.doOnConfigurationChanged(portrait);
     }
 
-    public void doOnConfigurationChanged(final boolean portrait) {
-        if (mVideoView != null) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    setFullScreen(!portrait);
-                    if (portrait) {
-                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                        Log.e("handler", "400");
-                        setLayoutParams(layoutParams);
-                        requestLayout();
-                    } else {
-                        int heightPixels = ((Activity) mContext).getResources().getDisplayMetrics().heightPixels;
-                        int widthPixels = ((Activity) mContext).getResources().getDisplayMetrics().widthPixels;
-                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                        layoutParams.height = heightPixels;
-                        layoutParams.width = widthPixels;
-                        Log.e("handler", "height==" + heightPixels + "\nwidth==" + widthPixels);
-                        setLayoutParams(layoutParams);
-                    }
-                }
-            });
+//
+//    public void doOnConfigurationChanged(final boolean portrait) {
+//        if (mVideoView != null) {
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    setFullScreen(!portrait);
+//                    if (portrait) {
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                        Log.e("handler", "400");
+//                        setLayoutParams(layoutParams);
+//                        requestLayout();
+//                    } else {
+//                        int heightPixels = ((Activity) mContext).getResources().getDisplayMetrics().heightPixels;
+//                        int widthPixels = ((Activity) mContext).getResources().getDisplayMetrics().widthPixels;
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        layoutParams.height = heightPixels;
+//                        layoutParams.width = widthPixels;
+//                        Log.e("handler", "height==" + heightPixels + "\nwidth==" + widthPixels);
+//                        setLayoutParams(layoutParams);
+//                    }
+//
+//                }
+//            });
 //            orientationEventListener.enable();
-        }
-    }
+//        }
+//    }
+
+
 
     public void stop() {
         if (mVideoView.isPlaying()) {
@@ -238,38 +236,37 @@ public class VPlayView extends RelativeLayout  {
     }
 
 
-
     public void onDestroy() {
-        orientationEventListener.disable();
-       customMediaContoller.onDestroy();
+//        orientationEventListener.disable();
+        customMediaContoller.onDestroy();
     }
-    public void onResume()
-    {
+
+    public void onResume() {
 //        mVideoView.start();
         customMediaContoller.onResume();
     }
-    public void onPause()
-    {
+
+    public void onPause() {
 //        mVideoView.pause();
         customMediaContoller.onPause();
     }
 
 
-    private void setFullScreen(boolean fullScreen) {
-        if (mContext != null && mContext instanceof Activity) {
-            WindowManager.LayoutParams attrs = ((Activity) mContext).getWindow().getAttributes();
-            if (fullScreen) {
-                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-                ((Activity) mContext).getWindow().setAttributes(attrs);
-                ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            } else {
-                attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                ((Activity) mContext).getWindow().setAttributes(attrs);
-                ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            }
-        }
-
-    }
+//    private void setFullScreen(boolean fullScreen) {
+//        if (mContext != null && mContext instanceof Activity) {
+//            WindowManager.LayoutParams attrs = ((Activity) mContext).getWindow().getAttributes();
+//            if (fullScreen) {
+//                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+//                ((Activity) mContext).getWindow().setAttributes(attrs);
+//                ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//            } else {
+//                attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                ((Activity) mContext).getWindow().setAttributes(attrs);
+//                ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//            }
+//        }
+//
+//    }
 
 
     public long getPalyPostion() {
@@ -285,8 +282,7 @@ public class VPlayView extends RelativeLayout  {
     }
 
 
-
-    public interface OnErrorListener{
+    public interface OnErrorListener {
         void onError(int what, int extra);
     }
 
@@ -294,18 +290,19 @@ public class VPlayView extends RelativeLayout  {
     public interface OnInfoListener {
         void onInfo(int what, int extra);
     }
-    private OnErrorListener onErrorListener=new OnErrorListener() {
+
+    private OnErrorListener onErrorListener = new OnErrorListener() {
         @Override
         public void onError(int what, int extra) {
         }
     };
-    private Runnable oncomplete =new Runnable() {
+    private Runnable oncomplete = new Runnable() {
         @Override
         public void run() {
 
         }
     };
-    private OnInfoListener onInfoListener=new OnInfoListener(){
+    private OnInfoListener onInfoListener = new OnInfoListener() {
         @Override
         public void onInfo(int what, int extra) {
 

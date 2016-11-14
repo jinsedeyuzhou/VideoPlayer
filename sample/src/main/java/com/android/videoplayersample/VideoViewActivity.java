@@ -17,6 +17,7 @@ public class VideoViewActivity extends FragmentActivity {
 
     private FrameLayout layout_video;
     private VPlayView vPlayPlayer;
+    private  int mporit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,7 +25,9 @@ public class VideoViewActivity extends FragmentActivity {
         setContentView(R.layout.activity_video);
         layout_video = (FrameLayout) findViewById(R.id.layout_video);
 
+        mporit=layout_video.getLayoutParams().height;
         vPlayPlayer = new VPlayView(this);
+        vPlayPlayer.setViewHeight(600);
         vPlayPlayer.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");
         layout_video.addView(vPlayPlayer);
 
@@ -65,7 +68,16 @@ public class VideoViewActivity extends FragmentActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (vPlayPlayer != null) {
-            vPlayPlayer.onChanged(newConfig);
+            vPlayPlayer.onConfigurationChanged(newConfig);
+            //方法二
+//            if (newConfig.orientation== Configuration.ORIENTATION_PORTRAIT)
+//            {
+//                layout_video.getLayoutParams().height=mporit;
+//            }
+//            else
+//            {
+//                layout_video.getLayoutParams().height= ViewGroup.LayoutParams.MATCH_PARENT;
+//            }
         }
     }
 }
