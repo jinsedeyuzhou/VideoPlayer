@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
@@ -31,9 +32,11 @@ public class VPlayView extends RelativeLayout {
 
     private Handler handler = new Handler();
 
+
     private boolean portrait;
     private View toolbar;
-//    private OrientationEventListener orientationEventListener;
+    private TextView topTitle;
+    //    private OrientationEventListener orientationEventListener;
 
 
     public VPlayView(Context context) {
@@ -74,6 +77,7 @@ public class VPlayView extends RelativeLayout {
          */
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
         toolbar = findViewById(R.id.app_video_top_box);
+        topTitle = (TextView) rootView.findViewById(R.id.app_video_title);
 
 
         customMediaContoller = new CustomMediaContoller(mContext, rootView);
@@ -92,39 +96,30 @@ public class VPlayView extends RelativeLayout {
                     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                     setLayoutParams(layoutParams);
                 }
-                if (oncomplete != null) {
-                    oncomplete.run();
-                }
+//                if (oncomplete != null) {
+//                    oncomplete.run();
+//                }
             }
         });
 
-        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-                onErrorListener.onError(what, extra);
-                return true;
-            }
-        });
-        mVideoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-                onInfoListener.onInfo(what, extra);
-                return true;
-            }
-        });
+//        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+//            @Override
+//            public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
+//                onErrorListener.onError(what, extra);
+//                return true;
+//            }
+//        });
+//        mVideoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
+//            @Override
+//            public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
+//                onInfoListener.onInfo(what, extra);
+//                return true;
+//            }
+//        });
 
 
     }
 
-    /**
-     * 方法一，传递参数更改布局宽高
-     * @param height
-     */
-    public void setViewHeight(int height)
-    {
-        findViewById(R.id.app_video_box).getLayoutParams().height=height;
-        customMediaContoller.initHeight=height;
-    }
 
     private void initAction() {
 //        orientationEventListener = new OrientationEventListener(mContext) {
@@ -146,12 +141,26 @@ public class VPlayView extends RelativeLayout {
 //        };
     }
 
-    public void setTitle(String str) {
-        customMediaContoller.setTopTitle(str);
-    }
 
     public void hideNavIcon() {
         customMediaContoller.setShowNavIcon(false);
+    }
+
+    /**
+     * 设置标题
+     * @param str
+     */
+    public void setTopTitle(String str) {
+        topTitle.setText(str);
+    }
+    /**
+     * 方法一，传递参数更改布局宽高
+     * @param height
+     */
+    public void setViewHeight(int height)
+    {
+        findViewById(R.id.app_video_box).getLayoutParams().height=height;
+        customMediaContoller.initHeight=height;
     }
 
     public boolean isPlay() {
@@ -168,16 +177,17 @@ public class VPlayView extends RelativeLayout {
 
     public void start(String path) {
         Uri uri = Uri.parse(path);
-        if (customMediaContoller != null)
-            customMediaContoller.start();
-        if (!mVideoView.isPlaying()) {
-            mVideoView.setVideoURI(uri);
-            mVideoView.start();
-        } else {
-            mVideoView.stopPlayback();
-            mVideoView.setVideoURI(uri);
-            mVideoView.start();
+        if (customMediaContoller != null) {
+            customMediaContoller.start(path);
         }
+//        if (!mVideoView.isPlaying()) {
+//            mVideoView.setVideoURI(uri);
+//            mVideoView.start();
+//        } else {
+//            mVideoView.stopPlayback();
+//            mVideoView.setVideoURI(uri);
+//            mVideoView.start();
+//        }
     }
 
     public void start() {
@@ -185,8 +195,25 @@ public class VPlayView extends RelativeLayout {
             mVideoView.start();
         }
     }
+    //当前位置
+    private int currentPosition;
+    //播放总时长
+    private long duration;
+    /**
+     * 获取当前播放位置
+     */
+    public int getCurrentPosition() {
+            currentPosition = mVideoView.getCurrentPosition();
+        return currentPosition;
+    }
 
-
+    /**
+     * 获取视频播放总时长
+     */
+    public long getDuration() {
+        duration = mVideoView.getDuration();
+        return duration;
+    }
     public void seekTo(int msec) {
         mVideoView.seekTo(msec);
     }
@@ -281,32 +308,5 @@ public class VPlayView extends RelativeLayout {
         return mVideoView.getCurrentStatue();
     }
 
-
-    public interface OnErrorListener {
-        void onError(int what, int extra);
-    }
-
-
-    public interface OnInfoListener {
-        void onInfo(int what, int extra);
-    }
-
-    private OnErrorListener onErrorListener = new OnErrorListener() {
-        @Override
-        public void onError(int what, int extra) {
-        }
-    };
-    private Runnable oncomplete = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
-    private OnInfoListener onInfoListener = new OnInfoListener() {
-        @Override
-        public void onInfo(int what, int extra) {
-
-        }
-    };
 
 }

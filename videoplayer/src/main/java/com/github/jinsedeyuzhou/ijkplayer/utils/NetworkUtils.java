@@ -59,4 +59,45 @@ public class NetworkUtils {
         /** 未知网络 */
         return -1;
     }
+
+
+    private static final String TAG = "NetUtils";
+
+    /**
+     * 判断是否有网
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isConnectionAvailable(Context context) {
+        ConnectivityManager con = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo workinfo = con.getActiveNetworkInfo();
+        if (workinfo == null || !workinfo.isAvailable()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 判断WiFi是否连接
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager mConnMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+//        NetworkInfo mMobile = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        boolean flag = false;
+        if ((mWifi != null) && ((mWifi.isAvailable()))) {
+            if ((mWifi.isConnected())) {
+                flag = true;
+            }
+        }
+        return flag;
+
+    }
+
+
 }

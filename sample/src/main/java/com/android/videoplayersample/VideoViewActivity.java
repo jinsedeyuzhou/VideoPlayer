@@ -24,12 +24,14 @@ public class VideoViewActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         layout_video = (FrameLayout) findViewById(R.id.layout_video);
-
-        mporit=layout_video.getLayoutParams().height;
         vPlayPlayer = new VPlayView(this);
         vPlayPlayer.setViewHeight(600);
         vPlayPlayer.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");
+//        mporit=layout_video.getLayoutParams().height;
+
         layout_video.addView(vPlayPlayer);
+
+
 
 
     }

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IMediaController;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
+import com.github.jinsedeyuzhou.ijkplayer.utils.NetworkUtils;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
@@ -74,6 +76,8 @@ public class CustomMediaContoller implements IMediaController {
     private boolean portrait;
     //亮度
     private float brightness = -1;
+    //是否显示控制bar
+    private boolean isShowContoller;
     //音量
     private int volume = -1;
     //新的位置
@@ -114,12 +118,14 @@ public class CustomMediaContoller implements IMediaController {
     private TextView video_brightness;
     private TextView topTitle;
     private long pauseTime;
+    private LinearLayout mVideoNetTie;
+    private TextView mVideoNetTieIcon;
+    private LinearLayout mVideoStaus;
+    private TextView mStatusText;
 
     public int getStatus() {
         return status;
     }
-
-    private boolean playerSupport;
 
 
     private OrientationEventListener orientationEventListener;
@@ -131,7 +137,6 @@ public class CustomMediaContoller implements IMediaController {
             switch (msg.what) {
                 case PlayStateParams.MESSAGE_FADE_OUT:
                     if (!hidden)
-
                         hide(false);
                     break;
                 case PlayStateParams.MESSAGE_HIDE_CENTER_BOX:
@@ -157,20 +162,20 @@ public class CustomMediaContoller implements IMediaController {
                     }
                     break;
                 case PlayStateParams.MESSAGE_RESTART_PLAY:
-//                    play(url);
+                    play(url);
+                    break;
+                case PlayStateParams.MESSAGE_HIDE_NETWORK:
+                    mVideoNetTie.setVisibility(View.GONE);
                     break;
             }
         }
     };
-    private LinearLayout mVideoStaus;
-    private TextView mStatusText;
 
 
     public CustomMediaContoller(Context context, View rootView) {
         this.mContext = context;
         activity = (Activity) context;
         this.rootView = rootView;
-        this.playerSupport = true;
 
         //播放控制
         controlbar = rootView.findViewById(R.id.player_controlbar);
@@ -239,6 +244,10 @@ public class CustomMediaContoller implements IMediaController {
         mVideoStaus = (LinearLayout) rootView.findViewById(R.id.app_video_status);
         mStatusText = (TextView) rootView.findViewById(R.id.app_video_status_text);
 
+        //网络提示
+        mVideoNetTie = (LinearLayout) rootView.findViewById(R.id.app_video_netTie);
+        mVideoNetTieIcon = (TextView) rootView.findViewById(R.id.app_video_netTie_icon);
+
 
     }
 
@@ -247,6 +256,7 @@ public class CustomMediaContoller implements IMediaController {
         mVideoFullscreen.setOnClickListener(onClickListener);
         mVideoReplay.setOnClickListener(onClickListener);
         mVideoPlay.setOnClickListener(onClickListener);
+        mVideoNetTieIcon.setOnClickListener(onClickListener);
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         final GestureDetector gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
@@ -270,29 +280,17 @@ public class CustomMediaContoller implements IMediaController {
             }
         });
 
-        mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(IMediaPlayer mp) {
-                statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
-//                oncomplete.run();
-            }
-        });
-        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(IMediaPlayer mp, int what, int extra) {
-                statusChange(PlayStateParams.STATE_ERROR);
-//                onErrorListener.onError(what, extra);
-                return true;
-            }
-        });
+
         mVideoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(IMediaPlayer mp, int what, int extra) {
                 switch (what) {
                     case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                        Log.d(TAG, "MEDIA_INFO_BUFFERING_START");
                         statusChange(PlayStateParams.STATE_PREPARING);
                         break;
                     case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                        Log.d(TAG, "MEDIA_INFO_BUFFERING_END");
                         statusChange(PlayStateParams.STATE_PLAYING);
                         break;
                     case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
@@ -300,20 +298,36 @@ public class CustomMediaContoller implements IMediaController {
 //                        Toaster.show("download rate:" + extra);
                         break;
                     case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                        Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
                         statusChange(PlayStateParams.STATE_PLAYING);
                         break;
                 }
-//                onInfoListener.onInfo(what, extra);
+                onInfoListener.onInfo(what, extra);
                 return false;
             }
         });
-
+        mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(IMediaPlayer mp) {
+                statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
+                oncomplete.run();
+            }
+        });
+        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(IMediaPlayer mp, int what, int extra) {
+                statusChange(PlayStateParams.STATE_ERROR);
+                onErrorListener.onError(what, extra);
+                return true;
+            }
+        });
 
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         orientationEventListener = new OrientationEventListener(activity) {
             @Override
             public void onOrientationChanged(int orientation) {
+
                 if (orientation >= 0 && orientation <= 30 || orientation >= 330 || (orientation >= 150 && orientation <= 210)) {
                     //竖屏
                     if (portrait) {
@@ -335,9 +349,6 @@ public class CustomMediaContoller implements IMediaController {
         portrait = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
         hideAll();
-        if (!playerSupport) {
-            showStatus(activity.getResources().getString(R.string.not_support));
-        }
     }
 
     public boolean onBackPressed() {
@@ -349,22 +360,44 @@ public class CustomMediaContoller implements IMediaController {
     }
 
 
+    public void setShowContoller(boolean isShowContoller) {
+        this.isShowContoller = isShowContoller;
+        handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+    }
+
     public void play(String url) {
-        if (playerSupport) {
-//            qr.id(R.id.app_video_loading).visible();
-            loading.setVisibility(View.VISIBLE);
-            mVideoView.setVideoPath(url);
-            mVideoView.start();
+        loading.setVisibility(View.VISIBLE);
+        mVideoView.setVideoPath(url);
+        mVideoView.start();
+
+    }
+
+    public void start(Uri uri) {
+
+        if (!mVideoView.isPlaying()) {
+            mVideoView.setVideoURI(uri);
+
+        } else {
+            mVideoView.stopPlayback();
+            mVideoView.setVideoURI(uri);
         }
     }
 
-    public void start() {
+    public void start(String path) {
+        Uri uri = Uri.parse(path);
+        Log.d(TAG, "start");
+        hideAll();
+        start(uri);
+        loading.setVisibility(View.VISIBLE);
+        isShowContoller = false;
         mVideoView.start();
+//
+//        }
+//        else {
+//          mVideoNetTie.setVisibility(View.VISIBLE);
+//        }
     }
 
-    public void setTopTitle(String str) {
-        topTitle.setText(str);
-    }
 
     public void onPause() {
         Log.d(TAG, "onPause" + status);
@@ -376,8 +409,9 @@ public class CustomMediaContoller implements IMediaController {
             if (!isLive) {
                 currentPosition = mVideoView.getCurrentPosition();
             }
+            statusChange(PlayStateParams.STATE_PAUSED);
         }
-        statusChange(PlayStateParams.STATE_PAUSED);
+
     }
 
     public void onDestroy() {
@@ -389,6 +423,7 @@ public class CustomMediaContoller implements IMediaController {
 
     public void onResume() {
         Log.d(TAG, "onResume" + status);
+//        orientationEventListener.enable();
 
         pauseTime = 0;
         if (status == PlayStateParams.STATE_PAUSED) {
@@ -400,8 +435,9 @@ public class CustomMediaContoller implements IMediaController {
                 }
             }
             mVideoView.start();
+            statusChange(PlayStateParams.STATE_PLAYING);
         }
-        statusChange(PlayStateParams.STATE_PLAYING);
+//        statusChange(PlayStateParams.STATE_PLAYING);
     }
 
     /**
@@ -472,10 +508,13 @@ public class CustomMediaContoller implements IMediaController {
     private void statusChange(int newStatus) {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
+            Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             hideAll();
             mVideoReplay.setVisibility(View.VISIBLE);
+
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
+            Log.d(TAG, "STATE_ERROR");
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             hideAll();
             if (isLive) {
@@ -487,11 +526,20 @@ public class CustomMediaContoller implements IMediaController {
                 showStatus(activity.getResources().getString(R.string.small_problem));
             }
         } else if (newStatus == PlayStateParams.STATE_PREPARING) {
+            Log.d(TAG, "STATE_PREPARING");
             hideAll();
             loading.setVisibility(View.VISIBLE);
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
+            Log.d(TAG, "STATE_PLAYING");
             hideAll();
+            isShowContoller = true;
+            if (!NetworkUtils.isNetworkAvailable(mContext)) {
+                mVideoView.pause();
+                mVideoNetTie.setVisibility(View.VISIBLE);
+            }
+
         }
+
 
     }
 
@@ -513,6 +561,9 @@ public class CustomMediaContoller implements IMediaController {
                 } else {
                     activity.finish();
                 }
+            } else if (v.getId() == R.id.app_video_netTie_icon) {
+                mVideoView.start();
+                handler.sendEmptyMessage(PlayStateParams.MESSAGE_HIDE_NETWORK);
             }
         }
     };
@@ -538,6 +589,7 @@ public class CustomMediaContoller implements IMediaController {
                         int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
                         liveBox.getLayoutParams().height = Math.min(heightPixels, widthPixels);
 //                        liveBox.getLayoutParams().width=widthPixels;
+                        Log.v(TAG, "initHeight" + 0);
                     }
                     updateFullScreenButton();
                 }
@@ -718,17 +770,9 @@ public class CustomMediaContoller implements IMediaController {
         }
     };
 
-    /**
-     * is player support this device
-     *
-     * @return
-     */
-    public boolean isPlayerSupport() {
-        return playerSupport;
-    }
-
 
     private void hideAll() {
+        Log.d(TAG, "hideAll");
         mVideoReplay.setVisibility(View.GONE);
         loading.setVisibility(View.GONE);
         top_box.setVisibility(View.GONE);
@@ -774,13 +818,34 @@ public class CustomMediaContoller implements IMediaController {
      * 更新全屏按钮
      */
     private void updateFullScreenButton() {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        Log.v(TAG, getScreenOrientation() + "");
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
             mVideoFullscreen.setImageResource(R.drawable.ic_fullscreen_exit_white_36dp);
         } else {
             mVideoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
         }
     }
 
+//    /**
+//     * 获取当前播放位置
+//     */
+//    public int getCurrentPosition() {
+//        if (!isLive) {
+//            currentPosition = mVideoView.getCurrentPosition();
+//        } else {
+//            /**直播*/
+//            currentPosition = -1;
+//        }
+//        return currentPosition;
+//    }
+//
+//    /**
+//     * 获取视频播放总时长
+//     */
+//    public long getDuration() {
+//        duration = mVideoView.getDuration();
+//        return duration;
+//    }
 
     /**
      * 手势结束
@@ -842,6 +907,8 @@ public class CustomMediaContoller implements IMediaController {
     @Override
     public void show(int timeout) {
         Log.d(TAG, "show timeout:" + isShowing);
+        if (!isShowContoller)
+            return;
         if (!isShowing) {
 //            $.id(R.id.app_video_top_box).visible();
             top_box.setVisibility(View.VISIBLE);
@@ -1097,4 +1164,33 @@ public class CustomMediaContoller implements IMediaController {
 ////            onControlPanelVisibilityChangeListener.change(false);
 //        }
 //    }
+
+
+
+
+    public interface OnErrorListener {
+        void onError(int what, int extra);
+    }
+
+    private OnErrorListener onErrorListener = new OnErrorListener() {
+        @Override
+        public void onError(int what, int extra) {
+        }
+    };
+    private Runnable oncomplete = new Runnable() {
+        @Override
+        public void run() {
+
+        }
+    };
+
+    public interface OnInfoListener {
+        void onInfo(int what, int extra);
+    }
+    private OnInfoListener onInfoListener = new OnInfoListener() {
+        @Override
+        public void onInfo(int what, int extra) {
+
+        }
+    };
 }
