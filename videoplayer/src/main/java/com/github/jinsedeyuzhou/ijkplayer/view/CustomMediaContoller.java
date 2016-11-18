@@ -2,9 +2,14 @@ package com.github.jinsedeyuzhou.ijkplayer.view;
 
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +30,7 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IMediaController;
@@ -95,7 +101,7 @@ public class CustomMediaContoller implements IMediaController {
     // 是否在拖动进度条中，默认为停止拖动，true为在拖动中，false为停止拖动
     private boolean isDragging;
 
-    private boolean isLive = false;//是否为直播
+    private boolean isLive;//是否为直播
     private boolean hidden; //暂停时不隐藏
     //当前位置
     private int currentPosition;
@@ -122,6 +128,11 @@ public class CustomMediaContoller implements IMediaController {
     private TextView mVideoNetTieIcon;
     private LinearLayout mVideoStaus;
     private TextView mStatusText;
+
+    //是否允许移动播放
+    private boolean isAllowModible;
+
+    private ConnectionChangeReceiver changeReceiver;
 
     public int getStatus() {
         return status;
@@ -176,7 +187,10 @@ public class CustomMediaContoller implements IMediaController {
         this.mContext = context;
         activity = (Activity) context;
         this.rootView = rootView;
-
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        changeReceiver=new ConnectionChangeReceiver();
+        mContext.registerReceiver(changeReceiver,intentFilter);
         //播放控制
         controlbar = rootView.findViewById(R.id.player_controlbar);
         //toolbar
@@ -417,6 +431,7 @@ public class CustomMediaContoller implements IMediaController {
     public void onDestroy() {
         Log.d(TAG, "onDestroy" + status);
         orientationEventListener.disable();
+        mContext.unregisterReceiver(changeReceiver);
         handler.removeCallbacksAndMessages(null);
         mVideoView.stopPlayback();
     }
@@ -533,9 +548,12 @@ public class CustomMediaContoller implements IMediaController {
             Log.d(TAG, "STATE_PLAYING");
             hideAll();
             isShowContoller = true;
-            if (!NetworkUtils.isNetworkAvailable(mContext)) {
+            if (!NetworkUtils.isNetworkAvailable(mContext) && !isAllowModible) {
                 mVideoView.pause();
                 mVideoNetTie.setVisibility(View.VISIBLE);
+                handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+
+
             }
 
         }
@@ -549,6 +567,8 @@ public class CustomMediaContoller implements IMediaController {
             if (v.getId() == R.id.app_video_fullscreen) {
                 toggleFullScreen();
             } else if (v.getId() == R.id.app_video_play) {
+                if (!NetworkUtils.isConnectionAvailable(mContext))
+                    return;
                 doPauseResume();
                 show(defaultTimeout);
             } else if (v.getId() == R.id.app_video_replay_icon) {
@@ -562,6 +582,7 @@ public class CustomMediaContoller implements IMediaController {
                     activity.finish();
                 }
             } else if (v.getId() == R.id.app_video_netTie_icon) {
+                isAllowModible = true;
                 mVideoView.start();
                 handler.sendEmptyMessage(PlayStateParams.MESSAGE_HIDE_NETWORK);
             }
@@ -907,8 +928,8 @@ public class CustomMediaContoller implements IMediaController {
     @Override
     public void show(int timeout) {
         Log.d(TAG, "show timeout:" + isShowing);
-        if (!isShowContoller)
-            return;
+//        if (!isShowContoller)
+//            return;
         if (!isShowing) {
 //            $.id(R.id.app_video_top_box).visible();
             top_box.setVisibility(View.VISIBLE);
@@ -932,7 +953,6 @@ public class CustomMediaContoller implements IMediaController {
 
     @Override
     public void show() {
-
     }
 
     @Override
@@ -1166,8 +1186,6 @@ public class CustomMediaContoller implements IMediaController {
 //    }
 
 
-
-
     public interface OnErrorListener {
         void onError(int what, int extra);
     }
@@ -1187,10 +1205,61 @@ public class CustomMediaContoller implements IMediaController {
     public interface OnInfoListener {
         void onInfo(int what, int extra);
     }
+
     private OnInfoListener onInfoListener = new OnInfoListener() {
         @Override
         public void onInfo(int what, int extra) {
 
         }
     };
+
+
+    private class ConnectionChangeReceiver extends BroadcastReceiver {
+//        private final String TAG = ConnectionChangeReceiver.class.getSimpleName();
+
+        private boolean isWifi;
+        private boolean isMobile;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e(TAG, "网络状态改变");
+            //获得网络连接服务
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+            //获取wifi连接状态
+            NetworkInfo.State wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+            //判断是否正在使用wifi网络
+            if (wifi == NetworkInfo.State.CONNECTED) {
+                isWifi = true;
+            } else
+                isWifi = false;
+            //获取GPRS状态
+            NetworkInfo.State state = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+            //判断是否在使用GPRS网络
+            if (state == NetworkInfo.State.CONNECTED) {
+                isMobile = true;
+            } else
+                isMobile = false;
+            //如果没有连接成功
+
+            Log.d(TAG,"isWifi:"+isWifi+"isMobile:"+isMobile);
+            if (!isWifi&&isMobile)
+            {
+                mVideoView.pause();
+                mVideoNetTie.setVisibility(View.VISIBLE);
+
+                handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+                loading.setVisibility(View.GONE);
+            }
+            else if (!isWifi&&!isMobile)
+            {
+                mVideoView.pause();
+                Toast.makeText(context,"当前网络无连接", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+
+        }
+
+    }
 }

@@ -25,11 +25,13 @@ public class VideoViewActivity extends FragmentActivity {
         setContentView(R.layout.activity_video);
         layout_video = (FrameLayout) findViewById(R.id.layout_video);
         vPlayPlayer = new VPlayView(this);
+        layout_video.addView(vPlayPlayer);
         vPlayPlayer.setViewHeight(600);
-        vPlayPlayer.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");
+//        vPlayPlayer.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");
+        vPlayPlayer.start("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
 //        mporit=layout_video.getLayoutParams().height;
 
-        layout_video.addView(vPlayPlayer);
+
 
 
 

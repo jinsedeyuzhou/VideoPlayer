@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.github.jinsedeyuzhou.ijkplayer.media.AndroidMediaController;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 
-import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,13 +37,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mVideoView.setMediaController(mMediaController);
 //        ijkVideo.setVideoURI(Uri.parse(videoPath));
         mVideoView.setVideoPath(videoPath);
-        mVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(IMediaPlayer mp) {
-                mVideoView.start();
-            }
-        });
-//        mVideoView.start();
+//        mVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(IMediaPlayer mp) {
+//                mVideoView.start();
+//            }
+//        });
+        mVideoView.start();
     }
 
     private void initView() {
