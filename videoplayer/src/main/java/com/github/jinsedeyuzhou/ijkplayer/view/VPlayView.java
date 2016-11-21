@@ -2,21 +2,17 @@ package com.github.jinsedeyuzhou.ijkplayer.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
-
-import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by Berkeley on 11/3/16.
@@ -82,25 +78,25 @@ public class VPlayView extends RelativeLayout {
 
         customMediaContoller = new CustomMediaContoller(mContext, rootView);
         mVideoView.setMediaController(customMediaContoller);
-        mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(IMediaPlayer iMediaPlayer) {
-                controlbar.setVisibility(View.GONE);
-                toolbar.setVisibility(View.GONE);
-                if (customMediaContoller.getScreenOrientation()
-                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                    //横屏播放完毕，重置
-                    ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    setLayoutParams(layoutParams);
-                }
-//                if (oncomplete != null) {
-//                    oncomplete.run();
+//        mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(IMediaPlayer iMediaPlayer) {
+//                controlbar.setVisibility(View.GONE);
+//                toolbar.setVisibility(View.GONE);
+//                if (customMediaContoller.getScreenOrientation()
+//                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+//                    //横屏播放完毕，重置
+//                    ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//                    ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                    setLayoutParams(layoutParams);
 //                }
-            }
-        });
+////                if (oncomplete != null) {
+////                    oncomplete.run();
+////                }
+//            }
+//        });
 
 //        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
 //            @Override

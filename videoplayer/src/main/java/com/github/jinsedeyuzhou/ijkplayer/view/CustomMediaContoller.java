@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -133,6 +134,7 @@ public class CustomMediaContoller implements IMediaController {
     private boolean isAllowModible;
 
     private ConnectionChangeReceiver changeReceiver;
+    private LinearLayout mReplay;
 
     public int getStatus() {
         return status;
@@ -214,6 +216,7 @@ public class CustomMediaContoller implements IMediaController {
 
         mVideoView = (IjkVideoView) rootView.findViewById(R.id.video_view);
         mVideoReplay = (ImageView) rootView.findViewById(R.id.app_video_replay_icon);
+        mReplay = (LinearLayout) rootView.findViewById(R.id.app_video_replay);
 
         liveBox = rootView.findViewById(R.id.app_video_box);
         //进度条
@@ -323,6 +326,15 @@ public class CustomMediaContoller implements IMediaController {
         mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer mp) {
+                if (getScreenOrientation()
+                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                    //横屏播放完毕，重置
+                    ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
+                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    mVideoView.setLayoutParams(layoutParams);
+                }
                 statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
                 oncomplete.run();
             }
@@ -403,7 +415,7 @@ public class CustomMediaContoller implements IMediaController {
         hideAll();
         start(uri);
         loading.setVisibility(View.VISIBLE);
-        isShowContoller = false;
+//        isShowContoller = false;
         mVideoView.start();
 //
 //        }
@@ -507,7 +519,7 @@ public class CustomMediaContoller implements IMediaController {
     private void doPauseResume() {
         if (status == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
 //            qr.id(R.id.app_video_replay).gone();
-            mVideoReplay.setVisibility(View.GONE);
+            mReplay.setVisibility(View.GONE);
             mVideoView.seekTo(0);
             mVideoView.start();
         } else if (mVideoView.isPlaying()) {
@@ -526,7 +538,8 @@ public class CustomMediaContoller implements IMediaController {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             hideAll();
-            mVideoReplay.setVisibility(View.VISIBLE);
+            mReplay.setVisibility(View.VISIBLE);
+            handler.sendEmptyMessage(9);
 
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
             Log.d(TAG, "STATE_ERROR");
@@ -794,7 +807,7 @@ public class CustomMediaContoller implements IMediaController {
 
     private void hideAll() {
         Log.d(TAG, "hideAll");
-        mVideoReplay.setVisibility(View.GONE);
+        mReplay.setVisibility(View.GONE);
         loading.setVisibility(View.GONE);
         top_box.setVisibility(View.GONE);
         mVideoFullscreen.setVisibility(View.INVISIBLE);
@@ -928,8 +941,8 @@ public class CustomMediaContoller implements IMediaController {
     @Override
     public void show(int timeout) {
         Log.d(TAG, "show timeout:" + isShowing);
-//        if (!isShowContoller)
-//            return;
+        if (!isShowContoller)
+            return;
         if (!isShowing) {
 //            $.id(R.id.app_video_top_box).visible();
             top_box.setVisibility(View.VISIBLE);
