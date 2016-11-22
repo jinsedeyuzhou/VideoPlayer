@@ -585,8 +585,6 @@ public class CustomMediaContoller implements IMediaController {
                 doPauseResume();
                 show(defaultTimeout);
             } else if (v.getId() == R.id.app_video_replay_icon) {
-                mVideoView.seekTo(0);
-                mVideoView.start();
                 doPauseResume();
             } else if (v.getId() == R.id.app_video_finish) {
                 if (!fullScreenOnly && !portrait) {
