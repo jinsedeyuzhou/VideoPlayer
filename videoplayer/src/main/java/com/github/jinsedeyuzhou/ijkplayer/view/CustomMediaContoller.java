@@ -42,15 +42,15 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by Berkeley on 11/2/16.
- * <p/>
+ * <p>
  * 两种方式控制屏幕变化
  * 1、设置view的宽高
  * 传递布局参数，设置布局参数
- * <p/>
+ * <p>
  * 2、设置父view的宽高
  * 在用的activity中更改添加布局的宽高
  */
-public class CustomMediaContoller implements IMediaController {
+public class CustomMediaContoller extends MediaController implements IMediaController {
 
     private static final String TAG = "CustomMediaContoller";
     private Context mContext;
@@ -58,7 +58,7 @@ public class CustomMediaContoller implements IMediaController {
     private View rootView;
     private final View controlbar;
     //    private final View toolbar;
-    private final View gesture;
+//    private final View gesture;
     private SeekBar seekBar;
     private View liveBox;
     private IjkVideoView mVideoView;
@@ -135,6 +135,12 @@ public class CustomMediaContoller implements IMediaController {
 
     private ConnectionChangeReceiver changeReceiver;
     private LinearLayout mReplay;
+    private LinearLayout gestureTouch;
+    private LinearLayout gesture;
+    private TextView mTvCurrent;
+    private TextView mTvDuration;
+    private ImageView mImageTip;
+    private ProgressBar mProgressGesture;
 
     public int getStatus() {
         return status;
@@ -159,6 +165,7 @@ public class CustomMediaContoller implements IMediaController {
                     brightness_box.setVisibility(View.GONE);
 //                    qr.id(R.id.app_video_fastForward_box).gone();
                     fastForward_box.setVisibility(View.GONE);
+                    gestureTouch.setVisibility(View.GONE);
                     break;
                 case PlayStateParams.MESSAGE_SEEK_NEW_POSITION:
                     if (!isLive && newPosition >= 0) {
@@ -186,21 +193,22 @@ public class CustomMediaContoller implements IMediaController {
 
 
     public CustomMediaContoller(Context context, View rootView) {
+        super(context);
         this.mContext = context;
         activity = (Activity) context;
         this.rootView = rootView;
-        IntentFilter intentFilter=new IntentFilter();
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        changeReceiver=new ConnectionChangeReceiver();
-        mContext.registerReceiver(changeReceiver,intentFilter);
+        changeReceiver = new ConnectionChangeReceiver();
+        mContext.registerReceiver(changeReceiver, intentFilter);
         //播放控制
         controlbar = rootView.findViewById(R.id.player_controlbar);
         //toolbar
 //        toolbar = rootView.findViewById(R.id.player_toolbar);
         //触摸上下亮度和音量
-        gesture = rootView.findViewById(R.id.player_touch_gesture);
+//        gesture = rootView.findViewById(R.id.player_touch_gesture);
 
-//        initHeight = rootView.findViewById(R.id.app_video_box).getHeight();
+        initHeight = rootView.findViewById(R.id.app_video_box).getHeight();
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
@@ -241,6 +249,15 @@ public class CustomMediaContoller implements IMediaController {
         volume_icon = (ImageView) rootView.findViewById(R.id.app_video_volume_icon);
         video_volume = (TextView) rootView.findViewById(R.id.app_video_volume);
         video_brightness = (TextView) rootView.findViewById(R.id.app_video_brightness);
+
+
+        //新的进度条
+        gestureTouch = (LinearLayout) rootView.findViewById(R.id.ll_gesture_touch);
+        gesture = (LinearLayout) rootView.findViewById(R.id.ll_gesture);
+        mTvCurrent = (TextView) rootView.findViewById(R.id.tv_current);
+        mTvDuration = (TextView) rootView.findViewById(R.id.tv_duration);
+        mImageTip = (ImageView) rootView.findViewById(R.id.image_tip);
+        mProgressGesture = (ProgressBar) rootView.findViewById(R.id.progressbar_gesture);
 
 
 //        $.id(R.id.app_video_brightness).text(((int) (lpa.screenBrightness * 100)) + "%");
@@ -348,8 +365,6 @@ public class CustomMediaContoller implements IMediaController {
             }
         });
 
-        seekBar.setMax(1000);
-        seekBar.setOnSeekBarChangeListener(mSeekListener);
         orientationEventListener = new OrientationEventListener(activity) {
             @Override
             public void onOrientationChanged(int orientation) {
@@ -443,7 +458,6 @@ public class CustomMediaContoller implements IMediaController {
     public void onDestroy() {
         Log.d(TAG, "onDestroy" + status);
         orientationEventListener.disable();
-        mContext.unregisterReceiver(changeReceiver);
         handler.removeCallbacksAndMessages(null);
         mVideoView.stopPlayback();
     }
@@ -537,7 +551,9 @@ public class CustomMediaContoller implements IMediaController {
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.removeCallbacksAndMessages(null);
             hideAll();
+            isShowContoller = false;
             mReplay.setVisibility(View.VISIBLE);
             handler.sendEmptyMessage(9);
 
@@ -883,6 +899,7 @@ public class CustomMediaContoller implements IMediaController {
      * 手势结束
      */
     private void endGesture() {
+
         volume = -1;
         brightness = -1f;
         if (newPosition >= 0) {
@@ -1078,17 +1095,26 @@ public class CustomMediaContoller implements IMediaController {
             s = "off";
         }
         // 显示
-        volume_icon.setImageResource(i == 0 ? R.drawable.ic_volume_off_white_36dp : R.drawable.ic_volume_up_white_36dp);
-//        $.id(R.id.app_video_volume_icon).image(i == 0 ? R.drawable.ic_volume_off_white_36dp : R.drawable.ic_volume_up_white_36dp);
-//        $.id(R.id.app_video_brightness_box).gone();
-        brightness_box.setVisibility(View.GONE);
-//        $.id(R.id.app_video_volume_box).visible();
-        volume_box.setVisibility(View.VISIBLE);
-//        $.id(R.id.app_video_volume_box).visible();
-
-        video_volume.setText(s);
-        video_volume.setVisibility(View.VISIBLE);
+//        volume_icon.setImageResource(i == 0 ? R.drawable.ic_volume_off_white_36dp : R.drawable.ic_volume_up_white_36dp);
+////        $.id(R.id.app_video_volume_icon).image(i == 0 ? R.drawable.ic_volume_off_white_36dp : R.drawable.ic_volume_up_white_36dp);
+////        $.id(R.id.app_video_brightness_box).gone();
+//        brightness_box.setVisibility(View.GONE);
+////        $.id(R.id.app_video_volume_box).visible();
+//        volume_box.setVisibility(View.VISIBLE);
+////        $.id(R.id.app_video_volume_box).visible();
+//
+//        video_volume.setText(s);
+//        video_volume.setVisibility(View.VISIBLE);
 //        $.id(R.id.app_video_volume).text(s).visible();
+
+
+        if (gestureTouch.getVisibility() == View.GONE) {
+            gestureTouch.setVisibility(View.VISIBLE);
+            gesture.setVisibility(View.GONE);
+            mImageTip.setImageResource(R.drawable.player_video_volume);
+        }
+        mProgressGesture.setProgress(i);
+
     }
 
     /**
@@ -1113,14 +1139,30 @@ public class CustomMediaContoller implements IMediaController {
         int showDelta = (int) delta / 1000;
         if (showDelta != 0) {
 //            $.id(R.id.app_video_fastForward_box).visible();
-            fastForward_box.setVisibility(View.VISIBLE);
-            String text = showDelta > 0 ? ("+" + showDelta) : "" + showDelta;
-//            $.id(R.id.app_video_fastForward).text(text + "s");
-            fastForward.setText(text + "s");
-//            $.id(R.id.app_video_fastForward_target).text(generateTime(newPosition) + "/");
-            fastForward_target.setText(generateTime(newPosition) + "/");
-//            $.id(R.id.app_video_fastForward_all).text(generateTime(duration));
-            fastForward_all.setText(generateTime(duration));
+//            fastForward_box.setVisibility(View.VISIBLE);
+//            String text = showDelta > 0 ? ("+" + showDelta) : "" + showDelta;
+////            $.id(R.id.app_video_fastForward).text(text + "s");
+//            fastForward.setText(text + "s");
+////            $.id(R.id.app_video_fastForward_target).text(generateTime(newPosition) + "/");
+//            fastForward_target.setText(generateTime(newPosition) + "/");
+////            $.id(R.id.app_video_fastForward_all).text(generateTime(duration));
+//            fastForward_all.setText(generateTime(duration));
+
+
+            if (gestureTouch.getVisibility() == View.GONE) {
+                gestureTouch.setVisibility(View.VISIBLE);
+                gesture.setVisibility(View.VISIBLE);
+            }
+            mImageTip.setImageResource(showDelta > 0 ? R.drawable.forward_icon : R.drawable.backward_icon);
+
+            String current = generateTime(newPosition);
+
+//            seekTxt.setText(current + "/" + allTime.getText());
+            mTvCurrent.setText(current + "/");
+            mTvDuration.setText(generateTime(duration));
+//            mProgressGesture.setProgress((int) newPosition);
+            mProgressGesture.setProgress(duration <= 0 ? 0 : (int) (newPosition * 100 / duration));
+
         }
     }
 
@@ -1140,7 +1182,7 @@ public class CustomMediaContoller implements IMediaController {
         }
         Log.d(this.getClass().getSimpleName(), "brightness:" + brightness + ",percent:" + percent);
 //        $.id(R.id.app_video_brightness_box).visible();
-        brightness_box.setVisibility(View.VISIBLE);
+//        brightness_box.setVisibility(View.VISIBLE);
         WindowManager.LayoutParams lpa = activity.getWindow().getAttributes();
         lpa.screenBrightness = brightness + percent;
         if (lpa.screenBrightness > 1.0f) {
@@ -1149,7 +1191,18 @@ public class CustomMediaContoller implements IMediaController {
             lpa.screenBrightness = 0.01f;
         }
 //        $.id(R.id.app_video_brightness).text(((int) (lpa.screenBrightness * 100)) + "%");
-        video_brightness.setText(((int) (lpa.screenBrightness * 100)) + "%");
+
+
+        if (gestureTouch.getVisibility() == View.GONE) {
+            gestureTouch.setVisibility(View.VISIBLE);
+            gesture.setVisibility(View.GONE);
+            mImageTip.setImageResource(R.drawable.player_video_light);
+        }
+
+        mProgressGesture.setProgress((int) (lpa.screenBrightness * 100));
+
+
+//        video_brightness.setText(((int) (lpa.screenBrightness * 100)) + "%");
         activity.getWindow().setAttributes(lpa);
 
     }
@@ -1252,22 +1305,17 @@ public class CustomMediaContoller implements IMediaController {
                 isMobile = false;
             //如果没有连接成功
 
-            Log.d(TAG,"isWifi:"+isWifi+"isMobile:"+isMobile);
-            if (!isWifi&&isMobile)
-            {
+            Log.d(TAG, "isWifi:" + isWifi + "isMobile:" + isMobile);
+            if (!isWifi && isMobile) {
                 mVideoView.pause();
                 mVideoNetTie.setVisibility(View.VISIBLE);
 
                 handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
                 loading.setVisibility(View.GONE);
-            }
-            else if (!isWifi&&!isMobile)
-            {
+            } else if (!isWifi && !isMobile) {
                 mVideoView.pause();
-                Toast.makeText(context,"当前网络无连接", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "当前网络无连接", Toast.LENGTH_SHORT).show();
             }
-
-
 
 
         }

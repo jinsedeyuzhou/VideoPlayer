@@ -1,10 +1,10 @@
-<FrameLayout android:id="@+id/app_video_center_box"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_video_center_box"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerInParent="true"
     android:background="@drawable/app_video_center_bg"
-    android:visibility="visible"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:visibility="visible">
     <!-- volume-->
     <LinearLayout
         android:id="@+id/app_video_volume_box"
@@ -12,15 +12,14 @@
         android:layout_height="80dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/app_video_volume_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_volume_up_white_36dp"/>
+            android:src="@drawable/ic_volume_up_white_36dp" />
 
         <TextView
             android:id="@+id/app_video_volume"
@@ -28,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="50%"
             android:textColor="@android:color/white"
-            android:textSize="18dp"/>
+            android:textSize="18dp" />
     </LinearLayout>
     <!-- brightness-->
     <LinearLayout
@@ -37,15 +36,14 @@
         android:layout_height="80dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/app_video_brightness_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/ic_brightness_6_white_36dp"/>
+            android:src="@drawable/ic_brightness_6_white_36dp" />
 
         <TextView
             android:id="@+id/app_video_brightness"
@@ -55,7 +53,7 @@
             android:paddingTop="8dp"
             android:text="50%"
             android:textColor="@android:color/white"
-            android:textSize="16dp"/>
+            android:textSize="16dp" />
     </LinearLayout>
     <!-- fast forward-->
     <LinearLayout
@@ -65,8 +63,7 @@
         android:layout_margin="8dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/app_video_fastForward"
@@ -76,7 +73,7 @@
             android:paddingTop="8dp"
             android:text="50%"
             android:textColor="@android:color/white"
-            android:textSize="16dp"/>
+            android:textSize="16dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -90,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:text="50%"
                 android:textColor="@android:color/white"
-                android:textSize="16dp"/>
+                android:textSize="16dp" />
 
             <TextView
                 android:id="@+id/app_video_fastForward_all"
@@ -98,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:text="50%"
                 android:textColor="@color/Grey_300"
-                android:textSize="16dp"/>
+                android:textSize="16dp" />
 
         </LinearLayout>
 

@@ -13,6 +13,22 @@ public class VideoBean implements Parcelable {
      * id
      */
     private int id;
+    /**
+     * 标题
+     */
+    private String title;
+    //播放次数
+    private int onlineUsersNumber;
+    //视频时长
+    private long duration;
+
+    //视频来源
+    private String resource;
+
+    //背景
+    private String bgUrl;
+    //评论
+    private String comments;
 
     /**
      * 视频地址
@@ -35,7 +51,7 @@ public class VideoBean implements Parcelable {
     /**
      * titie
      */
-    private String title;
+
     private boolean showNavIcon = true;
 
 
