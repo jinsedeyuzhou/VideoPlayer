@@ -36,14 +36,14 @@
 
         <include layout="@layout/player_gesture"/>
 
-       <include layout="@layout/player_touch_gesture"
-           android:id="@+id/player_touch_gesture"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_centerInParent="true"
-           android:background="@drawable/app_video_center_bg"
-           android:visibility="visible"
-           />
+       <!--<include layout="@layout/player_touch_gesture"-->
+           <!--android:id="@+id/player_touch_gesture"-->
+           <!--android:layout_width="wrap_content"-->
+           <!--android:layout_height="wrap_content"-->
+           <!--android:layout_centerInParent="true"-->
+           <!--android:background="@drawable/app_video_center_bg"-->
+           <!--android:visibility="visible"-->
+           <!--/>-->
 
         <!-- status-->
         <LinearLayout

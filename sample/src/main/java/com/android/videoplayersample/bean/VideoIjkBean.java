@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.config;
+package com.android.videoplayersample.bean;
 
 import java.io.Serializable;
 

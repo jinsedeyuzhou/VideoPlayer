@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.view;
+package com.github.jinsedeyuzhou.ijkplayer.play;
 
 /**
  * Created by Berkeley on 10/26/16.

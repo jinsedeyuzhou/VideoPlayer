@@ -6,7 +6,7 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
 public class NetworkUtils {
-
+    private static final String TAG = "NetUtils";
 
     /**
      * 判断当前网络类型-1为未知网络0为没有网络连接1网络断开或关闭2为以太网3为WiFi4为2G5为3G6为4G
@@ -61,7 +61,7 @@ public class NetworkUtils {
     }
 
 
-    private static final String TAG = "NetUtils";
+
 
     /**
      * 判断是否有网

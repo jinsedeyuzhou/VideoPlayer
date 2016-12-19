@@ -66,20 +66,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int i = view.getId();
         if (i == R.id.btn_ijk) {
             intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
 
         } else if (i == R.id.btn_surfaceview) {
-            System.out.print("执行了没");
-            intent = new Intent(getApplicationContext(), SurfaceActivity.class);
-
+            intent = new Intent(getApplicationContext(), LiveActivity.class);
+            startActivity(intent);
         } else if (i == R.id.videolist) {
-            intent = new Intent(getApplicationContext(), ListActivity.class);
+//            intent = new Intent(getApplicationContext(), ListActivity.class);
 
+        } else if (i == R.id.videoview) {
+            intent = new Intent(getApplicationContext(), VideoViewActivity.class);
+            startActivity(intent);
         }
-        else if(i==R.id.videoview)
-        {
-            intent=new Intent(getApplicationContext(),VideoViewActivity.class);
-        }
-        startActivity(intent);
 
 
     }

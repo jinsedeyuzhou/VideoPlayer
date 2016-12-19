@@ -40,7 +40,7 @@ import android.widget.MediaController;
 import android.widget.TableLayout;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
-import com.github.jinsedeyuzhou.ijkplayer.view.PlayStateParams;
+import com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams;
 
 import java.io.File;
 import java.io.IOException;
@@ -290,7 +290,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void openVideo() {
         if (mUri == null || mSurfaceHolder == null) {
             // not ready for playback just yet, will try again later

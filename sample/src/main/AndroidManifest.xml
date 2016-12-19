@@ -19,19 +19,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SurfaceActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="sensor"/>
-        <activity android:name=".VideoLiveActivity"/>
-        <activity android:name=".ListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="sensor"
-            />
         <activity android:name=".VideoViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />
-
+        <activity android:name=".LiveActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 

@@ -1,4 +1,4 @@
-package com.github.jinsedeyuzhou.ijkplayer.config;
+package com.android.videoplayersample.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
