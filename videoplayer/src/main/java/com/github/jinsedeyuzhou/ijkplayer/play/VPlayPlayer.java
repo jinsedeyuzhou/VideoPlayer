@@ -450,17 +450,19 @@ public class VPlayPlayer extends RelativeLayout {
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             endVideo();
-//            handler.removeCallbacksAndMessages(null);
+
             hideAll();
             isShowContoller = false;
-
-            handler.sendEmptyMessage(9);
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.removeCallbacksAndMessages(null);
+            handler.sendEmptyMessage(9);
+
+
 
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
             Log.d(TAG, "STATE_ERROR");
 
-//            handler.removeCallbacksAndMessages(null);
+
             hideAll();
             if (isLive) {
                 showStatus(activity.getResources().getString(R.string.small_problem));
@@ -471,6 +473,7 @@ public class VPlayPlayer extends RelativeLayout {
                 showStatus(activity.getResources().getString(R.string.small_problem));
             }
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.removeCallbacksAndMessages(null);
         } else if (newStatus == PlayStateParams.STATE_PREPARING) {
             Log.d(TAG, "STATE_PREPARING");
             hideAll();
