@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -75,7 +76,7 @@ public class VPlayPlayer extends RelativeLayout {
     private String url;
 
     //最大音量
-    private  int mMaxVolume;
+    private int mMaxVolume;
     private AudioManager audioManager;
 
     //是否显示
@@ -135,8 +136,6 @@ public class VPlayPlayer extends RelativeLayout {
     private ImageView mImageTip;
     private ProgressBar mProgressGesture;
     private TextView topTitle;
-
-
 
 
     private OrientationEventListener orientationEventListener;
@@ -208,12 +207,12 @@ public class VPlayPlayer extends RelativeLayout {
 
 
     public VPlayPlayer(Context context) {
-        this(context,null);
+        this(context, null);
 
     }
 
     public VPlayPlayer(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public VPlayPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -233,7 +232,7 @@ public class VPlayPlayer extends RelativeLayout {
         try {
             IjkMediaPlayer.loadLibrariesOnce(null);
             IjkMediaPlayer.native_profileBegin("libijkplayer.so");
-            playerSupport=true;
+            playerSupport = true;
         } catch (Throwable e) {
             Log.e("GiraffePlayer", "loadLibraries error", e);
         }
@@ -265,7 +264,6 @@ public class VPlayPlayer extends RelativeLayout {
         seekBar = (SeekBar) findViewById(R.id.app_video_seekBar);
         currentTime = (TextView) findViewById(R.id.app_video_currentTime);
         endTime = (TextView) findViewById(R.id.app_video_endTime);
-
 
 
         //新的进度条
@@ -304,11 +302,40 @@ public class VPlayPlayer extends RelativeLayout {
         final GestureDetector gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
 
 
-        liveBox.setClickable(true);
-        liveBox.setOnTouchListener(new OnTouchListener() {
+        controlbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e("custommedia", "event");
+
+                Rect seekRect = new Rect();
+                seekBar.getHitRect(seekRect);
+
+                if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
+
+                    float y = seekRect.top + seekRect.height() / 2;
+                    //seekBar only accept relative x
+                    float x = event.getX() - seekRect.left;
+                    if (x < 0) {
+                        x = 0;
+                    } else if (x > seekRect.width()) {
+                        x = seekRect.width();
+                    }
+                    MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
+                            event.getAction(), x, y, event.getMetaState());
+                    return seekBar.onTouchEvent(me);
+
+                }
+                return false;
+            }
+        });
+
+
+        setClickable(true);
+        setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (gestureDetector.onTouchEvent(motionEvent))
+                int id = view.getId();
+              if (gestureDetector.onTouchEvent(motionEvent))
                     return true;
 
                 // 处理手势结束
@@ -403,9 +430,6 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-
-
-
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
             mVideoPlay.setImageResource(R.drawable.ic_stop_white_24dp);
@@ -429,7 +453,7 @@ public class VPlayPlayer extends RelativeLayout {
             mVideoView.start();
         } else if (mVideoView.isPlaying()) {
             statusChange(PlayStateParams.STATE_PAUSED);
-            isAutoPause=true;
+            isAutoPause = true;
             mVideoView.pause();
         } else {
             statusChange(PlayStateParams.STATE_PLAYING);
@@ -439,14 +463,14 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-    private void endVideo()
-    {
-      Bitmap bitmap = mVideoView.getBitmap();
+    private void endVideo() {
+        Bitmap bitmap = mVideoView.getBitmap();
         if (bitmap != null) {
             mVideoFinishIcon.setImageBitmap(bitmap);
             mReplay.setVisibility(View.VISIBLE);
         }
     }
+
     private void statusChange(int newStatus) {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
@@ -458,7 +482,6 @@ public class VPlayPlayer extends RelativeLayout {
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             handler.removeCallbacksAndMessages(null);
             handler.sendEmptyMessage(9);
-
 
 
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
@@ -482,7 +505,6 @@ public class VPlayPlayer extends RelativeLayout {
             loading.setVisibility(View.VISIBLE);
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
-            hideAll();
             bottomProgress.setVisibility(View.VISIBLE);
             handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
@@ -721,8 +743,6 @@ public class VPlayPlayer extends RelativeLayout {
 //    };
 
 
-
-
     /**
      * 播放面板控制
      *
@@ -764,7 +784,6 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-
     /**
      * 手势结束
      */
@@ -797,8 +816,6 @@ public class VPlayPlayer extends RelativeLayout {
         }
 
     }
-
-
 
 
     @Override
@@ -1023,7 +1040,7 @@ public class VPlayPlayer extends RelativeLayout {
      */
     private long setProgress() {
 
-        Log.v(TAG,"setProgress");
+        Log.v(TAG, "setProgress");
         if (isDragging) {
             return 0;
         }
@@ -1038,7 +1055,7 @@ public class VPlayPlayer extends RelativeLayout {
             }
             int percent = mVideoView.getBufferPercentage();
             seekBar.setSecondaryProgress(percent * 10);
-            bottomProgress.setSecondaryProgress(percent*10);
+            bottomProgress.setSecondaryProgress(percent * 10);
         }
 
         this.duration = duration;
@@ -1083,12 +1100,12 @@ public class VPlayPlayer extends RelativeLayout {
 //    }
 
 
-
     //====================对外提供的方法==========================================
 
     public boolean isShowing() {
         return isShowing;
     }
+
     /**
      * 获取当前播放位置
      */
@@ -1102,6 +1119,7 @@ public class VPlayPlayer extends RelativeLayout {
         return currentPosition;
     }
 //
+
     /**
      * 获取视频播放总时长
      */
@@ -1138,13 +1156,16 @@ public class VPlayPlayer extends RelativeLayout {
     public void setLive(boolean isLive) {
         this.isLive = isLive;
     }
+
     /**
      * is player support this device
+     *
      * @return
      */
     public boolean isPlayerSupport() {
         return playerSupport;
     }
+
     /**
      * 快进
      *
@@ -1184,7 +1205,7 @@ public class VPlayPlayer extends RelativeLayout {
 
     }
 
-    public void start(String  path) {
+    public void start(String path) {
         Uri uri = Uri.parse(path);
         hideAll();
         loading.setVisibility(View.VISIBLE);
@@ -1201,7 +1222,6 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-
     public void onPause() {
         Log.d(TAG, "onPause" + status);
 
@@ -1209,7 +1229,7 @@ public class VPlayPlayer extends RelativeLayout {
         show(0);//把系统状态栏显示出来
         if (status == PlayStateParams.STATE_PLAYING) {
             mVideoView.pause();
-            isAutoPause=false;
+            isAutoPause = false;
             if (!isLive) {
                 currentPosition = mVideoView.getCurrentPosition();
             }
@@ -1222,12 +1242,22 @@ public class VPlayPlayer extends RelativeLayout {
         return status;
     }
 
+    private void reset() {
+        isLive = false;
+        isAutoPause = false;
+        bottomProgress.setProgress(0);
+        seekBar.setProgress(0);
+        isShowContoller = false;
+    }
+
     public void onDestroy() {
         Log.d(TAG, "onDestroy" + status);
         orientationEventListener.disable();
         handler.removeCallbacksAndMessages(null);
         mVideoView.stopPlayback();
-        isLive=false;
+        mVideoView.release(true);
+        reset();
+
     }
 
     public void onResume() {
@@ -1246,7 +1276,7 @@ public class VPlayPlayer extends RelativeLayout {
             }
 //            statusChange(PlayStateParams.STATE_PLAYING);
             if (!isAutoPause)
-                 mVideoView.start();
+                mVideoView.start();
 
         }
     }
@@ -1328,7 +1358,6 @@ public class VPlayPlayer extends RelativeLayout {
         }
 
     }
-
 
 
 }
