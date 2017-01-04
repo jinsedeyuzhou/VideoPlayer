@@ -26,7 +26,7 @@ public class VideoViewActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         layout_video = (FrameLayout) findViewById(R.id.layout_video);
-        player = PlayerManager.getSuperManage().initialize(this);
+        player = PlayerManager.getPlayerManager().initialize(this);
         if (player.getParent() != null)
             ((ViewGroup) player.getParent()).removeAllViews();
         layout_video.addView(player);

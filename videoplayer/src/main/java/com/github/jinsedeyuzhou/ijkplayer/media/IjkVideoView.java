@@ -325,8 +325,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     (TextUtils.isEmpty(scheme) || scheme.equalsIgnoreCase("file"))) {
                 IMediaDataSource dataSource = new FileMediaDataSource(new File(mUri.toString()));
                 mMediaPlayer.setDataSource(dataSource);
-            }  else
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 mMediaPlayer.setDataSource(mAppContext, mUri, mHeaders);
             } else {
                 mMediaPlayer.setDataSource(mUri.toString());
@@ -521,7 +520,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             new IMediaPlayer.OnErrorListener() {
                 public boolean onError(IMediaPlayer mp, int framework_err, int impl_err) {
                     Log.d(TAG, "Error: " + framework_err + "," + impl_err);
-                    mCurrentState =PlayStateParams. STATE_ERROR;
+                    mCurrentState = PlayStateParams.STATE_ERROR;
                     mTargetState = PlayStateParams.STATE_ERROR;
                     if (mMediaController != null) {
                         mMediaController.hide();
@@ -922,11 +921,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private void initRenders() {
         mAllRenders.clear();
-
-        if (mSettings.getEnableSurfaceView())
-            mAllRenders.add(RENDER_SURFACE_VIEW);
         if (mSettings.getEnableTextureView() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
             mAllRenders.add(RENDER_TEXTURE_VIEW);
+        if (mSettings.getEnableSurfaceView())
+            mAllRenders.add(RENDER_SURFACE_VIEW);
+
         if (mSettings.getEnableNoView())
             mAllRenders.add(RENDER_NONE);
 
@@ -1239,13 +1238,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
 
-    public int getCurrentStatue(){
+    public int getCurrentStatue() {
         return mCurrentState;
     }
 
 
     /**
      * 获取当前截屏
+     *
      * @return
      */
     public Bitmap getBitmap() {
@@ -1259,7 +1259,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     m.setRotate(mVideoRotationDegree, bitmap.getWidth() / (float) 2, bitmap.getHeight() / (float) 2);
                     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
@@ -1268,9 +1268,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public void setAspectRatio(int aspectRatio) {
         for (int i = 0; i < s_allAspectRatio.length; i++) {
-            if (s_allAspectRatio[i]==aspectRatio) {
-                mCurrentAspectRatioIndex=i;
-                if (mRenderView != null){
+            if (s_allAspectRatio[i] == aspectRatio) {
+                mCurrentAspectRatioIndex = i;
+                if (mRenderView != null) {
                     mRenderView.setAspectRatio(mCurrentAspectRatio);
                 }
                 break;

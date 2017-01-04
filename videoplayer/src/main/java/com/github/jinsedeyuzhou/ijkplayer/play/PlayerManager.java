@@ -13,7 +13,7 @@ public class PlayerManager {
 
     }
 
-    public static PlayerManager getSuperManage() {
+    public static PlayerManager getPlayerManager() {
         if (videoPlayViewManage == null) {
             videoPlayViewManage = new PlayerManager();
         }

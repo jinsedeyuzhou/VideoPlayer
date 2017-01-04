@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -134,9 +135,7 @@ public class VPlayPlayer extends RelativeLayout {
     private ProgressBar mProgressGesture;
     private TextView topTitle;
 
-    public int getStatus() {
-        return status;
-    }
+
 
 
     private OrientationEventListener orientationEventListener;
@@ -161,11 +160,12 @@ public class VPlayPlayer extends RelativeLayout {
                     break;
                 case PlayStateParams.MESSAGE_SHOW_PROGRESS:
                     setProgress();
-                    if (!isDragging && isShowing) {
+                    if (!isDragging) {
                         msg = obtainMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000);
-                        updatePausePlay();
+
                     }
+                    updatePausePlay();
                     break;
                 case PlayStateParams.MESSAGE_RESTART_PLAY:
                     play(url);
@@ -202,6 +202,8 @@ public class VPlayPlayer extends RelativeLayout {
             }
         }
     };
+    private ProgressBar bottomProgress;
+    private ImageView mVideoFinishIcon;
 
 
     public VPlayPlayer(Context context) {
@@ -241,7 +243,7 @@ public class VPlayPlayer extends RelativeLayout {
 //        mContext.registerReceiver(changeReceiver, intentFilter);
         //播放控制
         controlbar = findViewById(R.id.player_controlbar);
-        initHeight = findViewById(R.id.app_video_box).getHeight();
+        initHeight = findViewById(R.id.player_controlbar).getHeight();
 
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -250,6 +252,7 @@ public class VPlayPlayer extends RelativeLayout {
 
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
         mVideoReplay = (ImageView) findViewById(R.id.app_video_replay_icon);
+        mVideoFinishIcon = (ImageView) findViewById(R.id.app_video_finish_icon);
         mReplay = (LinearLayout) findViewById(R.id.app_video_replay);
 
         liveBox = findViewById(R.id.app_video_box);
@@ -271,6 +274,7 @@ public class VPlayPlayer extends RelativeLayout {
         mTvDuration = (TextView) findViewById(R.id.tv_duration);
         mImageTip = (ImageView) findViewById(R.id.image_tip);
         mProgressGesture = (ProgressBar) findViewById(R.id.progressbar_gesture);
+        bottomProgress = (ProgressBar) findViewById(R.id.bottom_progressbar);
 
         //topbox
         top_box = (LinearLayout) findViewById(R.id.app_video_top_box);
@@ -433,20 +437,30 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
+    private void endVideo()
+    {
+      Bitmap bitmap = mVideoView.getBitmap();
+        if (bitmap != null) {
+            mVideoFinishIcon.setImageBitmap(bitmap);
+            mReplay.setVisibility(View.VISIBLE);
+        }
+    }
     private void statusChange(int newStatus) {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            handler.removeCallbacksAndMessages(null);
+            endVideo();
+//            handler.removeCallbacksAndMessages(null);
             hideAll();
             isShowContoller = false;
-            mReplay.setVisibility(View.VISIBLE);
+
             handler.sendEmptyMessage(9);
+            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
 
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
             Log.d(TAG, "STATE_ERROR");
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+
+//            handler.removeCallbacksAndMessages(null);
             hideAll();
             if (isLive) {
                 showStatus(activity.getResources().getString(R.string.small_problem));
@@ -456,6 +470,7 @@ public class VPlayPlayer extends RelativeLayout {
             } else {
                 showStatus(activity.getResources().getString(R.string.small_problem));
             }
+            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
         } else if (newStatus == PlayStateParams.STATE_PREPARING) {
             Log.d(TAG, "STATE_PREPARING");
             hideAll();
@@ -463,14 +478,16 @@ public class VPlayPlayer extends RelativeLayout {
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
             hideAll();
+            bottomProgress.setVisibility(View.VISIBLE);
+            handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
-            if (!NetworkUtils.isNetworkAvailable(mContext) && !isAllowModible) {
-                mVideoView.pause();
-                mVideoNetTie.setVisibility(View.VISIBLE);
-                handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-
-
-            }
+//            if (!NetworkUtils.isNetworkAvailable(mContext) && !isAllowModible) {
+//                mVideoView.pause();
+//                mVideoNetTie.setVisibility(View.VISIBLE);
+//                handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+//
+//
+//            }
 
         }
 
@@ -478,37 +495,62 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-
-
-    /**
-     *
-     * @param portrait
-     */
-    private void doOnConfigurationChanged(final boolean portrait) {
-
-        if (mVideoView != null && !fullScreenOnly) {
+    public void doOnConfigurationChanged(final boolean portrait) {
+        if (mVideoView != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     tryFullScreen(!portrait);
                     if (portrait) {
-                        Log.v(TAG, "initHeight" + initHeight);
-                        if (!isLive)
-                            liveBox.getLayoutParams().height = initHeight;
-
+                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+                        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        setLayoutParams(layoutParams);
+                        requestLayout();
                     } else {
-                        int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
-                        int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
-                        liveBox.getLayoutParams().height = Math.min(heightPixels, widthPixels);
-//                        liveBox.getLayoutParams().width=widthPixels;
-                        Log.v(TAG, "initHeight" + 0);
+                        int heightPixels = ((Activity) mContext).getResources().getDisplayMetrics().heightPixels;
+                        int widthPixels = ((Activity) mContext).getResources().getDisplayMetrics().widthPixels;
+                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+                        layoutParams.height = heightPixels;
+                        layoutParams.width = widthPixels;
+                        setLayoutParams(layoutParams);
                     }
-                    updateFullScreenButton();
                 }
             });
             orientationEventListener.enable();
         }
     }
+
+
+//    /**
+////     *
+////     * @param portrait
+////     */
+//    private void doOnConfigurationChanged(final boolean portrait) {
+//
+//        if (mVideoView != null && !fullScreenOnly) {
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    tryFullScreen(!portrait);
+//                    if (portrait) {
+//                        Log.v(TAG, "initHeight" + initHeight);
+//                        if (!isLive)
+//                            liveBox.getLayoutParams().height = initHeight;
+//
+//                    } else {
+//                        int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
+//                        int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
+//                        liveBox.getLayoutParams().height = Math.min(heightPixels, widthPixels);
+////                        liveBox.getLayoutParams().width=widthPixels;
+//                        Log.v(TAG, "initHeight" + 0);
+//                    }
+//                    updateFullScreenButton();
+//                }
+//            });
+//            orientationEventListener.enable();
+//        }
+//    }
 
 
     private void tryFullScreen(boolean fullScreen) {
@@ -662,6 +704,7 @@ public class VPlayPlayer extends RelativeLayout {
         mVideoFullscreen.setVisibility(View.INVISIBLE);
         mVideoStaus.setVisibility(View.GONE);
         showBottomControl(false);
+
 //        onControlPanelVisibilityChangeListener.change(false);
     }
 
@@ -673,16 +716,22 @@ public class VPlayPlayer extends RelativeLayout {
 //    };
 
 
+
+
     /**
      * 播放面板控制
      *
      * @param show
      */
     private void showBottomControl(boolean show) {
+
         mVideoPlay.setVisibility(show ? View.VISIBLE : View.GONE);
         currentTime.setVisibility(show ? View.VISIBLE : View.GONE);
         endTime.setVisibility(show ? View.VISIBLE : View.GONE);
         seekBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        controlbar.setVisibility(show ? View.VISIBLE : View.GONE);
+        bottomProgress.setVisibility(show ? View.GONE : View.VISIBLE);
+
     }
 
     /**
@@ -735,7 +784,6 @@ public class VPlayPlayer extends RelativeLayout {
     public void hide(boolean force) {
 
         if (force || isShowing) {
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             showBottomControl(false);
             top_box.setVisibility(View.GONE);
             mVideoFullscreen.setVisibility(View.INVISIBLE);
@@ -769,7 +817,7 @@ public class VPlayPlayer extends RelativeLayout {
             isShowing = true;
         }
         updatePausePlay();
-        handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+
         handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
         if (timeout != 0) {
             handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT), timeout);
@@ -969,6 +1017,8 @@ public class VPlayPlayer extends RelativeLayout {
      * @return
      */
     private long setProgress() {
+
+        Log.v(TAG,"setProgress");
         if (isDragging) {
             return 0;
         }
@@ -979,9 +1029,11 @@ public class VPlayPlayer extends RelativeLayout {
             if (duration > 0) {
                 long pos = 1000L * position / duration;
                 seekBar.setProgress((int) pos);
+                bottomProgress.setProgress((int) pos);
             }
             int percent = mVideoView.getBufferPercentage();
             seekBar.setSecondaryProgress(percent * 10);
+            bottomProgress.setSecondaryProgress(percent*10);
         }
 
         this.duration = duration;
@@ -989,6 +1041,44 @@ public class VPlayPlayer extends RelativeLayout {
         endTime.setText(generateTime(this.duration));
         return position;
     }
+
+
+    //=========================全屏和大小屏判定===================================
+    public static final int FULLSCREEN_ID = 33797;
+    public static final int TINY_ID = 33798;
+//    public void startWindowTiny() {
+//        Log.i(TAG, "startWindowTiny " + " [" + this.hashCode() + "] ");
+//
+//        ViewGroup vp = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
+//        View old = vp.findViewById(TINY_ID);
+//        if (old != null) {
+//            vp.removeView(old);
+//        }
+//        if (textureViewContainer.getChildCount() > 0) {
+//            textureViewContainer.removeAllViews();
+//        }
+//        try {
+//            Constructor<IJKVideoPlayer> constructor = (Constructor<IJKVideoPlayer>) IJKVideoPlayer.this.getClass().getConstructor(Context.class);
+//            IJKVideoPlayer mIJKVideoPlayer = constructor.newInstance(getContext());
+//            mIJKVideoPlayer.setId(TINY_ID);
+//            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(400, 400);
+//            lp.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+//            vp.addView(mIJKVideoPlayer, lp);
+//            mIJKVideoPlayer.setUp(url, IJKVideoPlayerStandard.SCREEN_WINDOW_TINY, objects);
+//            mIJKVideoPlayer.setUiWitStateAndScreen(currentState);
+//            mIJKVideoPlayer.addTextureView();
+//            IJKVideoPlayerManager.putListener(mIJKVideoPlayer);
+//
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+
+
     //====================对外提供的方法==========================================
 
     public boolean isShowing() {
@@ -1122,6 +1212,10 @@ public class VPlayPlayer extends RelativeLayout {
 
     }
 
+    public int getStatus() {
+        return status;
+    }
+
     public void onDestroy() {
         Log.d(TAG, "onDestroy" + status);
         orientationEventListener.disable();
@@ -1216,7 +1310,6 @@ public class VPlayPlayer extends RelativeLayout {
                 mVideoView.pause();
                 mVideoNetTie.setVisibility(View.VISIBLE);
 
-                handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
                 loading.setVisibility(View.GONE);
             } else if (!isWifi && !isMobile) {
                 mVideoView.pause();
@@ -1227,4 +1320,7 @@ public class VPlayPlayer extends RelativeLayout {
         }
 
     }
+
+
+
 }

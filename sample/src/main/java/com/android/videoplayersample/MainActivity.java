@@ -6,10 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.github.jinsedeyuzhou.ijkplayer.media.AndroidMediaController;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
-
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,23 +24,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
 //        Settings settings = new Settings(getApplicationContext());
-        mVideoView = (IjkVideoView) findViewById(R.id.videoView);
-
-        AndroidMediaController mMediaController = new AndroidMediaController(this, false);
-
-        IjkMediaPlayer.loadLibrariesOnce(null);
-        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
-
-        mVideoView.setMediaController(mMediaController);
-//        ijkVideo.setVideoURI(Uri.parse(videoPath));
-        mVideoView.setVideoPath(videoPath);
-//        mVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(IMediaPlayer mp) {
-//                mVideoView.start();
-//            }
-//        });
-        mVideoView.start();
+//        mVideoView = (IjkVideoView) findViewById(R.id.videoView);
+//
+//        AndroidMediaController mMediaController = new AndroidMediaController(this, false);
+//
+//        IjkMediaPlayer.loadLibrariesOnce(null);
+//        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
+//
+//        mVideoView.setMediaController(mMediaController);
+////        ijkVideo.setVideoURI(Uri.parse(videoPath));
+//        mVideoView.setVideoPath(videoPath);
+////        mVideoView.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+////            @Override
+////            public void onPrepared(IMediaPlayer mp) {
+////                mVideoView.start();
+////            }
+////        });
+//        mVideoView.start();
     }
 
     private void initView() {

@@ -66,7 +66,7 @@ public class LiveActivity extends FragmentActivity {
         wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "liveTAG");
         wakeLock.acquire();
 
-        player = PlayerManager.getSuperManage().initialize(this);
+        player = PlayerManager.getPlayerManager().initialize(this);
 
         player.setLive(true);
         if (player.getParent()!=null)
