@@ -11,25 +11,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_ijk"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="IJKPlay" />
-
-        <Button
             android:id="@+id/btn_surfaceview"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="直播" />
 
-        <Button
-            android:id="@+id/videolist"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="VideoList" />
+
         <Button
             android:id="@+id/videoview"
             android:layout_width="0dp"

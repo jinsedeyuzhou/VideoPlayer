@@ -53,19 +53,23 @@ public class VideoViewActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        player.onResume();
+        if (null != player)
+            player.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        player.onPause();
+        if (null != player)
+            player.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.onDestroy();
+        if (null != player)
+            player.onDestroy();
+        player=null;
     }
 
     @Override

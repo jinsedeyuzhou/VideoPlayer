@@ -121,6 +121,7 @@ public class VPlayPlayer extends RelativeLayout {
     private TextView mVideoNetTieIcon;
     private LinearLayout mVideoStaus;
     private TextView mStatusText;
+    private boolean isAutoPause;
 
     //是否允许移动播放
     private boolean isAllowModible;
@@ -428,6 +429,7 @@ public class VPlayPlayer extends RelativeLayout {
             mVideoView.start();
         } else if (mVideoView.isPlaying()) {
             statusChange(PlayStateParams.STATE_PAUSED);
+            isAutoPause=true;
             mVideoView.pause();
         } else {
             statusChange(PlayStateParams.STATE_PLAYING);
@@ -1207,6 +1209,7 @@ public class VPlayPlayer extends RelativeLayout {
         show(0);//把系统状态栏显示出来
         if (status == PlayStateParams.STATE_PLAYING) {
             mVideoView.pause();
+            isAutoPause=false;
             if (!isLive) {
                 currentPosition = mVideoView.getCurrentPosition();
             }
@@ -1224,6 +1227,7 @@ public class VPlayPlayer extends RelativeLayout {
         orientationEventListener.disable();
         handler.removeCallbacksAndMessages(null);
         mVideoView.stopPlayback();
+        isLive=false;
     }
 
     public void onResume() {
@@ -1241,7 +1245,8 @@ public class VPlayPlayer extends RelativeLayout {
                 }
             }
 //            statusChange(PlayStateParams.STATE_PLAYING);
-            mVideoView.start();
+            if (!isAutoPause)
+                 mVideoView.start();
 
         }
     }

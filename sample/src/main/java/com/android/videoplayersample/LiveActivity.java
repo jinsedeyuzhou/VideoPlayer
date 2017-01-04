@@ -110,6 +110,7 @@ public class LiveActivity extends FragmentActivity {
         if (player != null) {
             player.onDestroy();
         }
+        player=null;
     }
 
     @Override
