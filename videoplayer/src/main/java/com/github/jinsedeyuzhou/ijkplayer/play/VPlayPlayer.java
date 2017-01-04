@@ -128,7 +128,7 @@ public class VPlayPlayer extends RelativeLayout {
     private boolean isAllowModible;
 
     private ConnectionChangeReceiver changeReceiver;
-    private LinearLayout mReplay;
+    private RelativeLayout mReplay;
     private LinearLayout gestureTouch;
     private LinearLayout gesture;
     private TextView mTvCurrent;
@@ -253,7 +253,7 @@ public class VPlayPlayer extends RelativeLayout {
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
         mVideoReplay = (ImageView) findViewById(R.id.app_video_replay_icon);
         mVideoFinishIcon = (ImageView) findViewById(R.id.app_video_finish_icon);
-        mReplay = (LinearLayout) findViewById(R.id.app_video_replay);
+        mReplay = (RelativeLayout) findViewById(R.id.app_video_replay);
 
         liveBox = findViewById(R.id.app_video_box);
         //进度条
@@ -475,8 +475,8 @@ public class VPlayPlayer extends RelativeLayout {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
-            endVideo();
             hideAll();
+            endVideo();
             isShowContoller = false;
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             handler.removeCallbacksAndMessages(null);

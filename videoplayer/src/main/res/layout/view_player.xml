@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="0px">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/app_video_replay"
             android:gravity="center"
             android:visibility="gone"
@@ -29,17 +29,17 @@
                 android:id="@+id/app_video_finish_icon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:scaleType="centerCrop"
                 />
             <ImageView
                 android:id="@+id/app_video_replay_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:src="@drawable/ic_play_circle_outline_white_36dp"
                 />
-        </LinearLayout>
+        </RelativeLayout>
 
         <include layout="@layout/player_gesture"/>
 
