@@ -476,7 +476,6 @@ public class VPlayPlayer extends RelativeLayout {
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             endVideo();
-
             hideAll();
             isShowContoller = false;
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
@@ -501,11 +500,11 @@ public class VPlayPlayer extends RelativeLayout {
             handler.removeCallbacksAndMessages(null);
         } else if (newStatus == PlayStateParams.STATE_PREPARING) {
             Log.d(TAG, "STATE_PREPARING");
-            hideAll();
             loading.setVisibility(View.VISIBLE);
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
             bottomProgress.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.GONE);
             handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
 //            if (!NetworkUtils.isNetworkAvailable(mContext) && !isAllowModible) {
