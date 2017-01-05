@@ -5,13 +5,13 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -126,8 +126,9 @@ public class VPlayPlayer extends RelativeLayout {
 
     //是否允许移动播放
     private boolean isAllowModible;
+    private boolean isNetListener = true;
 
-    private ConnectionChangeReceiver changeReceiver;
+    private NetChangeReceiver changeReceiver;
     private RelativeLayout mReplay;
     private LinearLayout gestureTouch;
     private LinearLayout gesture;
@@ -188,6 +189,8 @@ public class VPlayPlayer extends RelativeLayout {
                 doPauseResume();
                 show(defaultTimeout);
             } else if (v.getId() == R.id.app_video_replay_icon) {
+                if (!NetworkUtils.isConnectionAvailable(mContext))
+                    return;
                 doPauseResume();
             } else if (v.getId() == R.id.app_video_finish) {
                 if (!fullScreenOnly && !portrait) {
@@ -197,8 +200,14 @@ public class VPlayPlayer extends RelativeLayout {
                 }
             } else if (v.getId() == R.id.app_video_netTie_icon) {
                 isAllowModible = true;
-                mVideoView.start();
-                handler.sendEmptyMessage(PlayStateParams.MESSAGE_HIDE_NETWORK);
+               if (currentPosition==0)
+               {
+                   play(url);
+               }
+                else
+                   doPauseResume();
+                mVideoNetTie.setVisibility(View.GONE);
+//                handler.sendEmptyMessage(PlayStateParams.MESSAGE_HIDE_NETWORK);
             }
         }
     };
@@ -237,10 +246,6 @@ public class VPlayPlayer extends RelativeLayout {
             Log.e("GiraffePlayer", "loadLibraries error", e);
         }
         rootView = LayoutInflater.from(mContext).inflate(R.layout.view_player, this, true);
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-//        changeReceiver = new ConnectionChangeReceiver();
-//        mContext.registerReceiver(changeReceiver, intentFilter);
         //播放控制
         controlbar = findViewById(R.id.player_controlbar);
         initHeight = findViewById(R.id.player_controlbar).getHeight();
@@ -335,7 +340,7 @@ public class VPlayPlayer extends RelativeLayout {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 int id = view.getId();
-              if (gestureDetector.onTouchEvent(motionEvent))
+                if (gestureDetector.onTouchEvent(motionEvent))
                     return true;
 
                 // 处理手势结束
@@ -520,6 +525,39 @@ public class VPlayPlayer extends RelativeLayout {
 
     }
 
+    /**
+     * 当竖横屏切换时处理视频窗口
+     *
+     * @param portrait
+     */
+//    private void doOnConfigurationChanged(final boolean portrait) {
+//        if (mVideoView != null && !fullScreenOnly) {
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    setFullScreen(!portrait);
+//                    if (portrait) {
+//                        int screenWidth = DeviceUtils.deviceWidth(activity);
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                        layoutParams.width = screenWidth;
+//                        layoutParams.height = screenWidth * 9 / 16;
+//                        liveBox.setLayoutParams(layoutParams);
+////                        requestLayout();
+//                    } else {
+//                        int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
+//                        int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
+//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//                        layoutParams.height = heightPixels;
+//                        layoutParams.width = widthPixels;
+//                        liveBox.setLayoutParams(layoutParams);
+//                    }
+//                    updateFullScreenButton();
+//                }
+//            });
+//            orientationEventListener.enable();
+//        }
+//    }
 
     public void doOnConfigurationChanged(final boolean portrait) {
         if (mVideoView != null) {
@@ -548,36 +586,7 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
 
-//    /**
-////     *
-////     * @param portrait
-////     */
-//    private void doOnConfigurationChanged(final boolean portrait) {
 //
-//        if (mVideoView != null && !fullScreenOnly) {
-//            handler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    tryFullScreen(!portrait);
-//                    if (portrait) {
-//                        Log.v(TAG, "initHeight" + initHeight);
-//                        if (!isLive)
-//                            liveBox.getLayoutParams().height = initHeight;
-//
-//                    } else {
-//                        int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
-//                        int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
-//                        liveBox.getLayoutParams().height = Math.min(heightPixels, widthPixels);
-////                        liveBox.getLayoutParams().width=widthPixels;
-//                        Log.v(TAG, "initHeight" + 0);
-//                    }
-//                    updateFullScreenButton();
-//                }
-//            });
-//            orientationEventListener.enable();
-//        }
-//    }
-
 
     private void tryFullScreen(boolean fullScreen) {
         if (activity instanceof AppCompatActivity) {
@@ -1101,6 +1110,16 @@ public class VPlayPlayer extends RelativeLayout {
 
     //====================对外提供的方法==========================================
 
+    /**
+     * 获得某个控件
+     *
+     * @param ViewId
+     * @return
+     */
+    public View getView(int ViewId) {
+        return activity.findViewById(ViewId);
+    }
+
     public boolean isShowing() {
         return isShowing;
     }
@@ -1196,10 +1215,36 @@ public class VPlayPlayer extends RelativeLayout {
     }
 
     public void play(String url) {
-        if (playerSupport) {
-            loading.setVisibility(View.VISIBLE);
-            mVideoView.setVideoPath(url);
-            mVideoView.start();
+        this.url = url;
+        play(url, 0);
+    }
+
+    public void play(String url, int position) {
+        this.url = url;
+        if (!isNetListener) {// 如果设置不监听网络的变化，则取消监听网络变化的广播
+            unregisterNetReceiver();
+        } else {
+            // 注册网路变化的监听
+            registerNetReceiver();
+        }
+        if (mVideoView != null) {
+            reset();
+        }
+
+
+        if (!isAllowModible&&isNetListener&&NetworkUtils.getNetworkType(mContext) < 7 &&NetworkUtils.getNetworkType(mContext) >3) {
+            mVideoNetTie.setVisibility(View.VISIBLE);
+        } else {
+            if (playerSupport) {
+                loading.setVisibility(View.VISIBLE);
+                mVideoView.setVideoPath(url);
+                if (isLive) {
+                    mVideoView.seekTo(0);
+                } else {
+                    mVideoView.seekTo(position);
+                }
+                mVideoView.start();
+            }
         }
 
     }
@@ -1247,14 +1292,17 @@ public class VPlayPlayer extends RelativeLayout {
         bottomProgress.setProgress(0);
         seekBar.setProgress(0);
         isShowContoller = false;
+        mVideoView.stopPlayback();
+        mVideoView.release(true);
+
     }
 
     public void onDestroy() {
         Log.d(TAG, "onDestroy" + status);
         orientationEventListener.disable();
+        unregisterNetReceiver();
         handler.removeCallbacksAndMessages(null);
-        mVideoView.stopPlayback();
-        mVideoView.release(true);
+
         reset();
 
     }
@@ -1274,8 +1322,10 @@ public class VPlayPlayer extends RelativeLayout {
                 }
             }
 //            statusChange(PlayStateParams.STATE_PLAYING);
-            if (!isAutoPause)
+            if (!isAutoPause) {
                 mVideoView.start();
+                statusChange(PlayStateParams.STATE_PLAYING);
+            }
 
         }
     }
@@ -1312,47 +1362,79 @@ public class VPlayPlayer extends RelativeLayout {
 
     //=====================================网络状态改变广播类==============================================
 
+    private OnNetChangeListener onNetChangeListener;
+
+    public void setOnNetChangeListener(OnNetChangeListener onNetChangeListener) {
+        this.onNetChangeListener = onNetChangeListener;
+    }
+
+    public interface OnNetChangeListener {
+        // wifi
+        void onWifi();
+
+        // 手机
+        void onMobile();
+
+        // 网络断开
+        void onDisConnect();
+
+        // 网路不可用
+        void onNoAvailable();
+    }
+
+    /**
+     * 注册网络监听器
+     */
+    private void registerNetReceiver() {
+        if (changeReceiver == null) {
+            IntentFilter filter = new IntentFilter(
+                    ConnectivityManager.CONNECTIVITY_ACTION);
+            changeReceiver = new NetChangeReceiver();
+            mContext.registerReceiver(changeReceiver, filter);
+        }
+    }
+
+    /**
+     * 销毁网络监听器
+     */
+    private void unregisterNetReceiver() {
+        if (changeReceiver != null) {
+            mContext.unregisterReceiver(changeReceiver);
+            changeReceiver = null;
+        }
+    }
+
     /**
      * 网络改变监听
      */
-    private class ConnectionChangeReceiver extends BroadcastReceiver {
-//        private final String TAG = ConnectionChangeReceiver.class.getSimpleName();
-
-        private boolean isWifi;
-        private boolean isMobile;
-
+    private class NetChangeReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.e(TAG, "网络状态改变");
-            //获得网络连接服务
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
-            //获取wifi连接状态
-            NetworkInfo.State wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-            //判断是否正在使用wifi网络
-            if (wifi == NetworkInfo.State.CONNECTED) {
-                isWifi = true;
-            } else
-                isWifi = false;
-            //获取GPRS状态
-            NetworkInfo.State state = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-            //判断是否在使用GPRS网络
-            if (state == NetworkInfo.State.CONNECTED) {
-                isMobile = true;
-            } else
-                isMobile = false;
-            //如果没有连接成功
-
-            Log.d(TAG, "isWifi:" + isWifi + "isMobile:" + isMobile);
-            if (!isWifi && isMobile) {
+//            if (onNetChangeListener == null) {
+//                return;
+//            }
+            if (NetworkUtils.getNetworkType(activity) == 3) {// 网络是WIFI
+//                onNetChangeListener.onWifi();
+            } else if (!isAllowModible&&NetworkUtils.getNetworkType(activity) >3
+                    &&NetworkUtils.getNetworkType(activity) < 7) {// 网络不是手机网络或者是以太网
+                // TODO 更新状态是暂停状态
+                statusChange(PlayStateParams.STATE_PAUSED);
                 mVideoView.pause();
+                currentPosition=mVideoView.getCurrentPosition();
+                updatePausePlay();
+                loading.setVisibility(View.GONE);
+//                onNetChangeListener.onMobile();
                 mVideoNetTie.setVisibility(View.VISIBLE);
 
-                loading.setVisibility(View.GONE);
-            } else if (!isWifi && !isMobile) {
-                mVideoView.pause();
-                Toast.makeText(context, "当前网络无连接", Toast.LENGTH_SHORT).show();
+            } else if (NetworkUtils.getNetworkType(activity) == 1) {// 网络链接断开
+                Toast.makeText(mContext, "网路已断开", Toast.LENGTH_SHORT).show();
+                onPause();
+//                onNetChangeListener.onDisConnect();
+            } else {
+                Toast.makeText(mContext, "未知网络", Toast.LENGTH_SHORT).show();
+//                onNetChangeListener.onNoAvailable();
             }
-
 
         }
 
