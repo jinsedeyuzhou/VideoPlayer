@@ -1,6 +1,5 @@
 package com.android.videoplayersample;
 
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.github.jinsedeyuzhou.ijkplayer.play.PlayerManager;
 import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
 
 /**
@@ -20,13 +18,16 @@ public class VideoViewActivity extends FragmentActivity {
     private FrameLayout layout_video;
     private VPlayPlayer player;
     private int mporit;
+    private int initHeight;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         layout_video = (FrameLayout) findViewById(R.id.layout_video);
-        player = PlayerManager.getPlayerManager().initialize(this);
+        initHeight=layout_video.getLayoutParams().height;
+        if (player == null)
+            player =new VPlayPlayer(this);
         if (player.getParent() != null)
             ((ViewGroup) player.getParent()).removeAllViews();
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
@@ -39,16 +40,17 @@ public class VideoViewActivity extends FragmentActivity {
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (null!=player)
+            player.onBackPressed();
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                return true;
-            }
-        }
-        return super.onKeyUp(keyCode, event);
+    public void onBackPressed() {
+        if (null!=player)
+            player.onBackPressed();
     }
 
     @Override
@@ -68,13 +70,28 @@ public class VideoViewActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != player)
-            player.onDestroy();
-        player=null;
+        player.onDestroy();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (player != null) {
+            player.onConfigurationChanged(newConfig);
+        }
+        if (newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+        {
+            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
+            params.height = initHeight;
+            layout_video.setLayoutParams(params);
+        }else
+        {
+            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
+            int heightPixels =getResources().getDisplayMetrics().heightPixels;
+            int widthPixels = getResources().getDisplayMetrics().widthPixels;
+            params.height=heightPixels;
+            params.width=widthPixels;
+            layout_video.setLayoutParams(params);
+        }
     }
 }

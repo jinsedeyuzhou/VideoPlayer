@@ -29,13 +29,11 @@
     <style name="SeekBarAppTheme">
         <!--<item name="android:indeterminateOnly">false</item>-->
         <item name="android:focusable">true</item>
-        <item name="android:progressDrawable">
-            @drawable/bg_seek
-        </item>
+        <item name="android:progressDrawable">@drawable/player_bg_seek</item>
         <!--<item name="android:indeterminateDrawable">-->
             <!--@drawable/player_progress_horizontal_holo_dark-->
         <!--</item>-->
-        <item name="android:thumb">@drawable/bg_thumb</item>
+        <item name="android:thumb">@drawable/player_bg_thumb</item>
         <item name="android:thumbOffset">10dp</item>
         <item name="android:layout_marginLeft">3dip</item>
         <item name="android:layout_marginRight">3dip</item>

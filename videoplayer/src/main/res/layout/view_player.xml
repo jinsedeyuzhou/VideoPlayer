@@ -1,130 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/app_video_box"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#000"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#000">
 
     <com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
 
     <RelativeLayout
+        android:id="@+id/app_video_replay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="0px">
+        android:background="#B3616161"
+        android:gravity="center">
 
-        <RelativeLayout
-            android:id="@+id/app_video_replay"
-            android:gravity="center"
-            android:visibility="gone"
-            android:background="#B3616161"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/app_video_finish_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:scaleType="centerCrop"
-                />
-            <ImageView
-                android:id="@+id/app_video_replay_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/ic_play_circle_outline_white_36dp"
-                />
-        </RelativeLayout>
-
-        <include layout="@layout/player_gesture"/>
-
-       <!--<include layout="@layout/player_touch_gesture"-->
-           <!--android:id="@+id/player_touch_gesture"-->
-           <!--android:layout_width="wrap_content"-->
-           <!--android:layout_height="wrap_content"-->
-           <!--android:layout_centerInParent="true"-->
-           <!--android:background="@drawable/app_video_center_bg"-->
-           <!--android:visibility="visible"-->
-           <!--/>-->
-
-        <!-- status-->
-        <LinearLayout
-            android:id="@+id/app_video_status"
+        <ImageView
+            android:id="@+id/app_video_finish_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/background_dark"
-            android:gravity="center"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/app_video_status_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/small_problem"
-                android:textColor="@android:color/white"
-                android:textSize="14dp"/>
-        </LinearLayout>
-        <!--网络提示-->
-        <LinearLayout
-            android:id="@+id/app_video_netTie"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#33000000"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:gravity="center"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:text="您正在使用移动网络播放视频\n可能产生较高流量费用"
-                android:textColor="@android:color/white"/>
-
-            <TextView
-                android:id="@+id/app_video_netTie_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/network_player_btn"
-                android:gravity="center"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:text="继续"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
-
-        <!-- loading-->
-        <ProgressBar
-            android:id="@+id/app_video_loading"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
             android:layout_centerInParent="true"
-            android:indeterminateBehavior="repeat"
-            android:indeterminateDrawable="@drawable/progressbar"
-            android:indeterminateOnly="true"
-            android:visibility="gone"/>
+            android:scaleType="centerCrop" />
 
-       <include layout="@layout/player_controlbar"
-           android:id="@+id/player_controlbar"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:layout_alignParentBottom="true"
-           android:padding="8dp"
-           android:visibility="visible"
-           />
-
+        <ImageView
+            android:id="@+id/app_video_replay_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_play_complete" />
     </RelativeLayout>
 
-    <include layout="@layout/player_toolbar"
-        />
+    <include layout="@layout/player_gesture" />
+
+
+    <!-- status-->
+    <LinearLayout
+        android:id="@+id/app_video_status"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/app_video_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/small_problem"
+            android:textColor="@android:color/white"
+            android:textSize="14dp" />
+    </LinearLayout>
+    <!--网络提示-->
+    <LinearLayout
+        android:id="@+id/app_video_netTie"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#33000000"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="您正在使用移动网络播放视频\n可能产生较高流量费用"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/app_video_netTie_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/network_player_btn"
+            android:gravity="center"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="继续"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <!-- loading-->
+    <ProgressBar
+        android:id="@+id/app_video_loading"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@drawable/player_progressbar"
+        android:indeterminateOnly="true"
+        android:visibility="gone" />
+
+    <include layout="@layout/player_controlbar" />
+
+    <include layout="@layout/player_toolbar" />
 
     <ProgressBar
         android:id="@+id/bottom_progressbar"
@@ -133,8 +107,8 @@
         android:layout_height="1.5dp"
         android:layout_alignParentBottom="true"
         android:max="1000"
-        android:visibility="visible"
-        android:progressDrawable="@drawable/bg_seek"/>
+        android:progressDrawable="@drawable/player_bg_seek"
+        android:visibility="visible" />
 
 
 </RelativeLayout>
