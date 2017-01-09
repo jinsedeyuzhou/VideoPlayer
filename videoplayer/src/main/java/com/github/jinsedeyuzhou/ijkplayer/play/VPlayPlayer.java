@@ -687,7 +687,12 @@ public class VPlayPlayer extends FrameLayout {
         @Override
         public boolean onDown(MotionEvent e) {
             firstTouch = true;
-            return super.onDown(e);
+            //横屏下拦截事件
+            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                return true;
+            } else {
+                return super.onDown(e);
+            }
 
         }
 
