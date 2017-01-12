@@ -66,6 +66,7 @@ public class PlayStateParams {
     public  static final int MESSAGE_HIDE_CENTER_BOX = 4;
     public  static final int MESSAGE_RESTART_PLAY = 5;
     public  static final int MESSAGE_HIDE_NETWORK = 6;
+    public  static final int MESSAGE_UPDATE_PAUSE_ONRESUME= 7;
 
 
 

@@ -197,7 +197,7 @@ public class VPlayPlayer extends FrameLayout {
                     return;
                 doPauseResume();
             } else if (id == R.id.app_video_finish) {
-                    onBackPressed();
+                onBackPressed();
             } else if (id == R.id.app_video_netTie_icon) {
                 isAllowModible = true;
                 if (currentPosition == 0) {
@@ -495,10 +495,10 @@ public class VPlayPlayer extends FrameLayout {
 
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
-            mVideoPlay.setImageResource(R.drawable.ic_stop_white_24dp);
+            mVideoPlay.setSelected(true);
             hidden = false;
         } else {
-            mVideoPlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+            mVideoPlay.setSelected(false);
             hidden = true;
         }
     }
@@ -514,15 +514,17 @@ public class VPlayPlayer extends FrameLayout {
             mReplay.setVisibility(View.GONE);
             mVideoView.seekTo(0);
             mVideoView.start();
+            mVideoPlay.setSelected(true);
         } else if (mVideoView.isPlaying()) {
             statusChange(PlayStateParams.STATE_PAUSED);
             isAutoPause = true;
             mVideoView.pause();
+            mVideoPlay.setSelected(false);
         } else {
             statusChange(PlayStateParams.STATE_PLAYING);
             mVideoView.start();
+            mVideoPlay.setSelected(true);
         }
-        updatePausePlay();
     }
 
 
@@ -633,7 +635,6 @@ public class VPlayPlayer extends FrameLayout {
 
         }
     }
-
 
 
     private void tryFullScreen(boolean fullScreen) {
@@ -903,7 +904,6 @@ public class VPlayPlayer extends FrameLayout {
             }
             isShowing = true;
         }
-        updatePausePlay();
 
         handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
         if (timeout != 0) {
@@ -1247,6 +1247,18 @@ public class VPlayPlayer extends FrameLayout {
     public void setShowContoller(boolean isShowContoller) {
         this.isShowContoller = isShowContoller;
         handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+        showBottomControl(isShowContoller);
+    }
+
+    public void setVideoPath(String path) {
+        Uri uri = Uri.parse(path);
+        mVideoView.setVideoURI(uri);
+        if (!isNetListener) {// 如果设置不监听网络的变化，则取消监听网络变化的广播
+            unregisterNetReceiver();
+        } else {
+            // 注册网路变化的监听
+            registerNetReceiver();
+        }
     }
 
     public void play(String url) {
@@ -1275,24 +1287,46 @@ public class VPlayPlayer extends FrameLayout {
                     mVideoView.seekTo(position);
                 }
                 mVideoView.start();
+
             }
         }
 
     }
 
-    public void start(String path) {
-        Uri uri = Uri.parse(path);
-        hideAll();
-        loading.setVisibility(View.VISIBLE);
-        if (!mVideoView.isPlaying()) {
-            mVideoView.setVideoURI(uri);
-            mVideoView.start();
-
-        } else {
-            mVideoView.stopPlayback();
-            mVideoView.setVideoURI(uri);
-            mVideoView.start();
+    public void pause() {
+        mVideoPlay.setSelected(false);
+        if (mVideoView.isPlaying()) {
+            mVideoView.pause();
         }
+    }
+
+    public void start() {
+        if (!isAllowModible && isNetListener && NetworkUtils.getNetworkType(mContext) < 7 && NetworkUtils.getNetworkType(mContext) > 3) {
+            mVideoNetTie.setVisibility(View.VISIBLE);
+        } else {
+            if (playerSupport) {
+                loading.setVisibility(View.VISIBLE);
+                if (isLive)
+                {
+                    mVideoView.seekTo(0);
+                    mVideoView.start();
+                }
+                if (status == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
+                    mReplay.setVisibility(View.GONE);
+                    mVideoView.seekTo(0);
+                    mVideoView.start();
+                    mVideoPlay.setSelected(true);
+                } else if (!mVideoView.isPlaying()) {
+                    mVideoView.start();
+                    mVideoPlay.setSelected(true);
+                } else {
+                    mVideoView.stopPlayback();
+                    mVideoView.start();
+                }
+
+            }
+        }
+
     }
 
 
@@ -1336,7 +1370,6 @@ public class VPlayPlayer extends FrameLayout {
         orientationEventListener.disable();
         unregisterNetReceiver();
         handler.removeCallbacksAndMessages(null);
-
         reset();
 
     }
@@ -1459,7 +1492,7 @@ public class VPlayPlayer extends FrameLayout {
                 statusChange(PlayStateParams.STATE_PAUSED);
                 mVideoView.pause();
                 currentPosition = mVideoView.getCurrentPosition();
-                updatePausePlay();
+                onPause();
                 loading.setVisibility(View.GONE);
 //                onNetChangeListener.onMobile();
                 mVideoNetTie.setVisibility(View.VISIBLE);
