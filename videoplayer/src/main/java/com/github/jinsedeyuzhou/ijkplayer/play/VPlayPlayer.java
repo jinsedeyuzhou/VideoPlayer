@@ -1136,6 +1136,30 @@ public class VPlayPlayer extends FrameLayout {
 
 
     //====================对外提供的方法==========================================
+    public void stop() {
+        if (mVideoView.isPlaying()) {
+            mVideoView.stopPlayback();
+        }
+        isAutoPause = false;
+        mIsLand = false; // 是否是横屏
+        mClick = false; // 是否点击
+        mClickLand = true; // 点击进入横屏
+        mClickPort = true; // 点击进入竖屏
+        bottomProgress.setProgress(0);
+        seekBar.setProgress(0);
+    }
+
+    public void release() {
+        if (mVideoView != null)
+            mVideoView.release(true);
+        isAutoPause = false;
+        mIsLand = false; // 是否是横屏
+        mClick = false; // 是否点击
+        mClickLand = true; // 点击进入横屏
+        mClickPort = true; // 点击进入竖屏
+        bottomProgress.setProgress(0);
+        seekBar.setProgress(0);
+    }
 
     /**
      * 获得某个控件
@@ -1306,8 +1330,7 @@ public class VPlayPlayer extends FrameLayout {
         } else {
             if (playerSupport) {
                 loading.setVisibility(View.VISIBLE);
-                if (isLive)
-                {
+                if (isLive) {
                     mVideoView.seekTo(0);
                     mVideoView.start();
                 }
