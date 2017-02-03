@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
@@ -24,14 +23,14 @@ public class VideoViewActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-        layout_video = (FrameLayout) findViewById(R.id.layout_video);
-        initHeight=layout_video.getLayoutParams().height;
-        if (player == null)
-            player =new VPlayPlayer(this);
-        if (player.getParent() != null)
-            ((ViewGroup) player.getParent()).removeAllViews();
+        player = (VPlayPlayer) findViewById(R.id.layout_video);
+//        initHeight=layout_video.getLayoutParams().height;
+//        if (player == null)
+//            player =new VPlayPlayer(this);
+//        if (player.getParent() != null)
+//            ((ViewGroup) player.getParent()).removeAllViews();
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
-        layout_video.addView(player);
+//        layout_video.addView(player);
 //        vPlayPlayer.setViewHeight(600);
 //        player.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");
 
@@ -42,16 +41,11 @@ public class VideoViewActivity extends FragmentActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (null!=player)
-            player.onBackPressed();
+        if (null!=player&&player.onKeyDown(keyCode,event))
+            return true;
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (null!=player)
-            player.onBackPressed();
-    }
 
     @Override
     protected void onResume() {
@@ -79,19 +73,20 @@ public class VideoViewActivity extends FragmentActivity {
         if (player != null) {
             player.onConfigurationChanged(newConfig);
         }
-        if (newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
-        {
-            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
-            params.height = initHeight;
-            layout_video.setLayoutParams(params);
-        }else
-        {
-            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
-            int heightPixels =getResources().getDisplayMetrics().heightPixels;
-            int widthPixels = getResources().getDisplayMetrics().widthPixels;
-            params.height=heightPixels;
-            params.width=widthPixels;
-            layout_video.setLayoutParams(params);
-        }
+//        if (newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+//        {
+//            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
+//            int widthPixels = getResources().getDisplayMetrics().widthPixels;
+//            params.height = initHeight;
+//            layout_video.setLayoutParams(params);
+//        }else
+//        {
+//            ViewGroup.LayoutParams params = layout_video.getLayoutParams();
+//            int heightPixels =getResources().getDisplayMetrics().heightPixels;
+//            int widthPixels = getResources().getDisplayMetrics().widthPixels;
+//            params.height=widthPixels;
+////            params.width=widthPixels;
+//            layout_video.setLayoutParams(params);
+//        }
     }
 }

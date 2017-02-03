@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         android:src="@drawable/ic_chevron_left_white_36dp" />
 
-    <TextView
+    <com.github.jinsedeyuzhou.ijkplayer.play.MarqueeTextView
         android:id="@+id/app_video_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
