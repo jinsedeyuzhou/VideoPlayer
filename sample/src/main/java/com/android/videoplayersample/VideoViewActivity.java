@@ -41,11 +41,18 @@ public class VideoViewActivity extends FragmentActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (null!=player&&player.onKeyDown(keyCode,event))
+        if (null!=player&&player.handleVolumeKey(keyCode))
             return true;
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (player.onBackPressed())
+            return;
+
+        super.onBackPressed();
+    }
 
     @Override
     protected void onResume() {

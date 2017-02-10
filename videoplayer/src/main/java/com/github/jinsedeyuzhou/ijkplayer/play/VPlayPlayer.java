@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -86,7 +87,9 @@ public class VPlayPlayer extends FrameLayout {
 
     //屏幕宽度
     private int screenWidthPixels;
-    //屏幕宽度
+    //屏幕高度
+    private int screenHeightPixels;
+    //布局宽度
     public static int initHeight;
     //最大音量
     private int mMaxVolume;
@@ -118,7 +121,6 @@ public class VPlayPlayer extends FrameLayout {
     private boolean isLive;//是否为直播
     private boolean isLock;//是否锁屏
 
-    private boolean hidden; //暂停时不隐藏
     //是否支持该设备
     private boolean playerSupport;
     //当前位置
@@ -151,8 +153,8 @@ public class VPlayPlayer extends FrameLayout {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case PlayStateParams.MESSAGE_FADE_OUT:
-                    if (!hidden)
-                        hide(false);
+//                    if (!hidden)
+                    hide(false);
                     break;
                 case PlayStateParams.MESSAGE_HIDE_CENTER_BOX:
                     gestureTouch.setVisibility(View.GONE);
@@ -192,13 +194,16 @@ public class VPlayPlayer extends FrameLayout {
                 if (!NetworkUtils.isConnectionAvailable(mContext))
                     return;
                 doPauseResume();
-                show(defaultTimeout);
+//                show(defaultTimeout);
             } else if (id == R.id.app_video_replay_icon) {
                 if (!NetworkUtils.isConnectionAvailable(mContext))
                     return;
                 doPauseResume();
             } else if (id == R.id.app_video_finish) {
-                onBackPressed();
+               if(!onBackPressed())
+               {
+                   activity.finish();
+               }
 
             } else if (id == R.id.app_video_netTie_icon) {
                 isAllowModible = true;
@@ -292,8 +297,9 @@ public class VPlayPlayer extends FrameLayout {
         mVideoNetTie = (LinearLayout) findViewById(R.id.app_video_netTie);
         mVideoNetTieIcon = (TextView) findViewById(R.id.app_video_netTie_icon);
         //屏幕宽度
-//        screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
-//        initHeight = findViewById(R.id.player_controlbar).getHeight();
+        screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
+        screenHeightPixels = activity.getResources().getDisplayMetrics().heightPixels;
+//        initHeight =getHeight();
 
     }
 
@@ -319,32 +325,33 @@ public class VPlayPlayer extends FrameLayout {
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         final GestureDetector gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
 
-//        controlbar.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.e("custommedia", "event");
-//
-//                Rect seekRect = new Rect();
-//                seekBar.getHitRect(seekRect);
-//
-//                if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
-//
-//                    float y = seekRect.top + seekRect.height() / 2;
-//                    //seekBar only accept relative x
-//                    float x = event.getX() - seekRect.left;
-//                    if (x < 0) {
-//                        x = 0;
-//                    } else if (x > seekRect.width()) {
-//                        x = seekRect.width();
-//                    }
-//                    MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
-//                            event.getAction(), x, y, event.getMetaState());
-//                    return seekBar.onTouchEvent(me);
-//
-//                }
-//                return false;
-//            }
-//        });
+        controlbar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e("custommedia", "event");
+
+                Rect seekRect = new Rect();
+                seekBar.getHitRect(seekRect);
+                //如果滑动在此高度内，此进度条生效，seekbar区域向上和向下拓展50像素
+                if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
+
+                    float y = seekRect.top + seekRect.height() / 2;
+                    //seekBar only accept relative x
+                    float x = event.getX() - seekRect.left;
+                    if (x < 0) {
+                        x = 0;
+                    } else if (x > seekRect.width()) {
+                        x = seekRect.width();
+                    }else {
+                        MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
+                                event.getAction(), x, y, event.getMetaState());
+                        return seekBar.onTouchEvent(me);
+                    }
+
+                }
+                return false;
+            }
+        });
 
         setKeepScreenOn(true);
         setClickable(true);
@@ -373,6 +380,7 @@ public class VPlayPlayer extends FrameLayout {
         } catch (Throwable e) {
             Log.e("VPlayPlayer", "loadLibraries error", e);
         }
+        //需要更改为在引用的Application中使用   audioManager = (AudioManager) PlayerApplication.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
@@ -484,10 +492,8 @@ public class VPlayPlayer extends FrameLayout {
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
             mVideoPlay.setSelected(true);
-            hidden = false;
         } else {
             mVideoPlay.setSelected(false);
-            hidden = true;
         }
     }
 
@@ -512,6 +518,7 @@ public class VPlayPlayer extends FrameLayout {
             statusChange(PlayStateParams.STATE_PLAYING);
             mVideoView.start();
             mVideoPlay.setSelected(true);
+//            handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT),defaultTimeout);
         }
     }
 
@@ -558,6 +565,9 @@ public class VPlayPlayer extends FrameLayout {
             loading.setVisibility(View.GONE);
             handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
+        } else if (newStatus == PlayStateParams.STATE_PAUSED) {
+            handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+//            isShowContoller = false;
         }
 
 
@@ -866,7 +876,8 @@ public class VPlayPlayer extends FrameLayout {
     }
 
     public void hide(boolean force) {
-
+//        if (!isShowContoller)
+//            return;
         if (force || isShowing) {
             showBottomControl(false);
             top_box.setVisibility(View.GONE);
@@ -1022,6 +1033,53 @@ public class VPlayPlayer extends FrameLayout {
         }
         mProgressGesture.setProgress(i);
 
+    }
+
+    /**
+     * 处理音量键，避免外部按音量键后导航栏和状态栏显示出来退不回去的状态
+     *
+     * @param keyCode
+     * @return
+     */
+    public boolean handleVolumeKey(int keyCode) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            setVolume(true);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            setVolume(false);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 递增或递减音量，量度按最大音量的 1/15
+     *
+     * @param isIncrease 递增或递减
+     */
+    private void setVolume(boolean isIncrease) {
+        int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (isIncrease) {
+            curVolume += mMaxVolume / 15;
+        } else {
+            curVolume -= mMaxVolume / 15;
+        }
+        if (curVolume > mMaxVolume) {
+            curVolume = mMaxVolume;
+        } else if (curVolume < 0) {
+            curVolume = 0;
+        }
+        // 变更声音
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, curVolume, 0);
+        // 变更进度条
+        if (gestureTouch.getVisibility() == View.GONE) {
+            gestureTouch.setVisibility(View.VISIBLE);
+            gesture.setVisibility(View.GONE);
+            mImageTip.setImageResource(R.drawable.player_video_volume);
+        }
+        mProgressGesture.setProgress((curVolume * 100 / mMaxVolume));
+        endGesture();
     }
 
     /**
@@ -1262,10 +1320,8 @@ public class VPlayPlayer extends FrameLayout {
             }
             return true;
 
-        }else
-        {
+        } else {
 
-            activity.finish();
             return false;
         }
 
