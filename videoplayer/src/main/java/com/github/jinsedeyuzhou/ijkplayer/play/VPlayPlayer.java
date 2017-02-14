@@ -205,7 +205,8 @@ public class VPlayPlayer extends FrameLayout {
                    activity.finish();
                }
 
-            } else if (id == R.id.app_video_netTie_icon) {
+            }
+            else if (id == R.id.app_video_netTie_icon) {
                 isAllowModible = true;
                 if (currentPosition == 0) {
                     play(url);
