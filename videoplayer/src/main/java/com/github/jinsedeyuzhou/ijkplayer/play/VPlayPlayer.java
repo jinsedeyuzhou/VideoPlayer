@@ -587,15 +587,20 @@ public class VPlayPlayer extends FrameLayout {
                 public void run() {
                     tryFullScreen(!portrait);
                     ViewGroup.LayoutParams params = getLayoutParams();
+                    if (null == params)
+                        return;
                     if (portrait) {
                         Log.v(TAG, "initHeight" + initHeight);
                         params.height = initHeight;
                         setLayoutParams(params);
+                        requestLayout();
 
                     } else {
                         int heightPixels = activity.getResources().getDisplayMetrics().heightPixels;
                         int widthPixels = activity.getResources().getDisplayMetrics().widthPixels;
-                        getLayoutParams().height = Math.min(heightPixels, widthPixels);
+                        params.height = Math.min(heightPixels, widthPixels);
+                        setLayoutParams(params);
+                        requestLayout();
                         Log.v(TAG, "initHeight" + 0);
                     }
                     updateFullScreenButton();
