@@ -644,8 +644,11 @@ public class VPlayPlayer extends FrameLayout {
             ActionBar supportActionBar = ((AppCompatActivity) activity).getSupportActionBar();
             if (supportActionBar != null) {
                 if (fullScreen) {
+                    //次动画会导致actionbar再度显示
+                    supportActionBar.setShowHideAnimationEnabled(false);
                     supportActionBar.hide();
                 } else {
+                    supportActionBar.setShowHideAnimationEnabled(false);
                     supportActionBar.show();
                 }
             }
