@@ -42,6 +42,7 @@ import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 import com.github.jinsedeyuzhou.ijkplayer.utils.NetworkUtils;
 
+import master.flame.danmaku.ui.widget.DanmakuView;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -227,6 +228,7 @@ public class VPlayPlayer extends FrameLayout {
 
         }
     };
+    private DanmakuView mDanmaku;
 
 
     public VPlayPlayer(Context context) {
@@ -297,6 +299,7 @@ public class VPlayPlayer extends FrameLayout {
         //网络提示,网络相关参数提示
         mVideoNetTie = (LinearLayout) findViewById(R.id.app_video_netTie);
         mVideoNetTieIcon = (TextView) findViewById(R.id.app_video_netTie_icon);
+
         //屏幕宽度
         screenWidthPixels = activity.getResources().getDisplayMetrics().widthPixels;
         screenHeightPixels = activity.getResources().getDisplayMetrics().heightPixels;
@@ -414,6 +417,8 @@ public class VPlayPlayer extends FrameLayout {
         mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer mp) {
+                //释放内存
+                Runtime.getRuntime().gc();
                 if (getScreenOrientation()
                         == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                     //横屏播放完毕，重置
@@ -443,7 +448,7 @@ public class VPlayPlayer extends FrameLayout {
                 if (((rotation >= 0) && (rotation <= 30)) || (rotation >= 330)) {
                     if (mClick) {
                         if (mIsLand && !mClickLand) {
-                            return;
+                            return ;
                         } else {
                             mClickPort = true;
                             mClick = false;
@@ -644,8 +649,11 @@ public class VPlayPlayer extends FrameLayout {
             ActionBar supportActionBar = ((AppCompatActivity) activity).getSupportActionBar();
             if (supportActionBar != null) {
                 if (fullScreen) {
+                    //次动画会导致actionbar再度显示
+                    supportActionBar.setShowHideAnimationEnabled(false);
                     supportActionBar.hide();
                 } else {
+                    supportActionBar.setShowHideAnimationEnabled(false);
                     supportActionBar.show();
                 }
             }
@@ -1189,7 +1197,8 @@ public class VPlayPlayer extends FrameLayout {
     //============================弹幕=============================================
 
     private void initDanmaku() {
-
+        //弹幕
+        mDanmaku = (DanmakuView) findViewById(R.id.sv_danmaku);
 
     }
 

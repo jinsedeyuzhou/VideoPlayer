@@ -1,18 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/player_controlbar"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:layout_alignParentBottom="true"
-    android:background="#88000000"
-    android:padding="8dp"
-    android:visibility="gone">
-
+    android:background="#66000000"
+    android:padding="5dp"
+   >
     <ImageView
         android:id="@+id/app_video_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:padding="8dp"
         android:src="@drawable/player_pause_play" />
 
     <TextView
