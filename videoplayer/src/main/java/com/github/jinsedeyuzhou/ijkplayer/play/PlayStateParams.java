@@ -71,37 +71,14 @@ public class PlayStateParams {
 
 
 
-//
-//    int MEDIA_INFO_UNKNOWN = 1;
-//    int MEDIA_INFO_STARTED_AS_NEXT = 2;
-//    int MEDIA_INFO_VIDEO_RENDERING_START = 3;
-//    int MEDIA_INFO_VIDEO_TRACK_LAGGING = 700;
-//    int MEDIA_INFO_BUFFERING_START = 701;
-//    int MEDIA_INFO_BUFFERING_END = 702;
-//    int MEDIA_INFO_NETWORK_BANDWIDTH = 703;
-//    int MEDIA_INFO_BAD_INTERLEAVING = 800;
-//    int MEDIA_INFO_NOT_SEEKABLE = 801;
-//    int MEDIA_INFO_METADATA_UPDATE = 802;
-//    int MEDIA_INFO_TIMED_TEXT_ERROR = 900;
-//    int MEDIA_INFO_UNSUPPORTED_SUBTITLE = 901;
-//    int MEDIA_INFO_SUBTITLE_TIMED_OUT = 902;
-//    int MEDIA_INFO_VIDEO_ROTATION_CHANGED = 10001;
-//    int MEDIA_INFO_AUDIO_RENDERING_START = 10002;
-//    int MEDIA_ERROR_UNKNOWN = 1;
-//    int MEDIA_ERROR_SERVER_DIED = 100;
-//    int MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK = 200;
-//    int MEDIA_ERROR_IO = -1004;
-//    int MEDIA_ERROR_MALFORMED = -1007;
-//    int MEDIA_ERROR_UNSUPPORTED = -1010;
-//    int MEDIA_ERROR_TIMED_OUT = -110;
-
-
 
 
     /**====================ijk状态码表 开始=================================*/
     /*
      * Do not change these values without updating their counterparts in native
      */
+    // 无效变量
+    public  static final int INVALID_VALUE = -1;
     public static final int MEDIA_INFO_UNKNOWN = 1;//未知信息
     public static final int MEDIA_INFO_STARTED_AS_NEXT = 2;//播放下一条
     public static final int MEDIA_INFO_VIDEO_RENDERING_START = 3;//视频开始整备中
@@ -129,5 +106,19 @@ public class PlayStateParams {
     public static final int MEDIA_ERROR_UNSUPPORTED = -1010;//数据不支持
     public static final int MEDIA_ERROR_TIMED_OUT = -110;//数据超时
     /**====================ijk状态码表 结束=================================*/
+
+    /**============================ 弹幕 ====================================*/
+    /**
+     * 视频编辑状态：正常未编辑状态、在播放时编辑、暂停时编辑
+     */
+    public static final int NORMAL_STATUS = 501;
+    public static final int INTERRUPT_WHEN_PLAY = 502;
+    public static final int INTERRUPT_WHEN_PAUSE = 503;
+
+
+    // 弹幕格式：B站、A站和自定义
+    public static final int DANMAKU_TAG_BILI = 701;
+    public static final int DANMAKU_TAG_ACFUN = 702;
+    public static final int DANMAKU_TAG_CUSTOM = 703;
 
 }

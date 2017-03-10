@@ -7,7 +7,13 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 
-import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
+import com.android.videoplayersample.danmaku.DanmakuConverter;
+import com.android.videoplayersample.danmaku.DanmakuLoader;
+import com.android.videoplayersample.danmaku.DanmakuParser;
+import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayerDanmaku;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Berkeley on 11/9/16.
@@ -15,7 +21,7 @@ import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
 public class VideoViewActivity extends FragmentActivity {
 
     private FrameLayout layout_video;
-    private VPlayPlayer player;
+    private VPlayPlayerDanmaku player;
     private int mporit;
     private int initHeight;
 
@@ -23,13 +29,22 @@ public class VideoViewActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-        player = (VPlayPlayer) findViewById(R.id.layout_video);
+        player = (VPlayPlayerDanmaku) findViewById(R.id.layout_video);
 //        initHeight=layout_video.getLayoutParams().height;
 //        if (player == null)
 //            player =new VPlayPlayer(this);
 //        if (player.getParent() != null)
 //            ((ViewGroup) player.getParent()).removeAllViews();
+        InputStream stream = null;
+        try {
+            stream = getAssets().open("custom.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
+
+        player.setDanmakuCustomParser(new DanmakuParser(), DanmakuLoader.instance(), DanmakuConverter.instance());
+        player.setDanmakuSource(stream);
 //        layout_video.addView(player);
 //        vPlayPlayer.setViewHeight(600);
 //        player.start("http://119.90.25.48/record2.a8.com/mp4/1476696896120409.mp4");

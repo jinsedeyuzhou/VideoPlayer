@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="44dp"
+    android:layout_alignParentBottom="true"
+    android:orientation="horizontal"
+    android:visibility="gone"
+    >
+    <TextView
+        android:id="@+id/tv_open_edit_danmaku"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/shape_send_danmaku_bg"
+        android:gravity="center"
+        android:padding="7dp"
+        android:text="发射弹幕"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/iv_danmaku_control"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/sel_item_background"
+        android:padding="5dp"
+        android:src="@drawable/sel_btn_danmaku_control" />
+
+</LinearLayout>
