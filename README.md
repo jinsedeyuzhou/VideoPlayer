@@ -4,13 +4,13 @@
 
 VideoPlayer is an media player for Android base on ijkplayer.
 
-##Screenshot##
+## Screenshot
 
 ![player](./player.png)   
  
 ![player](./playerone.png)  
 	
-##Usage##
+## Usage
 
  **step1**   
  
@@ -140,7 +140,7 @@ VideoPlayer is an media player for Android base on ijkplayer.
         }
     }
 
-##Proguard
+## Proguard
 
 根据你的混淆器配置和使用，您可能需要在你的 proguard 文件内配置以下内容：
 
@@ -148,28 +148,28 @@ VideoPlayer is an media player for Android base on ijkplayer.
 		-dontwarn tv.danmaku.ijk.media.**;
 		}
 
-##Thanks
+# #Thanks  
+
 [GSYVideoPlayer](https://github.com/CarGuo/GSYVideoPlayer)  
 [ijkplayer](https://github.com/Bilibili/ijkplayer)  
 [GiraffePlayer](https://github.com/tcking/GiraffePlayer)   
 [IjkPlayerView](https://github.com/Rukey7/IjkPlayerView) 
-and so and
-##ISSUE
+and so and 
+
+## ISSUE
 **FFMPEG bug：**  
 1. IJKPLAY有一个问题，有人已经提过，不过目前还未解决，就是某些短小的视频会无法seekTo，说是FFMEPG的问题  
 2. 快进到某个位置会回退几个关键帧。
 
 
-##About Author
-
-
+## About Author  
 jinsedeyuzhou  
 QQ群:619016296  
 Email:jinsedeyuzhou@sina.com  
 
-##License
+## License
 
-**Copyright (C) dou361, The Framework Open Source Project**
+** Copyright (C) dou361, The Framework Open Source Project**
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
