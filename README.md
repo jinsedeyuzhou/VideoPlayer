@@ -159,9 +159,8 @@ VideoPlayer is an media player for Android base on ijkplayer.
 
 根据你的混淆器配置和使用，您可能需要在你的 proguard 文件内配置以下内容：
 
-		-keep com.dou361.ijkplayer.** {
-		*;
-		-dontwarn com.dou361.ijkplayer.**;
+		-keep tv.danmaku.ijk.media.** { *; }
+		-dontwarn tv.danmaku.ijk.media.**;
 		}
 
 ##Thanks
