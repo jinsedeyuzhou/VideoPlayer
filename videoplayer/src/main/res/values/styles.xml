@@ -44,4 +44,33 @@
         <item name="android:minHeight">2dp</item>
     </style>
 
+
+    <!-- 弹幕颜色选择按钮 -->
+    <style name="DanmakuInputOptionColorRadioButton">
+        <item name="android:layout_width">@dimen/danmaku_input_options_color_radio_btn_width</item>
+        <item name="android:layout_height">@dimen/danmaku_input_options_color_radio_btn_height</item>
+        <item name="android:layout_marginLeft">@dimen/danmaku_input_options_color_radio_btn_margin</item>
+        <item name="android:layout_marginRight">@dimen/danmaku_input_options_color_radio_btn_margin</item>
+        <item name="android:paddingLeft">@dimen/danmaku_input_options_color_radio_btn_margin</item>
+        <item name="android:paddingRight">@dimen/danmaku_input_options_color_radio_btn_margin</item>
+        <item name="android:button">@drawable/sel_btn_danmaku_input_options_color</item>
+    </style>
+
+    <!-- 弹幕参数选项 -->
+    <style name="DanmakuInputOptionRadioButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8.0dip</item>
+        <item name="android:layout_marginRight">8.0dip</item>
+        <item name="android:button">@null</item>
+    </style>
+
+    <!-- 屏幕宽高比选项 -->
+    <style name="AspectRatioButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/aspect_btn_height</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:button">@null</item>
+    </style>
+
 </resources>

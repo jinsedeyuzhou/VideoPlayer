@@ -13,7 +13,8 @@
     <master.flame.danmaku.ui.widget.DanmakuView
         android:id="@+id/sv_danmaku"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
 
     <RelativeLayout
         android:id="@+id/app_video_replay"
@@ -105,6 +106,8 @@
 
     <include layout="@layout/player_toolbar" />
 
+    <include layout="@layout/player_danmaku"/>
+    <include layout="@layout/layout_send_danmaku"/>
     <ProgressBar
         android:id="@+id/bottom_progressbar"
         style="?android:attr/progressBarStyleHorizontal"

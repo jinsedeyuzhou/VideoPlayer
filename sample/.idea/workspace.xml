@@ -7,20 +7,66 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5a766502-9e2a-44a8-85c6-7beda3735a19" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../.idea/misc.xml" afterPath="$PROJECT_DIR$/../.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_btn_danmaku_input_options_color_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_cancel_danmaku.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_closed.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_more_color.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_bottom_type.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_bottom_type_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_medium_textsize.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_medium_textsize_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_rl_type.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_rl_type_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_small_textsize.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_small_textsize_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_top_type.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_input_options_top_type_checked.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_danmaku_open.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/mipmap-xhdpi/ic_send_danmaku.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/assets/afun.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/assets/custom.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/GsonHelper.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/danmaku/DanmakuConverter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/danmaku/DanmakuData.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/danmaku/DanmakuLoader.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/danmaku/DanmakuParser.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/danmaku/JsonStrSource.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/AcFunDanmakuParser.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/BackgroundCacheStuffer.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/BaseDanmakuConverter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/BaseDanmakuData.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/BiliDanmukuParser.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/DanamakuAdapter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/DanmakuType.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/danmaku/OnDanmakuListener.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/play/VPlayPlayerDanmaku.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_control.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_bottom_type.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_color.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_medium_textsize.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_rl_type.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_small_textsize.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_btn_danmaku_input_options_top_type.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/sel_item_background.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/shape_send_danmaku_bg.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/drawable/transition_item_background.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/layout_danmaku_input_options.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/layout_send_danmaku.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/player_danmaku.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../build.gradle" afterPath="$PROJECT_DIR$/../build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/src/main/AndroidManifest.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java" afterPath="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/res/layout/activity_video.xml" afterPath="$PROJECT_DIR$/src/main/res/layout/activity_video.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/build.gradle" afterPath="$PROJECT_DIR$/../videoplayer/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/play/PlayStateParams.java" afterPath="$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/play/PlayStateParams.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/player_controlbar.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/player_controlbar.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/player_toolbar.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/player_toolbar.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/view_player.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/layout/view_player.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/values/colors.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/values/colors.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/values/dimens.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/values/dimens.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../videoplayer/src/main/res/values/styles.xml" afterPath="$PROJECT_DIR$/../videoplayer/src/main/res/values/styles.xml" />
     </list>
     <ignored path="sample.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -55,31 +101,8 @@
       <file leaf-file-name="VideoViewActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="activity_video.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_video.xml">
-          <provider editor-type-id="android-designer2">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="16" column="17" selection-start-line="16" selection-start-column="17" selection-end-line="16" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VPlayPlayer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/play/VPlayPlayer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2710">
-              <caret line="581" column="7" selection-start-line="581" selection-start-column="7" selection-end-line="581" selection-end-column="7" />
+            <state relative-caret-position="20">
+              <caret line="35" column="26" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -2648,9 +2671,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java" />
         <option value="$PROJECT_DIR$/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/src/main/res/layout/activity_video.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java" />
+        <option value="$PROJECT_DIR$/../build.gradle" />
       </list>
     </option>
   </component>
@@ -3092,7 +3116,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="1" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -3103,7 +3127,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32867134" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -3183,6 +3207,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_video.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../videoplayer/src/main/java/com/github/jinsedeyuzhou/ijkplayer/play/VPlayPlayer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2710">
@@ -3191,21 +3226,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/res/layout/activity_video.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
+    <entry file="file://$PROJECT_DIR$/../build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="16" column="17" selection-start-line="16" selection-start-column="17" selection-end-line="16" selection-end-column="17" />
+        <state relative-caret-position="140">
+          <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/android/videoplayersample/VideoViewActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="20">
+          <caret line="35" column="26" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
           <folding />
         </state>
       </provider>

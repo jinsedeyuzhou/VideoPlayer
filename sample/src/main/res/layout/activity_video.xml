@@ -5,13 +5,11 @@
     android:orientation="vertical"
     >
 
-    <com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer
+    <com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayerDanmaku
         android:id="@+id/layout_video"
         android:layout_width="match_parent"
         android:layout_height="210dp"
        />
-
-
 
 
 </RelativeLayout>
