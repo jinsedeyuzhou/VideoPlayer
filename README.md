@@ -97,48 +97,48 @@ VideoPlayer is an media player for Android base on ijkplayer.
 4. 配置生命周期方法,为了让播放器同步Activity生命周期
 
 
-	     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (null!=player&&player.handleVolumeKey(keyCode))
-            return true;
-        return super.onKeyDown(keyCode, event);
-    }
+		     @Override
+	    public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (null!=player&&player.handleVolumeKey(keyCode))
+		    return true;
+		return super.onKeyDown(keyCode, event);
+	    }
 
-    @Override
-    public void onBackPressed() {
-        if (player.onBackPressed())
-            return;
+	    @Override
+	    public void onBackPressed() {
+		if (player.onBackPressed())
+		    return;
 
-        super.onBackPressed();
-    }
+		super.onBackPressed();
+	    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (null != player)
-            player.onResume();
-    }
+	    @Override
+	    protected void onResume() {
+		super.onResume();
+		if (null != player)
+		    player.onResume();
+	    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (null != player)
-            player.onPause();
-    }
+	    @Override
+	    protected void onPause() {
+		super.onPause();
+		if (null != player)
+		    player.onPause();
+	    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        player.onDestroy();
-    }
+	    @Override
+	    protected void onDestroy() {
+		super.onDestroy();
+		player.onDestroy();
+	    }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (player != null) {
-            player.onConfigurationChanged(newConfig);
-        }
-    }
+	    @Override
+	    public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		if (player != null) {
+		    player.onConfigurationChanged(newConfig);
+		}
+	    }
 
 ## Proguard
 
