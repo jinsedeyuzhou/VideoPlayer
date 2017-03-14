@@ -1,5 +1,3 @@
-# VideoPlayer
-VideoPlayer is an media player for Android base on ijkplayer.
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Download](https://api.bintray.com/packages/tangsiyuan/maven/myokhttp/images/download.svg) ](https://bintray.com/tangsiyuan/maven/myokhttp/_latestVersion)
 # VideoPlayer
@@ -162,11 +160,12 @@ and so and
 2. 快进到某个位置会回退几个关键帧。
 
 
-##About Author  
+##About Author
 
-jinsedeyuzhou
-QQ群:619016296
-Email:jinsedeyuzhou@sina.com
+
+jinsedeyuzhou  
+QQ群:619016296  
+Email:jinsedeyuzhou@sina.com  
 
 ##License
 
@@ -188,4 +187,3 @@ limitations under the License.
 ##Bugs Report and Help
 
 If you find any bug when using project, please report here. Thanks for helping us building a better one.
-
