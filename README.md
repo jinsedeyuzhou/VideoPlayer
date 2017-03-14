@@ -12,8 +12,9 @@ VideoPlayer is an media player for Android base on ijkplayer.
 	
 ##Usage##
 
- **step1**    
-
+ **step1**   
+ 
+1. 方法一  
 	将库导入到项目中 build 
 
 		dependencies {
@@ -26,6 +27,28 @@ VideoPlayer is an media player for Android base on ijkplayer.
 	setting.gradle
 
 		include ':videoplayer'
+	
+2. 方法		
+	
+	
+
+		Add it in your root build.gradle at the end of repositories:
+
+			allprojects {
+				repositories {
+					...
+					maven { url 'https://jitpack.io' }
+				}
+			}
+
+		Step 2. Add the dependency
+
+			dependencies {
+				compile 'com.github.jinsedeyuzhou:VideoPlayer:8046772f4e'
+			}
+
+		Share this release:
+	
 **step2**
 	 
 1. Androidmanifest.xml  
