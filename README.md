@@ -12,7 +12,7 @@ VideoPlayer is an media player for Android base on ijkplayer.
 
 ![player](./Screenshot3.png)    
 
-![player](./Screenshot.png)    
+![player](./Screenshot3_1.png)    
 	
 ## Usage
 
@@ -25,12 +25,10 @@ VideoPlayer is an media player for Android base on ijkplayer.
 		compile fileTree(dir: 'libs', include: ['*.jar'])
 		testCompile 'junit:junit:4.12'
 		compile 'com.android.support:appcompat-v7:24.1.0'
-		compile project(":videoplayer")
+		compile 'com.wangyuxuan:videoplayer:1.0.1'
 		}
 	
-	setting.gradle
-
-		include ':videoplayer'
+	
 	
 2. jitpack		
 	
