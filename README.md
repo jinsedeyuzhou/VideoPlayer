@@ -4,16 +4,17 @@
 
 VideoPlayer is an media player for Android base on ijkplayer.
 
-##Screenshot##
+## Screenshot
 
 ![player](./player.png)   
  
 ![player](./playerone.png)  
 	
-##Usage##
+## Usage
 
- **step1**    
-
+ **step1**   
+ 
+1. maven  
 	将库导入到项目中 build 
 
 		dependencies {
@@ -26,6 +27,28 @@ VideoPlayer is an media player for Android base on ijkplayer.
 	setting.gradle
 
 		include ':videoplayer'
+	
+2. jitpack		
+	
+	
+
+		Add it in your root build.gradle at the end of repositories:
+
+			allprojects {
+				repositories {
+					...
+					maven { url 'https://jitpack.io' }
+				}
+			}
+
+		Step 2. Add the dependency
+
+			dependencies {
+				compile 'com.github.jinsedeyuzhou:VideoPlayer:8046772f4e'
+			}
+
+		Share this release:
+	
 **step2**
 	 
 1. Androidmanifest.xml  
@@ -48,116 +71,105 @@ VideoPlayer is an media player for Android base on ijkplayer.
 		                <category android:name="android.intent.category.LAUNCHER" />
 		            </intent-filter>
 		        </activity>
-		        <activity android:name=".list.ListViewActivity"/>
+		        <activity android:name=".VideoViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            />
 		    </application>
-		
-		public class VIdeoApplication extends Application {
-		    @Override
-		    public void onCreate() {
-		        super.onCreate();
-		        PlayerApplication.initApp(this);
-		    }
-		}
 
-2. 布局  
+2. Layout  
 
-	    <com.github.jinsedeyuzhou.VPlayPlayer
-	        android:id="@+id/fl_content"
-	        android:layout_width="match_parent"
-	        android:layout_height="210dp"/>
-3. MainActivity.java
+	    <com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer
+        android:id="@+id/layout_video"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"
+       />
+3. VideoViewActivity.java  
 
-		  private String url = "http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app";
-		    private VPlayPlayer vp;
-		    private DragScaleView dragview;
-		
-		
+		    private VPlayPlayer player;
 		    @Override
 		    protected void onCreate(Bundle savedInstanceState) {
 		        super.onCreate(savedInstanceState);
 		        setContentView(R.layout.activity_main);
-		        vp = (VPlayPlayer) findViewById(R.id.fl_content);
-		        dragview = (DragScaleView) findViewById(R.id.dragview);
-		        vp.setShowNavIcon(true);
-		        vp.setTitle(url);
-		        vp.play(url);
+		       player = (VPlayPlayer) findViewById(R.id.layout_video);
+        player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
 		    };
 4. 配置生命周期方法,为了让播放器同步Activity生命周期
 
 
-	    @Override
+		     @Override
 	    public boolean onKeyDown(int keyCode, KeyEvent event) {
-	        if (vp!=null&& vp.handleVolumeKey(keyCode))
-	            return true;
-	        return super.onKeyDown(keyCode, event);
-	    }
-	
-	
-	    @Override
-	    public void onBackPressed() {
-	        if (vp.onBackPressed())
-	            return ;
-	        super.onBackPressed();
-	    }
-	
-	    @Override
-	    public void onConfigurationChanged(Configuration newConfig) {
-	        super.onConfigurationChanged(newConfig);
-	        if (vp != null)
-	            vp.onChanged(newConfig);
-	    }
-	
-	    @Override
-	    protected void onResume() {
-	        super.onResume();
-	        if (vp != null)
-	            vp.onResume();
-	    }
-	
-	    @Override
-	    protected void onPause() {
-	        super.onPause();
-	        if (vp != null)
-	            vp.onPause();
-	
-	    }
-	
-	    @Override
-	    protected void onDestroy() {
-	        super.onDestroy();
-	        if (vp != null) {
-	            vp.onDestory();
-	            vp=null;
-	        }
-	       
+		if (null!=player&&player.handleVolumeKey(keyCode))
+		    return true;
+		return super.onKeyDown(keyCode, event);
 	    }
 
-##Proguard
+	    @Override
+	    public void onBackPressed() {
+		if (player.onBackPressed())
+		    return;
+
+		super.onBackPressed();
+	    }
+
+	    @Override
+	    protected void onResume() {
+		super.onResume();
+		if (null != player)
+		    player.onResume();
+	    }
+
+	    @Override
+	    protected void onPause() {
+		super.onPause();
+		if (null != player)
+		    player.onPause();
+	    }
+
+	    @Override
+	    protected void onDestroy() {
+		super.onDestroy();
+		player.onDestroy();
+	    }
+
+	    @Override
+	    public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		if (player != null) {
+		    player.onConfigurationChanged(newConfig);
+		}
+	    }
+
+## Proguard
 
 根据你的混淆器配置和使用，您可能需要在你的 proguard 文件内配置以下内容：
 
-		-keep com.dou361.ijkplayer.** {
-		*;
-		-dontwarn com.dou361.ijkplayer.**;
+		-keep tv.danmaku.ijk.media.** { *; }
+		-dontwarn tv.danmaku.ijk.media.**;
 		}
 
-##Thanks
+# #Thanks  
+
 [GSYVideoPlayer](https://github.com/CarGuo/GSYVideoPlayer)  
 [ijkplayer](https://github.com/Bilibili/ijkplayer)  
-[GiraffePlayer](https://github.com/tcking/GiraffePlayer) 
+[GiraffePlayer](https://github.com/tcking/GiraffePlayer)   
 [IjkPlayerView](https://github.com/Rukey7/IjkPlayerView) 
-and so and
-##ISSUE
+and so and 
+
+## ISSUE
 **FFMPEG bug：**  
 1. IJKPLAY有一个问题，有人已经提过，不过目前还未解决，就是某些短小的视频会无法seekTo，说是FFMEPG的问题  
 2. 快进到某个位置会回退几个关键帧。
 
 
-##About Author
+## About Author  
+jinsedeyuzhou  
+QQ群:619016296  
+Email:jinsedeyuzhou@sina.com  
 
-##License
+## License
 
-**Copyright (C) dou361, The Framework Open Source Project**
+** Copyright (C) dou361, The Framework Open Source Project**
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
