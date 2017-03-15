@@ -12,7 +12,7 @@ VideoPlayer is an media player for Android base on ijkplayer.
 
 ![player](./Screenshot3.png)    
 
-![player](./Screenshot4.png)    
+![player](./Screenshot.png)    
 	
 ## Usage
 
