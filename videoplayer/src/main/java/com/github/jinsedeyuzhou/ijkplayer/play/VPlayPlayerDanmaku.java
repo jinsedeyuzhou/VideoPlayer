@@ -22,7 +22,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
@@ -36,36 +35,35 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.jinsedeyuzhou.ijkplayer.R;
-import com.github.jinsedeyuzhou.ijkplayer.danmaku.BaseDanmakuConverter;
 import com.github.jinsedeyuzhou.ijkplayer.danmaku.BiliDanmukuParser;
+import com.github.jinsedeyuzhou.ijkplayer.danmaku.DanamakuAdapter;
 import com.github.jinsedeyuzhou.ijkplayer.danmaku.OnDanmakuListener;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 import com.github.jinsedeyuzhou.ijkplayer.utils.NetworkUtils;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
-import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.danmaku.loader.ILoader;
 import master.flame.danmaku.danmaku.loader.IllegalDataException;
 import master.flame.danmaku.danmaku.loader.android.DanmakuLoaderFactory;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
+import master.flame.danmaku.danmaku.model.IDisplayer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
+import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.ui.widget.DanmakuView;
@@ -247,17 +245,6 @@ public class VPlayPlayerDanmaku extends FrameLayout {
                     mVideoLock.setImageResource(R.drawable.video_lock);
                 }
             } else if (id == R.id.app_video_share) {
-
-            }
-            //一下弹幕
-            else if (id == R.id.tv_open_edit_danmaku) {
-
-            } else if (id == R.id.iv_danmaku_control) {
-                toggleDanmakuShow();
-            } else if (id == R.id.iv_cancel_send) {
-
-            } else if (id == R.id.iv_do_send) {
-
             }
 
         }
@@ -450,6 +437,7 @@ public class VPlayPlayerDanmaku extends FrameLayout {
         mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer mp) {
+                releaseDanmaku();
                 //释放内存
                 Runtime.getRuntime().gc();
                 if (getScreenOrientation()
@@ -552,10 +540,12 @@ public class VPlayPlayerDanmaku extends FrameLayout {
             statusChange(PlayStateParams.STATE_PAUSED);
             isAutoPause = true;
             mVideoView.pause();
+            pauseDanmaku();
             mVideoPlay.setSelected(false);
         } else {
             statusChange(PlayStateParams.STATE_PLAYING);
             mVideoView.start();
+            resumeDanmaku();
             mVideoPlay.setSelected(true);
 //            handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT),defaultTimeout);
         }
@@ -600,7 +590,6 @@ public class VPlayPlayerDanmaku extends FrameLayout {
             loading.setVisibility(View.VISIBLE);
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
-            loadDanmaku();
             bottomProgress.setVisibility(View.VISIBLE);
             loading.setVisibility(View.GONE);
             handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
@@ -1230,62 +1219,9 @@ public class VPlayPlayerDanmaku extends FrameLayout {
 
     //============================弹幕=============================================
     private DanmakuView mDanmakuView;
-
-    // 弹幕显示/隐藏按钮
-    private ImageView mIvDanmakuControl;
-    // 弹幕编辑布局打开按钮
-    private TextView mTvOpenEditDanmaku;
-    // 弹幕编辑布局
-    private View mEditDanmakuLayout;
-    //弹幕编辑内容空间
-    private EditText mEtDanmakuContent;
-    //弹幕取消
-    private ImageView mIvCancelSend;
-    //弹幕发送
-    private ImageView mIvDoSend;
-    //选项参数布局
-    private View mDanmakuOptionsBasic;
-    //更多基础布局
-    private View mDanmakuMoreOptions;
-    //当前颜色
-    private RadioButton mDanmakuCurColor;
-    //更多颜色按钮
-    private ImageView mDanmakuMoreColorIcon;
-    //字体大小按钮
-    private RadioGroup mDanmakuTextSizeOptions;
-    //弹幕类型按钮
-    private RadioGroup mDanmakuTypeOptions;
-    //可选颜色按钮
-    private RadioGroup mDanmakuColorOptions;
-
-
-    // 弹幕控制相关
     private DanmakuContext mDanmakuContext;
-    // 弹幕解析器
-    private BaseDanmakuParser mDanmakuParser;
-    // 弹幕加载器
-    private ILoader mDanmakuLoader;
-    // 弹幕数据转换器
-    private BaseDanmakuConverter mDanmakuConverter;
-    // 弹幕监听器
-    private OnDanmakuListener mDanmakuListener;
-    // 弹幕颜色
-    private int mDanmakuTextColor = Color.WHITE;
-    // 弹幕字体大小
-    private float mDanmakuTextSize = PlayStateParams.INVALID_VALUE;
-    // 弹幕类型
-    private int mDanmakuType = BaseDanmaku.TYPE_SCROLL_RL;
-    // 弹幕基础设置布局的宽度
-    private int mBasicOptionsWidth = PlayStateParams.INVALID_VALUE;
-    // 弹幕更多颜色设置布局宽度
-    private int mMoreOptionsWidth = PlayStateParams.INVALID_VALUE;
-    // 弹幕要跳转的目标位置，等视频播放再跳转，不然老出现只有弹幕在动的情况
-    private long mDanmakuTargetPosition = PlayStateParams.INVALID_VALUE;
-    // 是否使能弹幕
-    private boolean mIsEnableDanmaku = true;
+    private BaseDanmakuParser mParser;//解析器对象
     private long mDanmakuStartSeekPosition = -1;
-    //是否展示弹幕
-//    private boolean mDanmaKuShow = true;
 
     /**
      * 初始化布局
@@ -1293,95 +1229,32 @@ public class VPlayPlayerDanmaku extends FrameLayout {
     private void initDanmaku() {
         mDanmakuView = (DanmakuView) findViewById(R.id.sv_danmaku);
 
-        //控制弹幕
-        mTvOpenEditDanmaku = (TextView) findViewById(R.id.tv_open_edit_danmaku);
-        mIvDanmakuControl = (ImageView) findViewById(R.id.iv_danmaku_control);
+        // 设置最大显示行数
+        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
+        // 设置是否禁止重叠
+        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
+        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
 
-        //编辑弹幕
-        mEditDanmakuLayout = findViewById(R.id.ll_edit_danmaku);
-        mEtDanmakuContent = (EditText) findViewById(R.id.et_danmaku_content);
-        mIvCancelSend = (ImageView) findViewById(R.id.iv_cancel_send);
-        mIvDoSend = (ImageView) findViewById(R.id.iv_do_send);
-        mIvDanmakuControl.setOnClickListener(onClickListener);
-        mTvOpenEditDanmaku.setOnClickListener(onClickListener);
-        mIvCancelSend.setOnClickListener(onClickListener);
-        mIvDoSend.setOnClickListener(onClickListener);
-        // 这些为弹幕配置处理
-        int oneBtnWidth = getResources().getDimensionPixelOffset(R.dimen.danmaku_input_options_color_radio_btn_size);
-        // 布局宽度为每个选项卡宽度 * 12 个，有12种可选颜色
-        mMoreOptionsWidth = oneBtnWidth * 12;
-        mDanmakuOptionsBasic = findViewById(R.id.input_options_basic);
-        mDanmakuMoreOptions = findViewById(R.id.input_options_more);
-        mDanmakuMoreOptions.setOnClickListener(onClickListener);
-        mDanmakuCurColor = (RadioButton) findViewById(R.id.input_options_color_current);
-        mDanmakuMoreColorIcon = (ImageView) findViewById(R.id.input_options_color_more_icon);
-        mDanmakuTextSizeOptions = (RadioGroup) findViewById(R.id.input_options_group_textsize);
-        mDanmakuTypeOptions = (RadioGroup) findViewById(R.id.input_options_group_type);
-        mDanmakuColorOptions = (RadioGroup) findViewById(R.id.input_options_color_group);
-        mDanmakuTextSizeOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.input_options_small_textsize) {
-                    mDanmakuTextSize = 25f * (mDanmakuParser.getDisplayer().getDensity() - 0.6f) * 0.7f;
-                } else if (checkedId == R.id.input_options_medium_textsize) {
-                    mDanmakuTextSize = 25f * (mDanmakuParser.getDisplayer().getDensity() - 0.6f);
-                }
-            }
-        });
-        mDanmakuTypeOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.input_options_rl_type) {
-                    mDanmakuType = BaseDanmaku.TYPE_SCROLL_RL;
-                } else if (checkedId == R.id.input_options_top_type) {
-                    mDanmakuType = BaseDanmaku.TYPE_FIX_TOP;
-                } else if (checkedId == R.id.input_options_bottom_type) {
-                    mDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
-                }
-            }
-        });
-        mDanmakuColorOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // 取的是 tag 字符串值，需转换为颜色
-                String color = (String) findViewById(checkedId).getTag();
-                mDanmakuTextColor = Color.parseColor(color);
-                mDanmakuCurColor.setBackgroundColor(mDanmakuTextColor);
-            }
-        });
+        DanamakuAdapter danamakuAdapter = new DanamakuAdapter(mDanmakuView);
+        mDanmakuContext = DanmakuContext.create();
+        mDanmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
+                .setCacheStuffer(new SpannedCacheStuffer(), danamakuAdapter) // 图文混排使用SpannedCacheStuffer
+                .setMaximumLines(maxLinesPair)
+                .preventOverlapping(overlappingEnablePair);
 
-
-    }
-
-
-    /**
-     * 加载弹幕
-     */
-    private void loadDanmaku() {
-        if (mIsEnableDanmaku) {
-            // 设置弹幕
-            mDanmakuContext = DanmakuContext.create();
-            //同步弹幕和video，貌似没法保持同步，可能我用的有问题，先注释掉- -
-//            mDanmakuContext.setDanmakuSync(new VideoDanmakuSync(this));
-            if (mDanmakuParser == null) {
-                mDanmakuParser = new BaseDanmakuParser() {
-                    @Override
-                    protected Danmakus parse() {
-                        return new Danmakus();
-                    }
-                };
-            }
-            mDanmakuView.setCallback(new DrawHandler.Callback() {
-                @Override
-                public void prepared() {
-                    // 这里处理下有时调用 _resumeDanmaku() 时弹幕还没 prepared 的情况
-                    if (mDanmakuView!=null&&mVideoView.isPlaying()) {
-                        mDanmakuView.start();
-                    }
-                }
-
+        if (mDanmakuView != null) {
+            //todo 替换成你的数据流
+            mParser = createParser(this.getResources().openRawResource(R.raw.comments));
+            mDanmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
                 @Override
                 public void updateTimer(DanmakuTimer timer) {
+                }
+
+                @Override
+                public void drawingFinished() {
+
                 }
 
                 @Override
@@ -1389,216 +1262,134 @@ public class VPlayPlayerDanmaku extends FrameLayout {
                 }
 
                 @Override
-                public void drawingFinished() {
+                public void prepared() {
+                    if (mDanmakuView != null) {
+                        mDanmakuView.start();
+//                        if (getDanmakuStartSeekPosition() != -1) {
+//                            resolveDanmakuSeek(DanmakuVideoPlayer.this, getDanmakuStartSeekPosition());
+//                            setDanmakuStartSeekPosition(-1);
+//                        }
+//                        resolveDanmakuShow();
+                    }
                 }
             });
             mDanmakuView.enableDanmakuDrawingCache(true);
-            mDanmakuView.prepare(mDanmakuParser, mDanmakuContext);
+            startDanmakuView();
         }
+
 
     }
 
     /**
-     * 弹幕偏移
+     * 播放弹幕
      */
-    private void resolveDanmakuSeek(long time) {
-        if (mDanmakuView != null && mDanmakuView.isPrepared()) {
-            mDanmakuView.seekTo(time);
+    public void startDanmakuView() {
+        if (mDanmakuView != null && !mDanmakuView.isPrepared()) {
+            mDanmakuView.prepare(mParser, mDanmakuContext);
         }
     }
 
     /**
-     * 切换弹幕的显示/隐藏
+     * 释放弹幕控件
      */
-    private void toggleDanmakuShow() {
-        if (mIvDanmakuControl.isSelected()) {
-            showOrHideDanmaku(true);
-        } else {
-            showOrHideDanmaku(false);
+    private void releaseDanmaku() {
+        if ( mDanmakuView != null) {
+            mDanmakuView.release();
         }
     }
-
     /**
-     * 显示/隐藏弹幕
+     * 创建解析器对象
      *
-     * @param isShow 是否显示
+     * @param stream
+     */
+    public void setDanmakuCustomParser(InputStream stream) {
+        if (mDanmakuView != null)
+            mParser = createParser(stream);
+    }
+
+    /**
+     * 创建解析器对象，解析输入流
+     *
+     * @param stream
      * @return
      */
-    public void showOrHideDanmaku(boolean isShow) {
-        if (isShow) {
-            mIvDanmakuControl.setSelected(false);
-            mDanmakuView.show();
-        } else {
-            mIvDanmakuControl.setSelected(true);
-            mDanmakuView.hide();
-        }
-    }
+    private BaseDanmakuParser createParser(InputStream stream) {
 
-
-    /**
-     * 设置弹幕资源，默认资源格式需满足 bilibili 的弹幕文件格式，
-     * 配合{@link #setDanmakuCustomParser}来进行自定义弹幕解析方式，{@link #setDanmakuCustomParser}必须先调用
-     *
-     * @param stream 弹幕资源
-     * @return
-     */
-    public VPlayPlayerDanmaku setDanmakuSource(InputStream stream) {
         if (stream == null) {
-            return this;
+            return new BaseDanmakuParser() {
+
+                @Override
+                protected Danmakus parse() {
+                    return new Danmakus();
+                }
+            };
         }
-        if (!mIsEnableDanmaku) {
-            throw new RuntimeException("Danmaku is disable, use enableDanmaku() first");
-        }
-        if (mDanmakuLoader == null) {
-            mDanmakuLoader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
-        }
+
+        ILoader loader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
+
         try {
-            mDanmakuLoader.load(stream);
+            loader.load(stream);
         } catch (IllegalDataException e) {
             e.printStackTrace();
         }
-        IDataSource<?> dataSource = mDanmakuLoader.getDataSource();
-        if (mDanmakuParser == null) {
-            mDanmakuParser = new BiliDanmukuParser();
-        }
-        mDanmakuParser.load(dataSource);
-        return this;
+        BaseDanmakuParser parser = new BiliDanmukuParser();
+        IDataSource<?> dataSource = loader.getDataSource();
+        parser.load(dataSource);
+        return parser;
+
     }
 
     /**
-     * 设置弹幕资源，默认资源格式需满足 bilibili 的弹幕文件格式，
-     * 配合{@link #setDanmakuCustomParser}来进行自定义弹幕解析方式，{@link #setDanmakuCustomParser}必须先调用
+     * 发送一条只有内容的弹幕
      *
-     * @param uri 弹幕资源
-     * @return
+     * @param text
+     * @param islive
      */
-    public VPlayPlayerDanmaku setDanmakuSource(String uri) {
-        if (TextUtils.isEmpty(uri)) {
-            return this;
-        }
-        if (!mIsEnableDanmaku) {
-            throw new RuntimeException("Danmaku is disable, use enableDanmaku() first");
-        }
-        if (mDanmakuLoader == null) {
-            mDanmakuLoader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
-        }
-        try {
-            mDanmakuLoader.load(uri);
-        } catch (IllegalDataException e) {
-            e.printStackTrace();
-        }
-        IDataSource<?> dataSource = mDanmakuLoader.getDataSource();
-        if (mDanmakuParser == null) {
-            mDanmakuParser = new BiliDanmukuParser();
-        }
-        mDanmakuParser.load(dataSource);
-        return this;
-    }
-
-    /**
-     * 自定义弹幕解析器，配合{@link #setDanmakuSource}使用，先于{@link #setDanmakuSource}调用
-     *
-     * @param parser    解析器
-     * @param loader    加载器
-     * @param converter 转换器
-     * @return
-     */
-    public VPlayPlayerDanmaku setDanmakuCustomParser(BaseDanmakuParser parser, ILoader loader, BaseDanmakuConverter converter) {
-        mDanmakuParser = parser;
-        mDanmakuLoader = loader;
-        mDanmakuConverter = converter;
-        return this;
-    }
-
-
-    /**
-     * 发射弹幕
-     *
-     * @param text   内容
-     * @param isLive 是否直播
-     * @return 弹幕数据
-     */
-    public void addDanmaku(String text, boolean isLive) {
-        if (!mIsEnableDanmaku) {
-            throw new RuntimeException("Danmaku is disable, use enableDanmaku() first");
-        }
-        if (TextUtils.isEmpty(text)) {
-            Toast.makeText(mContext, "内容为空", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        BaseDanmaku danmaku = mDanmakuContext.mDanmakuFactory.createDanmaku(mDanmakuType);
+    public void addDanmaku(String text, boolean islive) {
+        BaseDanmaku danmaku = mDanmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
         if (danmaku == null || mDanmakuView == null) {
             return;
         }
-        if (mDanmakuTextSize == PlayStateParams.INVALID_VALUE) {
-            mDanmakuTextSize = 25f * (mDanmakuParser.getDisplayer().getDensity() - 0.6f);
-        }
-        danmaku.text = text;
+        // for(int i=0;i<100;i++){
+        // }
+        danmaku.text = text + System.nanoTime();
         danmaku.padding = 5;
-        danmaku.isLive = isLive;
         danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
-        danmaku.textSize = mDanmakuTextSize;
-        danmaku.textColor = mDanmakuTextColor;
-        danmaku.underlineColor = Color.GREEN;
-        danmaku.setTime(mDanmakuView.getCurrentTime() + 500);
+        danmaku.isLive = islive;
+        danmaku.setTime(mDanmakuView.getCurrentTime() + 1200);
+        danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
+        danmaku.textColor = Color.RED;
+        danmaku.textShadowColor = Color.WHITE;
+        // danmaku.underlineColor = Color.GREEN;
+        danmaku.borderColor = Color.GREEN;
         mDanmakuView.addDanmaku(danmaku);
 
-        if (mDanmakuListener != null) {
-            if (mDanmakuConverter != null) {
-                mDanmakuListener.onDataObtain(mDanmakuConverter.convertDanmaku(danmaku));
-            } else {
-                mDanmakuListener.onDataObtain(danmaku);
-            }
-        }
     }
 
     /**
-     * 发射弹幕
      * 图文混排
      *
-     * @param text   内容和图片
-     * @param isLive 是否直播
-     * @return 弹幕数据
+     * @param drawable
+     * @param islive
      */
-    public void addDanmaKuShowTextAndImage(String text, Drawable drawable, boolean isLive) {
-        if (!mIsEnableDanmaku) {
-            throw new RuntimeException("Danmaku is disable, use enableDanmaku() first");
-        }
-        if (TextUtils.isEmpty(text)) {
-            Toast.makeText(mContext, "内容为空", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        BaseDanmaku danmaku = mDanmakuContext.mDanmakuFactory.createDanmaku(mDanmakuType);
-        if (danmaku == null || mDanmakuView == null) {
-            return;
-        }
-        if (mDanmakuTextSize == PlayStateParams.INVALID_VALUE) {
-            mDanmakuTextSize = 25f * (mDanmakuParser.getDisplayer().getDensity() - 0.6f);
-        }
+    public void addDanmaKuShowTextAndImage(Drawable drawable, boolean islive) {
+        BaseDanmaku danmaku = mDanmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
         drawable.setBounds(0, 0, 100, 100);
-        SpannableStringBuilder spannable = createSpannable(text, drawable);
+        SpannableStringBuilder spannable = createSpannable(drawable);
         danmaku.text = spannable;
         danmaku.padding = 5;
         danmaku.priority = 1;  // 一定会显示, 一般用于本机发送的弹幕
+        danmaku.isLive = islive;
         danmaku.setTime(mDanmakuView.getCurrentTime() + 1200);
-        danmaku.textSize = 25f * (mDanmakuParser.getDisplayer().getDensity() - 0.6f);
+        danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
         danmaku.textColor = Color.RED;
         danmaku.textShadowColor = 0; // 重要：如果有图文混排，最好不要设置描边(设textShadowColor=0)，否则会进行两次复杂的绘制导致运行效率降低
         danmaku.underlineColor = Color.GREEN;
-        danmaku.isLive = isLive;
         mDanmakuView.addDanmaku(danmaku);
-
-        if (mDanmakuListener != null) {
-            if (mDanmakuConverter != null) {
-                mDanmakuListener.onDataObtain(mDanmakuConverter.convertDanmaku(danmaku));
-            } else {
-                mDanmakuListener.onDataObtain(danmaku);
-            }
-        }
     }
 
-    private SpannableStringBuilder createSpannable(String text, Drawable drawable) {
-//        String text = "bitmap";
+    private SpannableStringBuilder createSpannable(Drawable drawable) {
+        String text = "bitmap";
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
         ImageSpan span = new ImageSpan(drawable);//ImageSpan.ALIGN_BOTTOM);
         spannableStringBuilder.setSpan(span, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -1608,10 +1399,27 @@ public class VPlayPlayerDanmaku extends FrameLayout {
     }
 
 
+    private void pauseDanmaku() {
+        if (mDanmakuView != null && mDanmakuView.isPrepared()) {
+            mDanmakuView.pause();
+        }
+    }
 
+    private void resumeDanmaku() {
+        if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
+            mDanmakuView.resume();
+        }
+    }
 
+    private void destoryDanmaku() {
+        if (mDanmakuView != null) {
+            // dont forget release!
+            mDanmakuView.release();
+            mDanmakuView = null;
+        }
+    }
     public BaseDanmakuParser getParser() {
-        return mDanmakuParser;
+        return mParser;
     }
 
     public DanmakuContext getDanmakuContext() {
@@ -1629,32 +1437,6 @@ public class VPlayPlayerDanmaku extends FrameLayout {
     public void setDanmakuStartSeekPosition(long danmakuStartSeekPosition) {
         this.mDanmakuStartSeekPosition = danmakuStartSeekPosition;
     }
-
-
-
-
-    private void pauseDanmaku()
-    {
-        if (mDanmakuView != null && mDanmakuView.isPrepared()) {
-            mDanmakuView.pause();
-        }
-    }
-
-    private void resumeDanmaku()
-    {
-        if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
-            mDanmakuView.resume();
-        }
-    }
-    private void destoryDanmaku()
-    {
-        if (mDanmakuView != null) {
-            // dont forget release!
-            mDanmakuView.release();
-            mDanmakuView = null;
-        }
-    }
-
 
 
     // 可以在当前activity中 利用系统布局R.ANDROID.CONTENT 加载视频，设置全屏和小屏，但是列表会会导致抖动，需要延迟加载或者设置动画
@@ -1872,6 +1654,7 @@ public class VPlayPlayerDanmaku extends FrameLayout {
         if (mVideoView.isPlaying()) {
             mVideoView.pause();
         }
+        pauseDanmaku();
     }
 
     public void start() {
@@ -1916,10 +1699,7 @@ public class VPlayPlayerDanmaku extends FrameLayout {
             }
             statusChange(PlayStateParams.STATE_PAUSED);
         }
-        if (mDanmakuView != null && mDanmakuView.isPrepared()) {
-            mDanmakuView.pause();
-        }
-
+        pauseDanmaku();
     }
 
     public int getStatus() {
@@ -1947,11 +1727,7 @@ public class VPlayPlayerDanmaku extends FrameLayout {
         unregisterNetReceiver();
         handler.removeCallbacksAndMessages(null);
         reset();
-        if (mDanmakuView != null) {
-            // dont forget release!
-            mDanmakuView.release();
-            mDanmakuView = null;
-        }
+        destoryDanmaku();
 
     }
 
@@ -1975,12 +1751,18 @@ public class VPlayPlayerDanmaku extends FrameLayout {
 
         }
 
-        if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
-            mDanmakuView.resume();
-        }
     }
 
     //=====================对外提供接口===========================================
+    // 弹幕监听器
+    private OnDanmakuListener mDanmakuListener;
+    /**
+     * 设置弹幕监听器
+     * @param danmakuListener
+     */
+    public void setDanmakuListener(OnDanmakuListener danmakuListener) {
+        mDanmakuListener = danmakuListener;
+    }
 
 
     public interface OnClickOrientationListener {
@@ -2018,13 +1800,6 @@ public class VPlayPlayerDanmaku extends FrameLayout {
     };
 
     //=====================================网络状态改变广播类==============================================
-    /**
-     * 设置弹幕监听器
-     * @param danmakuListener
-     */
-    public void setDanmakuListener(OnDanmakuListener danmakuListener) {
-        mDanmakuListener = danmakuListener;
-    }
 
     private OnNetChangeListener onNetChangeListener;
 
