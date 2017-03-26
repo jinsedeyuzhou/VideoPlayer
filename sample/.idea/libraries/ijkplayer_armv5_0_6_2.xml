@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="ijkplayer-armv5-0.6.2">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/d3a0049030376cd3287ed515e443798e24510390/output/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/d3a0049030376cd3287ed515e443798e24510390/output/res" />
+      <root url="file://$PROJECT_DIR$/../videoplayer/build/intermediates/exploded-aar/tv.danmaku.ijk.media/ijkplayer-armv5/0.6.2/res" />
+      <root url="jar://$PROJECT_DIR$/../videoplayer/build/intermediates/exploded-aar/tv.danmaku.ijk.media/ijkplayer-armv5/0.6.2/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
