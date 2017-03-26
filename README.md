@@ -150,7 +150,7 @@ VideoPlayer is an media player for Android base on ijkplayer.
 		-dontwarn tv.danmaku.ijk.media.**;
 		}
 
-# #Thanks  
+## Thanks  
 
 [GSYVideoPlayer](https://github.com/CarGuo/GSYVideoPlayer)  
 [ijkplayer](https://github.com/Bilibili/ijkplayer)  
@@ -163,7 +163,9 @@ and so and
 1. IJKPLAY有一个问题，有人已经提过，不过目前还未解决，就是某些短小的视频会无法seekTo，说是FFMEPG的问题  
 2. 快进到某个位置会回退几个关键帧。
 
-
+## 近期版本更新 1.0.2  
+1. 导入了弹幕，只是简单的使用，未在真实环境中使用过弹幕。
+2. 重新的播放类还没有完成
 ## About Author  
 jinsedeyuzhou  
 QQ群:619016296  

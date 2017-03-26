@@ -7,13 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 
-import com.android.videoplayersample.danmaku.DanmakuConverter;
-import com.android.videoplayersample.danmaku.DanmakuLoader;
-import com.android.videoplayersample.danmaku.DanmakuParser;
 import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayerDanmaku;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created by Berkeley on 11/9/16.
@@ -30,18 +24,6 @@ public class VideoViewActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         player = (VPlayPlayerDanmaku) findViewById(R.id.layout_video);
-        player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
-        player = (VPlayPlayerDanmaku) findViewById(R.id.layout_video);
-        InputStream stream = null;
-        try {
-            stream = getAssets().open("custom.json");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        player.setDanmakuCustomParser(new DanmakuParser(), DanmakuLoader.instance(), DanmakuConverter.instance());
-        player.setDanmakuSource(stream);
-
-
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
 
 

@@ -13,10 +13,11 @@ import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
@@ -43,14 +44,13 @@ import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 import com.github.jinsedeyuzhou.ijkplayer.utils.NetworkUtils;
 
-import master.flame.danmaku.ui.widget.DanmakuView;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 /**
  * Created by Berkeley on 11/2/16.
  */
-public class VPlayPlayer extends FrameLayout {
+public class WYXVideoPlayer extends FrameLayout {
 
     private static final String TAG = "VPlayPlayer";
     private Context mContext;
@@ -202,11 +202,13 @@ public class VPlayPlayer extends FrameLayout {
                     return;
                 doPauseResume();
             } else if (id == R.id.app_video_finish) {
-                if (!onBackPressed()) {
-                    activity.finish();
-                }
+               if(!onBackPressed())
+               {
+                   activity.finish();
+               }
 
-            } else if (id == R.id.app_video_netTie_icon) {
+            }
+            else if (id == R.id.app_video_netTie_icon) {
                 isAllowModible = true;
                 if (currentPosition == 0) {
                     play(url);
@@ -227,22 +229,27 @@ public class VPlayPlayer extends FrameLayout {
 
         }
     };
-    private DanmakuView mDanmaku;
 
 
-    public VPlayPlayer(Context context) {
+    public WYXVideoPlayer(Context context) {
         super(context);
         init(context);
     }
 
 
-    public VPlayPlayer(Context context, AttributeSet attrs) {
+    public WYXVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public VPlayPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WYXVideoPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public WYXVideoPlayer(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
 
@@ -252,12 +259,11 @@ public class VPlayPlayer extends FrameLayout {
         initView();
         initAction();
         initMediaPlayer();
-        initDanmaku();
     }
 
 
     private void initView() {
-        View.inflate(mContext, R.layout.view_player, this);
+        View.inflate(mContext, getLayoutId(), this);
         //播放控制
         live_box = findViewById(R.id.app_video_box);
         controlbar = findViewById(R.id.player_controlbar);
@@ -328,7 +334,7 @@ public class VPlayPlayer extends FrameLayout {
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         final GestureDetector gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
 
-        controlbar.setOnTouchListener(new View.OnTouchListener() {
+        controlbar.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.e("custommedia", "event");
@@ -345,7 +351,7 @@ public class VPlayPlayer extends FrameLayout {
                         x = 0;
                     } else if (x > seekRect.width()) {
                         x = seekRect.width();
-                    } else {
+                    }else {
                         MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
                                 event.getAction(), x, y, event.getMetaState());
                         return seekBar.onTouchEvent(me);
@@ -419,7 +425,7 @@ public class VPlayPlayer extends FrameLayout {
                 //释放内存
                 Runtime.getRuntime().gc();
                 if (getScreenOrientation()
-                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                     //横屏播放完毕，重置
                     ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
@@ -447,7 +453,7 @@ public class VPlayPlayer extends FrameLayout {
                 if (((rotation >= 0) && (rotation <= 30)) || (rotation >= 330)) {
                     if (mClick) {
                         if (mIsLand && !mClickLand) {
-                            return;
+                            return ;
                         } else {
                             mClickPort = true;
                             mClick = false;
@@ -462,7 +468,7 @@ public class VPlayPlayer extends FrameLayout {
                     }
                 }
                 // 设置横屏
-                else if (((rotation >= 230) && (rotation <= 310)) || (rotation >= 60 && rotation <= 120)) {
+                else if (((rotation >= 230) && (rotation <= 310))) {
                     if (mClick) {
                         if (!mIsLand && !mClickPort) {
                             return;
@@ -473,26 +479,14 @@ public class VPlayPlayer extends FrameLayout {
                         }
                     } else {
                         if (!mIsLand) {
-
-                            if (((rotation >= 230) && (rotation <= 310)))
-                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                            else if ((rotation >= 60 && rotation <= 120))
-                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                             mIsLand = true;
                             mClick = false;
-                        }else
-                        {
-                            if (((rotation >= 230) && (rotation <= 310)))
-                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                            else if ((rotation >= 60 && rotation <= 120))
-                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                         }
-
                     }
                 }
             }
         };
-        //开启重力感应
         orientationEventListener.enable();
 
         hideAll();
@@ -503,6 +497,10 @@ public class VPlayPlayer extends FrameLayout {
         if (!playerSupport) {
             showStatus(activity.getResources().getString(R.string.not_support));
         }
+    }
+
+    public int getLayoutId() {
+        return R.layout.view_player;
     }
 
 
@@ -552,7 +550,6 @@ public class VPlayPlayer extends FrameLayout {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
-            orientationEventListener.disable();
             hideAll();
             endVideo();
             isShowContoller = false;
@@ -562,7 +559,6 @@ public class VPlayPlayer extends FrameLayout {
 
 
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
-            orientationEventListener.disable();
             Log.d(TAG, "STATE_ERROR");
             hideAll();
             if (isLive) {
@@ -719,7 +715,7 @@ public class VPlayPlayer extends FrameLayout {
         public boolean onDown(MotionEvent e) {
             firstTouch = true;
             //横屏下拦截事件
-            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                 return true;
             } else {
                 return super.onDown(e);
@@ -1209,13 +1205,6 @@ public class VPlayPlayer extends FrameLayout {
 
     //============================弹幕=============================================
 
-    private void initDanmaku() {
-        //弹幕
-        mDanmaku = (DanmakuView) findViewById(R.id.sv_danmaku);
-
-    }
-
-
     //=========================全屏和大小屏判定未做===================================
     public static final int FULLSCREEN_ID = 33797;
     public static final int TINY_ID = 33798;
@@ -1239,7 +1228,6 @@ public class VPlayPlayer extends FrameLayout {
         if (mVideoView != null)
             mVideoView.release(true);
         isAutoPause = false;
-        orientationEventListener.disable();
         mIsLand = false; // 是否是横屏
         mClick = false; // 是否点击
         mClickLand = true; // 点击进入横屏
@@ -1337,13 +1325,14 @@ public class VPlayPlayer extends FrameLayout {
     }
 
     public boolean onBackPressed() {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 
             if (!isLock) {
+                mIsLand = false; // 是否是横屏
+                mClick = false; // 是否点击
+                mClickLand = true; // 点击进入横屏
+                mClickPort = true; // 点击进入竖屏
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                mClick = true; // 是否点击
-                mIsLand = true;
-                mClickPort = false;
                 return true;
             }
             return true;
@@ -1357,13 +1346,14 @@ public class VPlayPlayer extends FrameLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 
             if (!isLock) {
+                mIsLand = false; // 是否是横屏
+                mClick = false; // 是否点击
+                mClickLand = true; // 点击进入横屏
+                mClickPort = true; // 点击进入竖屏
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                mClick = true; // 是否点击
-                mIsLand = true;
-                mClickPort = false;
                 return true;
             }
             return true;
@@ -1392,15 +1382,6 @@ public class VPlayPlayer extends FrameLayout {
 
     public void play(String url) {
         this.url = url;
-        //设置开启 1 开启 0关闭
-//        Settings.System.putInt(mContext.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
-        //得到是否开启 1 开启
-        int flag = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (flag == 1)
-            orientationEventListener.enable();
-        else
-            orientationEventListener.disable();
         play(url, 0);
     }
 
@@ -1439,15 +1420,6 @@ public class VPlayPlayer extends FrameLayout {
     }
 
     public void start() {
-        //设置开启 1 开启 0关闭
-//        Settings.System.putInt(mContext.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
-        //得到是否开启 1 开启
-        int flag = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (flag == 1)
-            orientationEventListener.enable();
-        else
-            orientationEventListener.disable();
         if (!isAllowModible && isNetListener && NetworkUtils.getNetworkType(mContext) < 7 && NetworkUtils.getNetworkType(mContext) > 3) {
             mVideoNetTie.setVisibility(View.VISIBLE);
         } else {
