@@ -3,11 +3,13 @@ package com.github.jinsedeyuzhou.ijkplayer.play;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -257,7 +259,7 @@ public class VPlayPlayer extends FrameLayout {
 
 
     private void initView() {
-        View.inflate(mContext, R.layout.view_player, this);
+        View.inflate(mContext, R.layout.wxy_player, this);
         //播放控制
         live_box = findViewById(R.id.app_video_box);
         controlbar = findViewById(R.id.player_controlbar);
@@ -419,7 +421,7 @@ public class VPlayPlayer extends FrameLayout {
                 //释放内存
                 Runtime.getRuntime().gc();
                 if (getScreenOrientation()
-                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
                     //横屏播放完毕，重置
                     ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
@@ -480,8 +482,7 @@ public class VPlayPlayer extends FrameLayout {
                                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                             mIsLand = true;
                             mClick = false;
-                        }else
-                        {
+                        } else {
                             if (((rotation >= 230) && (rotation <= 310)))
                                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                             else if ((rotation >= 60 && rotation <= 120))
@@ -719,7 +720,7 @@ public class VPlayPlayer extends FrameLayout {
         public boolean onDown(MotionEvent e) {
             firstTouch = true;
             //横屏下拦截事件
-            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
                 return true;
             } else {
                 return super.onDown(e);
@@ -1337,7 +1338,7 @@ public class VPlayPlayer extends FrameLayout {
     }
 
     public boolean onBackPressed() {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
 
             if (!isLock) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1357,7 +1358,7 @@ public class VPlayPlayer extends FrameLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE|| getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
 
             if (!isLock) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1657,6 +1658,75 @@ public class VPlayPlayer extends FrameLayout {
         }
 
     }
+    //==================================系统自动旋转屏幕开关============================//
+    /**
+     * 得到系统旋转参数 1，开启自动旋转，0 关闭
+     *
+     * @param context
+     * @return
+     */
+
+    //得到屏幕旋转的状态
+    private int getRotationStatus(Context context) {
+        int status = 0;
+        try {
+            status = android.provider.Settings.System.getInt(context.getContentResolver(),
+                    android.provider.Settings.System.ACCELEROMETER_ROTATION);
+        } catch (Settings.SettingNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    /**
+     * 设置系统屏幕旋转按钮
+     *
+     * @param resolver
+     * @param status
+     */
+    private void setRotationStatus(ContentResolver resolver, int status) {
+        //得到uri
+        Uri uri = android.provider.Settings.System.getUriFor("accelerometer_rotation");
+        //沟通设置status的值改变屏幕旋转设置
+        android.provider.Settings.System.putInt(resolver, "accelerometer_rotation", status);
+        //通知改变
+        resolver.notifyChange(uri, null);
+    }
+
+    //观察屏幕旋转设置变化，类似于注册动态广播监听变化机制
+    private class RotationObserver extends ContentObserver {
+        ContentResolver mResolver;
+
+        public RotationObserver(Handler handler) {
+            super(handler);
+            mResolver = mContext.getContentResolver();
+            // TODO Auto-generated constructor stub
+        }
+
+        //屏幕旋转设置改变时调用
+        @Override
+        public void onChange(boolean selfChange) {
+            // TODO Auto-generated method stub
+            super.onChange(selfChange);
+            //更新按钮状态
+            if (getRotationStatus(mContext) == 1 && mVideoView.isPlaying()) {
+                orientationEventListener.enable();
+            } else {
+                orientationEventListener.disable();
+            }
 
 
+        }
+
+        public void startObserver() {
+            mResolver.registerContentObserver(Settings.System
+                            .getUriFor(Settings.System.ACCELEROMETER_ROTATION), false,
+                    this);
+        }
+
+        public void stopObserver() {
+            mResolver.unregisterContentObserver(this);
+        }
+    }
 }

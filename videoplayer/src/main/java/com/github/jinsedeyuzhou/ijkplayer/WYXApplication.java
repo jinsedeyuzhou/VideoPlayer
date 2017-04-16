@@ -7,27 +7,27 @@ import android.content.Context;
  * 设置全局变量或者获取应用Context 嵌入的app中App中配置
  */
 
-public class VPlayerApplication {
+public class WYXApplication {
 
     private static Context mContext;
-    private static VPlayerApplication mInstance;
+    private static WYXApplication mInstance;
 
     public static void initApp(Context context) {
         mContext = context;
-        mInstance = new VPlayerApplication();
+        mInstance = new WYXApplication();
 
 
     }
-    VPlayerApplication() {
+    WYXApplication() {
         mInstance = this;
     }
     public static Context getAppContext() {
         return mContext;
     }
 
-    public static synchronized VPlayerApplication getInstance() {
+    public static synchronized WYXApplication getInstance() {
         if (null == mInstance) {
-            mInstance = new VPlayerApplication();
+            mInstance = new WYXApplication();
         }
         return mInstance;
     }
