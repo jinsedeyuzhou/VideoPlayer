@@ -8,7 +8,7 @@ import android.content.Context;
  */
 public class PlayerManager {
     public static  PlayerManager videoPlayViewManage;
-    private VPlayPlayer videoPlayView;
+    private WYXVideoPlayer videoPlayView;
 
     private PlayerManager() {
 
@@ -21,9 +21,9 @@ public class PlayerManager {
         return videoPlayViewManage;
     }
 
-    public VPlayPlayer initialize(Context context) {
+    public WYXVideoPlayer initialize(Context context) {
         if (videoPlayView == null) {
-            videoPlayView = new VPlayPlayer(context);
+            videoPlayView = new WYXVideoPlayer(context);
         }
         return videoPlayView;
     }

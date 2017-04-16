@@ -53,13 +53,11 @@ import static com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils.generateTime;
 /**
  * Created by Berkeley on 11/2/16.
  */
-public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener,View.OnTouchListener {
+public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener, View.OnTouchListener {
 
     private static final String TAG = WYXVideoPlayer.class.getSimpleName();
     private Context mContext;
     private Activity activity;
-
-
     private View controlbar;
     private SeekBar seekBar;
     private IjkVideoView mVideoView;
@@ -113,13 +111,10 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
     private long newPosition = -1;
     //默认重复请求时间
     private long defaultRetryTime = 5000;
-
     //默认超时时间
     private int defaultTimeout = 3000;
-
     //播放总时长
     private long duration;
-
     private boolean instantSeeking;
     // 是否在拖动进度条中，默认为停止拖动，true为在拖动中，false为停止拖动
     private boolean isDragging;
@@ -147,10 +142,9 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
     private boolean mClickLand = true; // 点击进入横屏
     private boolean mClickPort = true; // 点击进入竖屏
 
-
     private String url;
     private OrientationEventListener orientationEventListener;
-
+    private GestureDetector gestureDetector;
     private NetChangeReceiver changeReceiver;
     private IPlayer.OnClickOrientationListener onClickOrientationListener;
     private IPlayer.OnInfoListener onInfoListener;
@@ -162,7 +156,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case PlayStateParams.MESSAGE_FADE_OUT:
-//                    if (!hidden)
                     hide(false);
                     break;
                 case PlayStateParams.MESSAGE_HIDE_CENTER_BOX:
@@ -193,13 +186,10 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         }
     };
 
-
-
     public WYXVideoPlayer(Context context) {
         super(context);
         init(context);
     }
-
 
     public WYXVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -219,8 +209,12 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         initMediaPlayer();
     }
 
+    public int getLayoutId() {
+        return R.layout.wxy_player;
+    }
+
     private void initView() {
-        View.inflate(mContext, R.layout.wxy_player, this);
+        View.inflate(mContext, getLayoutId(), this);
         //播放控制
         live_box = findViewById(R.id.app_video_box);
         controlbar = findViewById(R.id.player_controlbar);
@@ -291,7 +285,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         setKeepScreenOn(true);
         setClickable(true);
-        GestureDetector  gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
+        gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
         controlbar.setOnTouchListener(this);
         mVideoView.setOnTouchListener(this);
 
@@ -417,7 +411,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
             }
         };
         //关闭重力感应
-        orientationEventListener.enable();
         hideAll();
         if (fullScreenOnly) {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -437,7 +430,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
             if (!NetworkUtils.isConnectionAvailable(mContext))
                 return;
             doPauseResume();
-//                show(defaultTimeout);
         } else if (id == R.id.app_video_replay_icon) {
             if (!NetworkUtils.isConnectionAvailable(mContext))
                 return;
@@ -457,10 +449,13 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         } else if (id == R.id.app_video_lock) {
             if (isLock) {
                 isLock = false;
+                orientationEventListener.enable();
                 mVideoLock.setImageResource(R.drawable.video_unlock);
             } else {
                 isLock = true;
+                orientationEventListener.disable();
                 mVideoLock.setImageResource(R.drawable.video_lock);
+                hide(true);
             }
         } else if (id == R.id.app_video_share) {
 
@@ -470,24 +465,21 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        int id=v.getId();
+        int id = v.getId();
         if (id == R.id.video_view) {
             if (gestureDetector.onTouchEvent(event))
                 return true;
-
             // 处理手势结束
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_UP:
                     endGesture();
                     break;
             }
-        } else
-        if (id== R.id.player_controlbar) {
+        } else if (id == R.id.player_controlbar) {
             Rect seekRect = new Rect();
             seekBar.getHitRect(seekRect);
             //如果滑动在此高度内，此进度条生效，seekbar区域向上和向下拓展50像素
             if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
-
                 float y = seekRect.top + seekRect.height() / 2;
                 //seekBar only accept relative x
                 float x = event.getX() - seekRect.left;
@@ -507,6 +499,124 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         return super.onTouchEvent(event);
     }
 
+
+    public class PlayerGestureListener extends GestureDetector.SimpleOnGestureListener {
+        //点击
+        private boolean firstTouch;
+        //音量控制
+        private boolean volumeControl;
+        //进度条
+        private boolean toSeek;
+
+        /**
+         * 双击
+         */
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+//            mVideoView.toggleAspectRatio();
+            return true;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            firstTouch = true;
+            //横屏下拦截事件
+            if (WindowUtils.isLandscape(mContext)) {
+                return true;
+            } else {
+                return super.onDown(e);
+            }
+
+        }
+
+        /**
+         * 滑动
+         */
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            float mOldX = e1.getX(), mOldY = e1.getY();
+            float deltaY = mOldY - e2.getY();
+            float deltaX = mOldX - e2.getX();
+            if (firstTouch) {
+                toSeek = Math.abs(distanceX) >= Math.abs(distanceY);
+                volumeControl = mOldX > screenWidthPixels * 0.5f;
+                firstTouch = false;
+            }
+            if (!isLive)
+                if (toSeek) {
+                    onProgressSlide(-deltaX / mVideoView.getWidth());
+                } else {
+                    float percent = deltaY / mVideoView.getHeight();
+                    if (volumeControl) {
+                        onVolumeSlide(percent);
+                    } else {
+                        onBrightnessSlide(percent);
+                    }
+                }
+
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        /**
+         * 单击
+         *
+         * @param e
+         * @return
+         */
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            Log.d(TAG, "onSingleTapUp:" + isShowing);
+            if (isLock) {
+                if (mVideoLock.getVisibility() == View.VISIBLE)
+                    mVideoLock.setVisibility(View.GONE);
+                else
+                    mVideoLock.setVisibility(View.VISIBLE);
+            } else if (isShowing || isLive) {
+                hide(false);
+            } else {
+                show(defaultTimeout);
+            }
+            return true;
+        }
+    }
+
+    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (!fromUser)
+                return;
+            mVideoStaus.setVisibility(View.GONE);//移动时隐藏掉状态image
+            int newPosition = (int) ((duration * progress * 1.0) / 1000);
+            String time = generateTime(newPosition);
+            if (instantSeeking) {
+                mVideoView.seekTo(newPosition);
+            }
+            currentTime.setText(time);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            isDragging = true;
+            show(3600000);
+            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            if (instantSeeking) {
+                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            }
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            if (!instantSeeking) {
+                mVideoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
+            }
+            show(defaultTimeout);
+            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            isDragging = false;
+            handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_SHOW_PROGRESS, 1000);
+        }
+    };
+
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
             mVideoPlay.setSelected(true);
@@ -515,6 +625,11 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         }
     }
 
+    /**
+     * 显示状态信息
+     *
+     * @param statusText
+     */
     private void showStatus(String statusText) {
         mVideoStaus.setVisibility(View.VISIBLE);
         mStatusText.setText(statusText);
@@ -548,6 +663,11 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         }
     }
 
+    /**
+     * 播放状态信息
+     *
+     * @param newStatus
+     */
     private void statusChange(int newStatus) {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
@@ -694,124 +814,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     }
 
-
-    public class PlayerGestureListener extends GestureDetector.SimpleOnGestureListener {
-        //点击
-        private boolean firstTouch;
-        //音量控制
-        private boolean volumeControl;
-        //进度条
-        private boolean toSeek;
-
-        /**
-         * 双击
-         */
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-//            mVideoView.toggleAspectRatio();
-            return true;
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            firstTouch = true;
-            //横屏下拦截事件
-            if (WindowUtils.isLandscape(mContext)) {
-                return true;
-            } else {
-                return super.onDown(e);
-            }
-
-        }
-
-        /**
-         * 滑动
-         */
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            float mOldX = e1.getX(), mOldY = e1.getY();
-            float deltaY = mOldY - e2.getY();
-            float deltaX = mOldX - e2.getX();
-            if (firstTouch) {
-                toSeek = Math.abs(distanceX) >= Math.abs(distanceY);
-                volumeControl = mOldX > screenWidthPixels * 0.5f;
-                firstTouch = false;
-            }
-
-            if (toSeek) {
-                if (!isLive) {
-                    onProgressSlide(-deltaX / mVideoView.getWidth());
-                }
-            } else {
-                float percent = deltaY / mVideoView.getHeight();
-                if (volumeControl) {
-                    onVolumeSlide(percent);
-                } else {
-                    onBrightnessSlide(percent);
-                }
-
-
-            }
-
-            return super.onScroll(e1, e2, distanceX, distanceY);
-        }
-
-        /**
-         * 单击
-         *
-         * @param e
-         * @return
-         */
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            Log.d(TAG, "onSingleTapUp:" + isShowing);
-            if (isShowing || isLive) {
-                hide(false);
-            } else {
-                show(defaultTimeout);
-            }
-            return true;
-        }
-    }
-
-    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (!fromUser)
-                return;
-            mVideoStaus.setVisibility(View.GONE);//移动时隐藏掉状态image
-            int newPosition = (int) ((duration * progress * 1.0) / 1000);
-            String time = generateTime(newPosition);
-            if (instantSeeking) {
-                mVideoView.seekTo(newPosition);
-            }
-            currentTime.setText(time);
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            isDragging = true;
-            show(3600000);
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            if (instantSeeking) {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-            }
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            if (!instantSeeking) {
-                mVideoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
-            }
-            show(defaultTimeout);
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            isDragging = false;
-            handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_SHOW_PROGRESS, 1000);
-        }
-    };
-
-
     private void hideAll() {
         Log.d(TAG, "hideAll");
         mReplay.setVisibility(View.GONE);
@@ -819,10 +821,10 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         top_box.setVisibility(View.GONE);
         mVideoFullscreen.setVisibility(View.INVISIBLE);
         mVideoStaus.setVisibility(View.GONE);
+        mVideoLock.setVisibility(View.GONE);
         showBottomControl(false);
 
     }
-
 
     /**
      * 播放面板控制
@@ -836,6 +838,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         endTime.setVisibility(show ? View.VISIBLE : View.GONE);
         seekBar.setVisibility(show ? View.VISIBLE : View.GONE);
         controlbar.setVisibility(show ? View.VISIBLE : View.GONE);
+        mVideoLock.setVisibility(!portrait && show ? View.VISIBLE : View.GONE);
         bottomProgress.setVisibility(show ? View.GONE : View.VISIBLE);
 
     }
@@ -892,11 +895,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     }
 
-    public void hide() {
-        Log.d(TAG, "hide:" + isShowing);
-
-    }
-
     public void hide(boolean force) {
 //        if (!isShowContoller)
 //            return;
@@ -908,13 +906,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         }
 
     }
-
-//
-//    @Override
-//    public void setEnabled(boolean enabled) {
-//
-//    }
-
 
     public void show(int timeout) {
         Log.d(TAG, "show timeout:" + isShowing);
@@ -935,9 +926,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         if (timeout != 0) {
             handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT), timeout);
         }
-    }
-
-    public void show() {
     }
 
     /**
@@ -1098,12 +1086,10 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
      * @return
      */
     private long setProgress() {
-
         Log.v(TAG, "setProgress");
         if (isDragging) {
             return 0;
         }
-
         long position = mVideoView.getCurrentPosition();
         long duration = mVideoView.getDuration();
         if (seekBar != null) {
@@ -1116,7 +1102,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
             seekBar.setSecondaryProgress(percent * 10);
             bottomProgress.setSecondaryProgress(percent * 10);
         }
-
         this.duration = duration;
         currentTime.setText(generateTime(position));
         endTime.setText(generateTime(this.duration));
@@ -1185,7 +1170,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         return duration;
     }
 
-
     /**
      * 监听全屏跟非全屏
      *
@@ -1205,7 +1189,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
     public void setShowNavIcon(boolean show) {
         mVideoFinish.setVisibility(show ? View.VISIBLE : View.GONE);
     }
-
 
     /**
      * @param isLive 设置是否直播
@@ -1248,7 +1231,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
                 return true;
             }
             return true;
-
         } else {
 
             return false;
@@ -1258,7 +1240,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (WindowUtils.isLandscape(mContext)) {
 
             if (!isLock) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1293,15 +1275,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     public void play(String url) {
         this.url = url;
-        //设置开启 1 开启 0关闭
-//        Settings.System.putInt(mContext.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
-        //得到是否开启 1 开启
-        int flag = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (flag == 1)
-            orientationEventListener.enable();
-        else
-            orientationEventListener.disable();
         play(url, 0);
     }
 
@@ -1340,7 +1313,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
     }
 
     public void start() {
-
         if (WindowUtils.getRotationStatus(mContext) == 1)
             orientationEventListener.enable();
         else
@@ -1376,7 +1348,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     public void onPause() {
         Log.d(TAG, "onPause" + status);
-
         pauseTime = System.currentTimeMillis();
         show(0);//把系统状态栏显示出来
         if (status == PlayStateParams.STATE_PLAYING) {
@@ -1422,7 +1393,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         Log.d(TAG, "onResume" + status);
         pauseTime = 0;
         if (status == PlayStateParams.STATE_PLAYING) {
-
             if (isLive) {
                 mVideoView.seekTo(0);
             } else if (isAutoPause) {
@@ -1439,13 +1409,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         }
     }
 
-
-    //=====================对外提供接口===========================================
-    ;
-
-
-    //=====================================网络状态改变广播类==============================================
-
+    //=====================================网络状态改变广播类==============================================//
 
     /**
      * 注册网络监听器
@@ -1476,9 +1440,6 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.e(TAG, "网络状态改变");
-//            if (onNetChangeListener == null) {
-//                return;
-//            }
             if (NetworkUtils.getNetworkType(activity) == 3) {// 网络是WIFI
 //                onNetChangeListener.onWifi();
             } else if (!isAllowModible && NetworkUtils.getNetworkType(activity) > 3

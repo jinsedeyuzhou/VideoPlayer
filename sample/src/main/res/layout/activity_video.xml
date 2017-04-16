@@ -5,7 +5,7 @@
     android:orientation="vertical"
     >
 
-    <com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer
+    <com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerDanmaku
         android:id="@+id/layout_video"
         android:layout_width="match_parent"
         android:layout_height="210dp"
