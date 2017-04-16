@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 
-import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayerDanmaku;
+import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer;
 
 /**
  * Created by Berkeley on 11/9/16.
@@ -15,7 +15,7 @@ import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayerDanmaku;
 public class VideoViewActivity extends FragmentActivity {
 
     private FrameLayout layout_video;
-    private VPlayPlayerDanmaku player;
+    private WYXVideoPlayer player;
     private int mporit;
     private int initHeight;
 
@@ -23,7 +23,7 @@ public class VideoViewActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-        player = (VPlayPlayerDanmaku) findViewById(R.id.layout_video);
+        player = (WYXVideoPlayer) findViewById(R.id.layout_video);
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
 
 

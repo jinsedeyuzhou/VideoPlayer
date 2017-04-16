@@ -3,31 +3,30 @@ package com.github.jinsedeyuzhou.ijkplayer.play;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -43,16 +42,20 @@ import android.widget.Toast;
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 import com.github.jinsedeyuzhou.ijkplayer.utils.NetworkUtils;
+import com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils;
+import com.github.jinsedeyuzhou.ijkplayer.utils.WindowUtils;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
+import static com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils.generateTime;
+
 /**
  * Created by Berkeley on 11/2/16.
  */
-public class WYXVideoPlayer extends FrameLayout {
+public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener,View.OnTouchListener {
 
-    private static final String TAG = "VPlayPlayer";
+    private static final String TAG = WYXVideoPlayer.class.getSimpleName();
     private Context mContext;
     private Activity activity;
 
@@ -138,18 +141,22 @@ public class WYXVideoPlayer extends FrameLayout {
     private boolean isNetListener = true;
     //锁屏时是否是播放状态
     private boolean isAutoPause;
+
     private boolean mIsLand = false; // 是否是横屏
     private boolean mClick = false; // 是否点击
     private boolean mClickLand = true; // 点击进入横屏
     private boolean mClickPort = true; // 点击进入竖屏
+
+
     private String url;
-
-
     private OrientationEventListener orientationEventListener;
-    private NetChangeReceiver changeReceiver;
-    private OnClickOrientationListener onClickOrientationListener;
 
-    @SuppressWarnings("HandlerLeak")
+    private NetChangeReceiver changeReceiver;
+    private IPlayer.OnClickOrientationListener onClickOrientationListener;
+    private IPlayer.OnInfoListener onInfoListener;
+    private IPlayer.CompletionListener completionListener;
+    private IPlayer.OnNetChangeListener onNetChangeListener;
+    private IPlayer.OnErrorListener onErrorListener;
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -186,49 +193,6 @@ public class WYXVideoPlayer extends FrameLayout {
         }
     };
 
-    private final OnClickListener onClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int id = v.getId();
-            if (id == R.id.app_video_fullscreen) {
-                toggleFullScreen();
-            } else if (id == R.id.app_video_play) {
-                if (!NetworkUtils.isConnectionAvailable(mContext))
-                    return;
-                doPauseResume();
-//                show(defaultTimeout);
-            } else if (id == R.id.app_video_replay_icon) {
-                if (!NetworkUtils.isConnectionAvailable(mContext))
-                    return;
-                doPauseResume();
-            } else if (id == R.id.app_video_finish) {
-               if(!onBackPressed())
-               {
-                   activity.finish();
-               }
-
-            }
-            else if (id == R.id.app_video_netTie_icon) {
-                isAllowModible = true;
-                if (currentPosition == 0) {
-                    play(url);
-                } else
-                    doPauseResume();
-                mVideoNetTie.setVisibility(View.GONE);
-            } else if (id == R.id.app_video_lock) {
-                if (isLock) {
-                    isLock = false;
-                    mVideoLock.setImageResource(R.drawable.video_unlock);
-                } else {
-                    isLock = true;
-                    mVideoLock.setImageResource(R.drawable.video_lock);
-                }
-            } else if (id == R.id.app_video_share) {
-
-            }
-
-        }
-    };
 
 
     public WYXVideoPlayer(Context context) {
@@ -247,12 +211,6 @@ public class WYXVideoPlayer extends FrameLayout {
         init(context);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public WYXVideoPlayer(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context);
-    }
-
     private void init(Context context) {
         this.mContext = context;
         activity = (Activity) mContext;
@@ -261,9 +219,8 @@ public class WYXVideoPlayer extends FrameLayout {
         initMediaPlayer();
     }
 
-
     private void initView() {
-        View.inflate(mContext, getLayoutId(), this);
+        View.inflate(mContext, R.layout.wxy_player, this);
         //播放控制
         live_box = findViewById(R.id.app_video_box);
         controlbar = findViewById(R.id.player_controlbar);
@@ -323,62 +280,21 @@ public class WYXVideoPlayer extends FrameLayout {
 
 
     private void initAction() {
-        mVideoLock.setOnClickListener(onClickListener);
-        mVideoShare.setOnClickListener(onClickListener);
-        mVideoFinish.setOnClickListener(onClickListener);
-        mVideoFullscreen.setOnClickListener(onClickListener);
-        mVideoReplay.setOnClickListener(onClickListener);
-        mVideoPlay.setOnClickListener(onClickListener);
-        mVideoNetTieIcon.setOnClickListener(onClickListener);
+        mVideoLock.setOnClickListener(this);
+        mVideoShare.setOnClickListener(this);
+        mVideoFinish.setOnClickListener(this);
+        mVideoFullscreen.setOnClickListener(this);
+        mVideoReplay.setOnClickListener(this);
+        mVideoPlay.setOnClickListener(this);
+        mVideoNetTieIcon.setOnClickListener(this);
         seekBar.setMax(1000);
         seekBar.setOnSeekBarChangeListener(mSeekListener);
-        final GestureDetector gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
-
-        controlbar.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e("custommedia", "event");
-
-                Rect seekRect = new Rect();
-                seekBar.getHitRect(seekRect);
-                //如果滑动在此高度内，此进度条生效，seekbar区域向上和向下拓展50像素
-                if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
-
-                    float y = seekRect.top + seekRect.height() / 2;
-                    //seekBar only accept relative x
-                    float x = event.getX() - seekRect.left;
-                    if (x < 0) {
-                        x = 0;
-                    } else if (x > seekRect.width()) {
-                        x = seekRect.width();
-                    }else {
-                        MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
-                                event.getAction(), x, y, event.getMetaState());
-                        return seekBar.onTouchEvent(me);
-                    }
-
-                }
-                return false;
-            }
-        });
-
         setKeepScreenOn(true);
         setClickable(true);
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (gestureDetector.onTouchEvent(motionEvent))
-                    return true;
+        GestureDetector  gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
+        controlbar.setOnTouchListener(this);
+        mVideoView.setOnTouchListener(this);
 
-                // 处理手势结束
-                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_UP:
-                        endGesture();
-                        break;
-                }
-                return false;
-            }
-        });
     }
 
     private void initMediaPlayer() {
@@ -414,7 +330,8 @@ public class WYXVideoPlayer extends FrameLayout {
                         statusChange(PlayStateParams.STATE_PLAYING);
                         break;
                 }
-                onInfoListener.onInfo(what, extra);
+                if (onInfoListener != null)
+                    onInfoListener.onInfo(what, extra);
                 return false;
             }
         });
@@ -424,8 +341,8 @@ public class WYXVideoPlayer extends FrameLayout {
             public void onCompletion(IMediaPlayer mp) {
                 //释放内存
                 Runtime.getRuntime().gc();
-                if (getScreenOrientation()
-                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                if (WindowUtils.getScreenOrientation(activity)
+                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
                     //横屏播放完毕，重置
                     ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
@@ -434,14 +351,16 @@ public class WYXVideoPlayer extends FrameLayout {
                     mVideoView.setLayoutParams(layoutParams);
                 }
                 statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
-                oncomplete.run();
+                if (completionListener != null)
+                    completionListener.completion(mp);
             }
         });
         mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer mp, int what, int extra) {
                 statusChange(PlayStateParams.STATE_ERROR);
-                onErrorListener.onError(what, extra);
+                if (onErrorListener != null)
+                    onErrorListener.onError(what, extra);
                 return true;
             }
         });
@@ -453,7 +372,7 @@ public class WYXVideoPlayer extends FrameLayout {
                 if (((rotation >= 0) && (rotation <= 30)) || (rotation >= 330)) {
                     if (mClick) {
                         if (mIsLand && !mClickLand) {
-                            return ;
+                            return;
                         } else {
                             mClickPort = true;
                             mClick = false;
@@ -468,7 +387,7 @@ public class WYXVideoPlayer extends FrameLayout {
                     }
                 }
                 // 设置横屏
-                else if (((rotation >= 230) && (rotation <= 310))) {
+                else if (((rotation >= 230) && (rotation <= 310)) || (rotation >= 60 && rotation <= 120)) {
                     if (mClick) {
                         if (!mIsLand && !mClickPort) {
                             return;
@@ -479,30 +398,114 @@ public class WYXVideoPlayer extends FrameLayout {
                         }
                     } else {
                         if (!mIsLand) {
-                            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+                            if (((rotation >= 230) && (rotation <= 310)))
+                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                            else if ((rotation >= 60 && rotation <= 120))
+                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                             mIsLand = true;
                             mClick = false;
+                        } else {
+                            if (((rotation >= 230) && (rotation <= 310)))
+                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                            else if ((rotation >= 60 && rotation <= 120))
+                                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                         }
+
                     }
                 }
             }
         };
+        //关闭重力感应
         orientationEventListener.enable();
-
         hideAll();
         if (fullScreenOnly) {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        portrait = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        portrait = WindowUtils.isPortrait(activity);
         if (!playerSupport) {
             showStatus(activity.getResources().getString(R.string.not_support));
         }
     }
 
-    public int getLayoutId() {
-        return R.layout.view_player;
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.app_video_fullscreen) {
+            toggleFullScreen();
+        } else if (id == R.id.app_video_play) {
+            if (!NetworkUtils.isConnectionAvailable(mContext))
+                return;
+            doPauseResume();
+//                show(defaultTimeout);
+        } else if (id == R.id.app_video_replay_icon) {
+            if (!NetworkUtils.isConnectionAvailable(mContext))
+                return;
+            doPauseResume();
+        } else if (id == R.id.app_video_finish) {
+            if (!onBackPressed()) {
+                activity.finish();
+            }
+
+        } else if (id == R.id.app_video_netTie_icon) {
+            isAllowModible = true;
+            if (currentPosition == 0) {
+                play(url);
+            } else
+                doPauseResume();
+            mVideoNetTie.setVisibility(View.GONE);
+        } else if (id == R.id.app_video_lock) {
+            if (isLock) {
+                isLock = false;
+                mVideoLock.setImageResource(R.drawable.video_unlock);
+            } else {
+                isLock = true;
+                mVideoLock.setImageResource(R.drawable.video_lock);
+            }
+        } else if (id == R.id.app_video_share) {
+
+        }
     }
 
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        int id=v.getId();
+        if (id == R.id.video_view) {
+            if (gestureDetector.onTouchEvent(event))
+                return true;
+
+            // 处理手势结束
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_UP:
+                    endGesture();
+                    break;
+            }
+        } else
+        if (id== R.id.player_controlbar) {
+            Rect seekRect = new Rect();
+            seekBar.getHitRect(seekRect);
+            //如果滑动在此高度内，此进度条生效，seekbar区域向上和向下拓展50像素
+            if ((event.getY() >= (seekRect.top - 50)) && (event.getY() <= (seekRect.bottom + 50))) {
+
+                float y = seekRect.top + seekRect.height() / 2;
+                //seekBar only accept relative x
+                float x = event.getX() - seekRect.left;
+                if (x < 0) {
+                    x = 0;
+                } else if (x > seekRect.width()) {
+                    x = seekRect.width();
+                } else {
+                    MotionEvent me = MotionEvent.obtain(event.getDownTime(), event.getEventTime(),
+                            event.getAction(), x, y, event.getMetaState());
+                    return seekBar.onTouchEvent(me);
+                }
+
+            }
+        }
+
+        return super.onTouchEvent(event);
+    }
 
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
@@ -533,7 +536,6 @@ public class WYXVideoPlayer extends FrameLayout {
             statusChange(PlayStateParams.STATE_PLAYING);
             mVideoView.start();
             mVideoPlay.setSelected(true);
-//            handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT),defaultTimeout);
         }
     }
 
@@ -550,15 +552,15 @@ public class WYXVideoPlayer extends FrameLayout {
         status = newStatus;
         if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
+            orientationEventListener.disable();
             hideAll();
             endVideo();
             isShowContoller = false;
             handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             handler.removeCallbacksAndMessages(null);
             handler.sendEmptyMessage(9);
-
-
         } else if (newStatus == PlayStateParams.STATE_ERROR) {
+            orientationEventListener.disable();
             Log.d(TAG, "STATE_ERROR");
             hideAll();
             if (isLive) {
@@ -582,7 +584,6 @@ public class WYXVideoPlayer extends FrameLayout {
             isShowContoller = true;
         } else if (newStatus == PlayStateParams.STATE_PAUSED) {
             handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
-//            isShowContoller = false;
         }
 
 
@@ -715,7 +716,7 @@ public class WYXVideoPlayer extends FrameLayout {
         public boolean onDown(MotionEvent e) {
             firstTouch = true;
             //横屏下拦截事件
-            if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            if (WindowUtils.isLandscape(mContext)) {
                 return true;
             } else {
                 return super.onDown(e);
@@ -868,8 +869,7 @@ public class WYXVideoPlayer extends FrameLayout {
      * 更新全屏按钮
      */
     private void updateFullScreenButton() {
-        Log.v(TAG, getScreenOrientation() + "");
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+        if (WindowUtils.isLandscape(mContext)) {
             mVideoFullscreen.setImageResource(R.drawable.ic_fullscreen_exit_white_36dp);
         } else {
             mVideoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
@@ -881,7 +881,6 @@ public class WYXVideoPlayer extends FrameLayout {
      * 手势结束
      */
     private void endGesture() {
-
         volume = -1;
         brightness = -1f;
         if (newPosition >= 0) {
@@ -910,11 +909,11 @@ public class WYXVideoPlayer extends FrameLayout {
 
     }
 
-
-    @Override
-    public void setEnabled(boolean enabled) {
-
-    }
+//
+//    @Override
+//    public void setEnabled(boolean enabled) {
+//
+//    }
 
 
     public void show(int timeout) {
@@ -939,85 +938,6 @@ public class WYXVideoPlayer extends FrameLayout {
     }
 
     public void show() {
-    }
-
-
-    /**
-     * time to String
-     *
-     * @param time
-     * @return
-     */
-    private String generateTime(long time) {
-        int totalSeconds = (int) (time / 1000);
-        int seconds = totalSeconds % 60;
-        int minutes = (totalSeconds / 60) % 60;
-        int hours = totalSeconds / 3600;
-        return hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes, seconds) : String.format("%02d:%02d", minutes, seconds);
-    }
-
-    /**
-     * 获取屏幕位置
-     *
-     * @return
-     */
-    public int getScreenOrientation() {
-        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        int orientation;
-        // if the device's natural orientation is portrait:
-        if ((rotation == Surface.ROTATION_0
-                || rotation == Surface.ROTATION_180) && height > width ||
-                (rotation == Surface.ROTATION_90
-                        || rotation == Surface.ROTATION_270) && width > height) {
-            switch (rotation) {
-                case Surface.ROTATION_0:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    break;
-                case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    break;
-                case Surface.ROTATION_180:
-                    orientation =
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    break;
-                case Surface.ROTATION_270:
-                    orientation =
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    break;
-                default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    break;
-            }
-        }
-        // if the device's natural orientation is landscape or if the device
-        // is square:
-        else {
-            switch (rotation) {
-                case Surface.ROTATION_0:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    break;
-                case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    break;
-                case Surface.ROTATION_180:
-                    orientation =
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    break;
-                case Surface.ROTATION_270:
-                    orientation =
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    break;
-                default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    break;
-            }
-        }
-
-        return orientation;
     }
 
     /**
@@ -1132,7 +1052,7 @@ public class WYXVideoPlayer extends FrameLayout {
                 gesture.setVisibility(View.VISIBLE);
             }
             mImageTip.setImageResource(showDelta > 0 ? R.drawable.forward_icon : R.drawable.backward_icon);
-            String current = generateTime(newPosition);
+            String current = StringUtils.generateTime(newPosition);
             mTvCurrent.setText(current + "/");
             mTvDuration.setText(generateTime(duration));
             mProgressGesture.setProgress(duration <= 0 ? 0 : (int) (newPosition * 100 / duration));
@@ -1203,13 +1123,6 @@ public class WYXVideoPlayer extends FrameLayout {
         return position;
     }
 
-    //============================弹幕=============================================
-
-    //=========================全屏和大小屏判定未做===================================
-    public static final int FULLSCREEN_ID = 33797;
-    public static final int TINY_ID = 33798;
-
-
     //====================对外提供的方法==========================================
     public void stop() {
         if (mVideoView.isPlaying()) {
@@ -1228,6 +1141,7 @@ public class WYXVideoPlayer extends FrameLayout {
         if (mVideoView != null)
             mVideoView.release(true);
         isAutoPause = false;
+        orientationEventListener.disable();
         mIsLand = false; // 是否是横屏
         mClick = false; // 是否点击
         mClickLand = true; // 点击进入横屏
@@ -1325,14 +1239,12 @@ public class WYXVideoPlayer extends FrameLayout {
     }
 
     public boolean onBackPressed() {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-
+        if (WindowUtils.isLandscape(mContext)) {
             if (!isLock) {
-                mIsLand = false; // 是否是横屏
-                mClick = false; // 是否点击
-                mClickLand = true; // 点击进入横屏
-                mClickPort = true; // 点击进入竖屏
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                mClick = true; // 是否点击
+                mIsLand = true;
+                mClickPort = false;
                 return true;
             }
             return true;
@@ -1346,14 +1258,13 @@ public class WYXVideoPlayer extends FrameLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        if (WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
 
             if (!isLock) {
-                mIsLand = false; // 是否是横屏
-                mClick = false; // 是否点击
-                mClickLand = true; // 点击进入横屏
-                mClickPort = true; // 点击进入竖屏
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                mClick = true; // 是否点击
+                mIsLand = true;
+                mClickPort = false;
                 return true;
             }
             return true;
@@ -1382,6 +1293,15 @@ public class WYXVideoPlayer extends FrameLayout {
 
     public void play(String url) {
         this.url = url;
+        //设置开启 1 开启 0关闭
+//        Settings.System.putInt(mContext.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
+        //得到是否开启 1 开启
+        int flag = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.ACCELEROMETER_ROTATION, 0);
+        if (flag == 1)
+            orientationEventListener.enable();
+        else
+            orientationEventListener.disable();
         play(url, 0);
     }
 
@@ -1420,6 +1340,12 @@ public class WYXVideoPlayer extends FrameLayout {
     }
 
     public void start() {
+
+        if (WindowUtils.getRotationStatus(mContext) == 1)
+            orientationEventListener.enable();
+        else
+            orientationEventListener.disable();
+
         if (!isAllowModible && isNetListener && NetworkUtils.getNetworkType(mContext) < 7 && NetworkUtils.getNetworkType(mContext) > 3) {
             mVideoNetTie.setVisibility(View.VISIBLE);
         } else {
@@ -1513,64 +1439,13 @@ public class WYXVideoPlayer extends FrameLayout {
         }
     }
 
+
     //=====================对外提供接口===========================================
+    ;
 
-
-    public interface OnClickOrientationListener {
-        void landscape();
-
-        void portrait();
-    }
-
-
-    public interface OnErrorListener {
-        void onError(int what, int extra);
-    }
-
-    private OnErrorListener onErrorListener = new OnErrorListener() {
-        @Override
-        public void onError(int what, int extra) {
-        }
-    };
-    private Runnable oncomplete = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
-
-    public interface OnInfoListener {
-        void onInfo(int what, int extra);
-    }
-
-    private OnInfoListener onInfoListener = new OnInfoListener() {
-        @Override
-        public void onInfo(int what, int extra) {
-
-        }
-    };
 
     //=====================================网络状态改变广播类==============================================
 
-    private OnNetChangeListener onNetChangeListener;
-
-    public void setOnNetChangeListener(OnNetChangeListener onNetChangeListener) {
-        this.onNetChangeListener = onNetChangeListener;
-    }
-
-    public interface OnNetChangeListener {
-        // wifi
-        void onWifi();
-
-        // 手机
-        void onMobile();
-
-        // 网络断开
-        void onDisConnect();
-
-        // 网路不可用
-        void onNoAvailable();
-    }
 
     /**
      * 注册网络监听器
@@ -1629,6 +1504,41 @@ public class WYXVideoPlayer extends FrameLayout {
         }
 
     }
+    //==================================系统自动旋转屏幕开关============================//
+
+    //观察屏幕旋转设置变化，类似于注册动态广播监听变化机制
+    private class RotationObserver extends ContentObserver {
+        ContentResolver mResolver;
+
+        public RotationObserver(Handler handler) {
+            super(handler);
+            mResolver = mContext.getContentResolver();
+            // TODO Auto-generated constructor stub
+        }
+
+        //屏幕旋转设置改变时调用
+        @Override
+        public void onChange(boolean selfChange) {
+            // TODO Auto-generated method stub
+            super.onChange(selfChange);
+            //更新按钮状态
+            if (WindowUtils.getRotationStatus(mContext) == 1 && mVideoView.isPlaying()) {
+                orientationEventListener.enable();
+            } else {
+                orientationEventListener.disable();
+            }
 
 
+        }
+
+        public void startObserver() {
+            mResolver.registerContentObserver(Settings.System
+                            .getUriFor(Settings.System.ACCELEROMETER_ROTATION), false,
+                    this);
+        }
+
+        public void stopObserver() {
+            mResolver.unregisterContentObserver(this);
+        }
+    }
 }
