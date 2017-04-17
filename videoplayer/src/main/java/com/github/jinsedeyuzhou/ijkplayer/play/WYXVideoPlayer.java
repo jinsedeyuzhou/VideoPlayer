@@ -150,7 +150,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
 
     private String url;
     private OrientationEventListener orientationEventListener;
-
+    private GestureDetector  gestureDetector;
     private NetChangeReceiver changeReceiver;
     private IPlayer.OnClickOrientationListener onClickOrientationListener;
     private IPlayer.OnInfoListener onInfoListener;
@@ -291,7 +291,7 @@ public class WYXVideoPlayer extends FrameLayout implements  View.OnClickListener
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         setKeepScreenOn(true);
         setClickable(true);
-        GestureDetector  gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
+        gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
         controlbar.setOnTouchListener(this);
         mVideoView.setOnTouchListener(this);
 
