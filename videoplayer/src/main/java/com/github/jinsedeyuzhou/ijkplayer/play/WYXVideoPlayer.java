@@ -1408,6 +1408,28 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
         }
     }
+    //======================================接口=======================================================
+
+
+    public void setOnClickOrientationListener(IPlayer.OnClickOrientationListener var1) {
+        onClickOrientationListener=var1;
+    }
+
+    public void setOnErrorListener(IPlayer.OnErrorListener var1) {
+        onErrorListener=var1;
+    }
+
+    public void setOnInfoListener(IPlayer.OnInfoListener var1) {
+        onInfoListener=var1;
+    }
+
+    public void setCompletionListener(IPlayer.CompletionListener var1) {
+        completionListener=var1;
+    }
+
+    public void setOnNetChangeListener(IPlayer.OnNetChangeListener var1) {
+      onNetChangeListener=var1;
+    }
 
     //=====================================网络状态改变广播类==============================================//
 
