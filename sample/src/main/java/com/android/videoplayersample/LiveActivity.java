@@ -19,7 +19,7 @@ import android.widget.FrameLayout;
 
 import com.android.videoplayersample.bean.LiveBean;
 import com.android.videoplayersample.net.ApiServiceUtils;
-import com.github.jinsedeyuzhou.ijkplayer.play.VPlayPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class LiveActivity extends FragmentActivity {
 
     private static final String TAG = "LiveActivity";
     private View rootView;
-    private VPlayPlayer player;
+    private WYXVideoPlayer player;
     private String liveUrl = "http://pull5.a8.com/live/1477621558925497.flv";
 
     private String title = "我是傻逼";
@@ -65,7 +65,7 @@ public class LiveActivity extends FragmentActivity {
         wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "liveTAG");
 
 
-        player = new VPlayPlayer(this);
+        player = new WYXVideoPlayer(this);
 
         player.setLive(true);
         if (player.getParent() != null)
