@@ -79,15 +79,32 @@ public class NetworkUtils {
         return true;
     }
 
+
+    /**
+     * 判断网络是不是WIFI
+     *
+     * @param mContext
+     * @return
+     */
+    public static boolean isWifiAvailable(Context mContext) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetInfo != null
+                && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            return true;
+        }
+        return false;
+    }
     /**
      * 判断WiFi是否连接
      *
      * @param context
      * @return
      */
-    public static boolean isNetworkAvailable(Context context) {
+    public static boolean isMobileAvailable(Context context) {
         ConnectivityManager mConnMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mWifi = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 //        NetworkInfo mMobile = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         boolean flag = false;
         if ((mWifi != null) && ((mWifi.isAvailable()))) {

@@ -90,7 +90,15 @@
             android:text="继续"
             android:textColor="@android:color/white" />
     </LinearLayout>
-
+    <!--锁屏按钮-->
+    <ImageView
+        android:id="@+id/app_video_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/video_unlock"
+        />
     <!-- loading-->
     <ProgressBar
         android:id="@+id/app_video_loading"

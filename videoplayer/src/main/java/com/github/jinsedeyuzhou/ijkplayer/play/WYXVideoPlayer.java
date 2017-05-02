@@ -447,21 +447,25 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
                 doPauseResume();
             mVideoNetTie.setVisibility(View.GONE);
         } else if (id == R.id.app_video_lock) {
-            if (isLock) {
-                isLock = false;
-                orientationEventListener.enable();
-                mVideoLock.setImageResource(R.drawable.video_unlock);
-            } else {
-                isLock = true;
-                orientationEventListener.disable();
-                mVideoLock.setImageResource(R.drawable.video_lock);
-                hide(true);
-            }
+          toggleLockState();
         } else if (id == R.id.app_video_share) {
 
         }
     }
 
+    private void toggleLockState()
+    {
+        if (isLock) {
+            isLock = false;
+            orientationEventListener.enable();
+            mVideoLock.setImageResource(R.drawable.video_unlock);
+        } else {
+            isLock = true;
+            orientationEventListener.disable();
+            mVideoLock.setImageResource(R.drawable.video_lock);
+            hide(true);
+        }
+    }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -1287,7 +1291,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             registerNetReceiver();
         }
 
-        if (!isAllowModible && isNetListener && NetworkUtils.getNetworkType(mContext) < 7 && NetworkUtils.getNetworkType(mContext) > 3) {
+        if (!isAllowModible && isNetListener && NetworkUtils.isMobileAvailable(mContext)) {
             mVideoNetTie.setVisibility(View.VISIBLE);
         } else {
             if (playerSupport) {
@@ -1318,7 +1322,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         else
             orientationEventListener.disable();
 
-        if (!isAllowModible && isNetListener && NetworkUtils.getNetworkType(mContext) < 7 && NetworkUtils.getNetworkType(mContext) > 3) {
+        if (!isAllowModible && isNetListener && NetworkUtils.isMobileAvailable(mContext)) {
             mVideoNetTie.setVisibility(View.VISIBLE);
         } else {
             if (playerSupport) {
@@ -1412,23 +1416,23 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
 
     public void setOnClickOrientationListener(IPlayer.OnClickOrientationListener var1) {
-        onClickOrientationListener=var1;
+        onClickOrientationListener = var1;
     }
 
     public void setOnErrorListener(IPlayer.OnErrorListener var1) {
-        onErrorListener=var1;
+        onErrorListener = var1;
     }
 
     public void setOnInfoListener(IPlayer.OnInfoListener var1) {
-        onInfoListener=var1;
+        onInfoListener = var1;
     }
 
     public void setCompletionListener(IPlayer.CompletionListener var1) {
-        completionListener=var1;
+        completionListener = var1;
     }
 
     public void setOnNetChangeListener(IPlayer.OnNetChangeListener var1) {
-      onNetChangeListener=var1;
+        onNetChangeListener = var1;
     }
 
     //=====================================网络状态改变广播类==============================================//
@@ -1462,10 +1466,11 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.e(TAG, "网络状态改变");
-            if (NetworkUtils.getNetworkType(activity) == 3) {// 网络是WIFI
+            if (NetworkUtils.isWifiAvailable(activity)) {// 网络是WIFI
 //                onNetChangeListener.onWifi();
-            } else if (!isAllowModible && NetworkUtils.getNetworkType(activity) > 3
-                    && NetworkUtils.getNetworkType(activity) < 7) {// 网络不是手机网络或者是以太网
+                mVideoNetTie.setVisibility(View.GONE);
+            } else if (!isAllowModible && NetworkUtils.isMobileAvailable(activity)
+                    ) {// 网络不是手机网络或者是以太网
                 // TODO 更新状态是暂停状态
                 statusChange(PlayStateParams.STATE_PAUSED);
                 mVideoView.pause();
@@ -1475,11 +1480,9 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 //                onNetChangeListener.onMobile();
                 mVideoNetTie.setVisibility(View.VISIBLE);
 
-            } else if (NetworkUtils.getNetworkType(activity) == 1) {// 网络链接断开
-                Toast.makeText(mContext, "网路已断开", Toast.LENGTH_SHORT).show();
-                onPause();
-//                onNetChangeListener.onDisConnect();
             } else {
+                onPause();
+                mVideoNetTie.setVisibility(View.GONE);
                 Toast.makeText(mContext, "未知网络", Toast.LENGTH_SHORT).show();
 //                onNetChangeListener.onNoAvailable();
             }
