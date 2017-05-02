@@ -69,6 +69,10 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
     @Override
     public void onClick(View v) {
         super.onClick(v);
+        int id=v.getId();
+         if (id == R.id.app_video_share) {
+             resolveDanmakuShow();
+        }
     }
 
     @Override
@@ -144,6 +148,7 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
      * 释放弹幕控件
      */
     private void releaseDanmaku() {
+
         if (mDanmakuView != null) {
             mDanmakuView.release();
         }

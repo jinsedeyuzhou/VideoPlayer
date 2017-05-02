@@ -447,14 +447,14 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
                 doPauseResume();
             mVideoNetTie.setVisibility(View.GONE);
         } else if (id == R.id.app_video_lock) {
-          toggleLockState();
-        } else if (id == R.id.app_video_share) {
-
+            toggleLockState();
         }
+//        else if (id == R.id.app_video_share) {
+//
+//        }
     }
 
-    private void toggleLockState()
-    {
+    private void toggleLockState() {
         if (isLock) {
             isLock = false;
             orientationEventListener.enable();
@@ -1390,6 +1390,9 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         unregisterNetReceiver();
         handler.removeCallbacksAndMessages(null);
         reset();
+        ViewGroup parent = (ViewGroup) this.getParent();
+        if (parent != null)
+            parent.removeAllViews();
 
     }
 
