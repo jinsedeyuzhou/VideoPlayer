@@ -7,9 +7,6 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  */
 
 public interface IPlayer {
-
-
-
     void setOnClickOrientationListener(IPlayer.OnClickOrientationListener var1);
     void setOnErrorListener(IPlayer.OnErrorListener var1);
     void setOnInfoListener(IPlayer.OnInfoListener var1);

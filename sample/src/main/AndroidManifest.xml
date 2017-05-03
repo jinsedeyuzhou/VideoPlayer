@@ -23,6 +23,7 @@
         <activity android:name=".VideoViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             />
         <activity android:name=".LiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

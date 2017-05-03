@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/app_video_box"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#B3616161"
+        android:layout_gravity="center"
         android:gravity="center">
 
         <ImageView
@@ -29,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:scaleType="fitCenter"
-             />
+            />
 
         <ImageView
             android:id="@+id/app_video_replay_icon"
@@ -40,8 +41,6 @@
     </RelativeLayout>
 
     <include layout="@layout/player_gesture" />
-
-
     <!-- status-->
     <LinearLayout
         android:id="@+id/app_video_status"
@@ -49,6 +48,7 @@
         android:layout_height="match_parent"
         android:background="@android:color/background_dark"
         android:gravity="center"
+        android:layout_gravity="center"
         android:visibility="gone">
 
         <TextView
@@ -66,6 +66,7 @@
         android:layout_height="match_parent"
         android:background="#33000000"
         android:gravity="center"
+        android:layout_gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -104,6 +105,7 @@
         android:id="@+id/app_video_loading"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_gravity="center"
         android:layout_centerInParent="true"
         android:indeterminateBehavior="repeat"
         android:indeterminateDrawable="@drawable/player_progressbar"
@@ -114,16 +116,16 @@
 
     <include layout="@layout/player_toolbar" />
 
-    <include layout="@layout/player_danmaku"/>
     <ProgressBar
         android:id="@+id/bottom_progressbar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
         android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:max="1000"
         android:progressDrawable="@drawable/player_bg_seek"
         android:visibility="visible" />
 
 
-</RelativeLayout>
+</FrameLayout>
