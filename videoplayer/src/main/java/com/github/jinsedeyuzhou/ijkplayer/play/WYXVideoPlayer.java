@@ -1464,10 +1464,10 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             Log.e(TAG, "网络状态改变");
             if (NetworkUtils.getNetworkType(activity) == 3) {// 网络是WIFI
 //                onNetChangeListener.onWifi();
+                mVideoNetTie.setVisibility(View.GONE);
             } else if (!isAllowModible && NetworkUtils.getNetworkType(activity) > 3
                     && NetworkUtils.getNetworkType(activity) < 7) {// 网络不是手机网络或者是以太网
                 // TODO 更新状态是暂停状态
-                statusChange(PlayStateParams.STATE_PAUSED);
                 mVideoView.pause();
                 currentPosition = mVideoView.getCurrentPosition();
                 onPause();
