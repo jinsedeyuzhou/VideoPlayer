@@ -14,6 +14,7 @@ import android.view.View;
 import com.github.jinsedeyuzhou.ijkplayer.R;
 import com.github.jinsedeyuzhou.ijkplayer.danmaku.BiliDanmukuParser;
 import com.github.jinsedeyuzhou.ijkplayer.danmaku.DanamakuAdapter;
+import com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.ui.widget.DanmakuView;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by wyy on 2017/4/16.
@@ -72,6 +74,7 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
         int id=v.getId();
          if (id == R.id.app_video_share) {
              resolveDanmakuShow();
+             mDanmaKuShow=!mDanmaKuShow;
         }
     }
 
@@ -274,25 +277,53 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
         return spannableStringBuilder;
     }
 
+    @Override
+    public void onPauseResume() {
+        super.onPauseResume();
+        IjkVideoView ijkVideoView = getIjkVideoView();
+        if (ijkVideoView != null)
+        {
+            if (ijkVideoView.isPlaying())
+            {
+                mDanmakuView.resume();
+            }else
+            {
+                mDanmakuView.pause();
+            }
+        }
 
-    private void pauseDanmaku() {
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         if (mDanmakuView != null && mDanmakuView.isPrepared()) {
             mDanmakuView.pause();
         }
     }
 
-    private void resumeDanmaku() {
+    @Override
+    public void onResume() {
+        super.onResume();
         if (mDanmakuView != null && mDanmakuView.isPrepared() && mDanmakuView.isPaused()) {
             mDanmakuView.resume();
         }
     }
 
-    private void destoryDanmaku() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         if (mDanmakuView != null) {
             // dont forget release!
             mDanmakuView.release();
             mDanmakuView = null;
         }
+    }
+
+    @Override
+    public void onCompletion(IMediaPlayer iMediaPlayer) {
+        super.onCompletion(iMediaPlayer);
+        releaseDanmaku();
     }
 
     public BaseDanmakuParser getParser() {
@@ -314,6 +345,7 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
     public void setDanmakuStartSeekPosition(long danmakuStartSeekPosition) {
         this.mDanmakuStartSeekPosition = danmakuStartSeekPosition;
     }
+
 
 
 }

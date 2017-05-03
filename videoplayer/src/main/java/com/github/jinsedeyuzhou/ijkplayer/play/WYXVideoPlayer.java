@@ -53,7 +53,10 @@ import static com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils.generateTime;
 /**
  * Created by Berkeley on 11/2/16.
  */
-public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener, View.OnTouchListener {
+public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener, View.OnTouchListener, SeekBar.OnSeekBarChangeListener,
+        IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener
+
+{
 
     private static final String TAG = WYXVideoPlayer.class.getSimpleName();
     private Context mContext;
@@ -191,6 +194,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         init(context);
     }
 
+
     public WYXVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
@@ -282,7 +286,10 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         mVideoPlay.setOnClickListener(this);
         mVideoNetTieIcon.setOnClickListener(this);
         seekBar.setMax(1000);
-        seekBar.setOnSeekBarChangeListener(mSeekListener);
+        seekBar.setOnSeekBarChangeListener(this);
+        mVideoView.setOnCompletionListener(this);
+        mVideoView.setOnErrorListener(this);
+        mVideoView.setOnInfoListener(this);
         setKeepScreenOn(true);
         setClickable(true);
         gestureDetector = new GestureDetector(activity, new PlayerGestureListener());
@@ -302,63 +309,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         //需要更改为在引用的Application中使用   audioManager = (AudioManager) PlayerApplication.getAppContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-
-        mVideoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(IMediaPlayer mp, int what, int extra) {
-                switch (what) {
-                    case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
-                        Log.d(TAG, "MEDIA_INFO_BUFFERING_START");
-                        statusChange(PlayStateParams.STATE_PREPARING);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
-                        Log.d(TAG, "MEDIA_INFO_BUFFERING_END");
-                        statusChange(PlayStateParams.STATE_PLAYING);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
-                        //显示 下载速度
-//                        Toaster.show("download rate:" + extra);
-                        break;
-                    case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                        Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
-                        statusChange(PlayStateParams.STATE_PLAYING);
-                        break;
-                }
-                if (onInfoListener != null)
-                    onInfoListener.onInfo(what, extra);
-                return false;
-            }
-        });
-
-        mVideoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(IMediaPlayer mp) {
-                //释放内存
-                Runtime.getRuntime().gc();
-                if (WindowUtils.getScreenOrientation(activity)
-                        == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
-                    //横屏播放完毕，重置
-                    ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
-                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    mVideoView.setLayoutParams(layoutParams);
-                }
-                statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
-                if (completionListener != null)
-                    completionListener.completion(mp);
-            }
-        });
-        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(IMediaPlayer mp, int what, int extra) {
-                statusChange(PlayStateParams.STATE_ERROR);
-                if (onErrorListener != null)
-                    onErrorListener.onError(what, extra);
-                return true;
-            }
-        });
-
         orientationEventListener = new OrientationEventListener(mContext) {
             @Override
             public void onOrientationChanged(int rotation) {
@@ -503,6 +453,92 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         return super.onTouchEvent(event);
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (!fromUser)
+            return;
+        mVideoStaus.setVisibility(View.GONE);//移动时隐藏掉状态image
+        int newPosition = (int) ((duration * progress * 1.0) / 1000);
+        String time = generateTime(newPosition);
+        if (instantSeeking) {
+            mVideoView.seekTo(newPosition);
+        }
+        currentTime.setText(time);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        isDragging = true;
+        show(3600000);
+        handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        if (instantSeeking) {
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        }
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        if (!instantSeeking) {
+            mVideoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
+        }
+        show(defaultTimeout);
+        handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        isDragging = false;
+        handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_SHOW_PROGRESS, 1000);
+    }
+
+    @Override
+    public void onCompletion(IMediaPlayer iMediaPlayer) {
+        //释放内存
+        Runtime.getRuntime().gc();
+        if (WindowUtils.getScreenOrientation(activity)
+                == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || WindowUtils.getScreenOrientation(activity) == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+            //横屏播放完毕，重置
+            ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            mVideoView.setLayoutParams(layoutParams);
+        }
+        statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
+        if (completionListener != null)
+            completionListener.completion(iMediaPlayer);
+    }
+
+    @Override
+    public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
+        statusChange(PlayStateParams.STATE_ERROR);
+        if (onErrorListener != null)
+            onErrorListener.onError(what, extra);
+        return true;
+    }
+
+    @Override
+    public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                Log.d(TAG, "MEDIA_INFO_BUFFERING_START");
+                statusChange(PlayStateParams.STATE_PREPARING);
+                break;
+            case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                Log.d(TAG, "MEDIA_INFO_BUFFERING_END");
+                statusChange(PlayStateParams.STATE_PLAYING);
+                break;
+            case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
+                //显示 下载速度
+//                        Toaster.show("download rate:" + extra);
+                break;
+            case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
+                statusChange(PlayStateParams.STATE_PLAYING);
+                break;
+        }
+        if (onInfoListener != null)
+            onInfoListener.onInfo(what, extra);
+        return false;
+    }
+
 
     public class PlayerGestureListener extends GestureDetector.SimpleOnGestureListener {
         //点击
@@ -584,43 +620,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         }
     }
 
-    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (!fromUser)
-                return;
-            mVideoStaus.setVisibility(View.GONE);//移动时隐藏掉状态image
-            int newPosition = (int) ((duration * progress * 1.0) / 1000);
-            String time = generateTime(newPosition);
-            if (instantSeeking) {
-                mVideoView.seekTo(newPosition);
-            }
-            currentTime.setText(time);
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            isDragging = true;
-            show(3600000);
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            if (instantSeeking) {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-            }
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            if (!instantSeeking) {
-                mVideoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
-            }
-            show(defaultTimeout);
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
-            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            isDragging = false;
-            handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_SHOW_PROGRESS, 1000);
-        }
-    };
-
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
             mVideoPlay.setSelected(true);
@@ -656,6 +655,13 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             mVideoView.start();
             mVideoPlay.setSelected(true);
         }
+
+        onPauseResume();
+    }
+
+    public void onPauseResume() {
+
+
     }
 
 
@@ -1149,6 +1155,10 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         return activity.findViewById(ViewId);
     }
 
+    public IjkVideoView getIjkVideoView() {
+        return mVideoView;
+    }
+
     public boolean isShowing() {
         return isShowing;
     }
@@ -1399,7 +1409,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     public void onResume() {
         Log.d(TAG, "onResume" + status);
         pauseTime = 0;
-        if (status == PlayStateParams.STATE_PLAYING) {
+        if (status == PlayStateParams.STATE_PAUSED) {
             if (isLive) {
                 mVideoView.seekTo(0);
             } else if (isAutoPause) {
