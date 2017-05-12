@@ -2,6 +2,7 @@ package com.github.jinsedeyuzhou.ijkplayer.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
@@ -97,23 +98,19 @@ public class NetworkUtils {
         return false;
     }
     /**
-     * 判断WiFi是否连接
+     * 判断移动网络是否连接
      *
      * @param context
      * @return
      */
     public static boolean isMobileAvailable(Context context) {
         ConnectivityManager mConnMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-//        NetworkInfo mMobile = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        boolean flag = false;
-        if ((mWifi != null) && ((mWifi.isAvailable()))) {
-            if ((mWifi.isConnected())) {
-                flag = true;
-            }
+        NetworkInfo mobile = mConnMgr.getActiveNetworkInfo();
+        if (mobile != null
+                && mobile.getType() == ConnectivityManager.TYPE_MOBILE) {
+            return true;
         }
-        return flag;
-
+        return false;
     }
 
 
