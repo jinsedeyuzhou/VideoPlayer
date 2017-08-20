@@ -1,7 +1,7 @@
-package com.android.videoplayersample.net;
+package com.ebrightmoon.aplayer.net;
 
 import com.alibaba.fastjson.JSON;
-import com.android.videoplayersample.bean.LiveBean;
+import com.ebrightmoon.aplayer.bean.LiveBean;
 
 import org.json.JSONObject;
 

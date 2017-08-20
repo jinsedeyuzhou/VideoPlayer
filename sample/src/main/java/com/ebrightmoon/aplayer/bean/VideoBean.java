@@ -1,17 +1,34 @@
-package com.android.videoplayersample.bean;
+package com.ebrightmoon.aplayer.bean;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by Berkeley on 10/26/16.
  */
 
 
-public class VideoIjkBean implements Serializable {
+public class VideoBean implements Parcelable {
     /**
      * id
      */
     private int id;
+    /**
+     * 标题
+     */
+    private String title;
+    //播放次数
+    private int onlineUsersNumber;
+    //视频时长
+    private long duration;
+
+    //视频来源
+    private String resource;
+
+    //背景
+    private String bgUrl;
+    //评论
+    private String comments;
 
     /**
      * 视频地址
@@ -34,7 +51,7 @@ public class VideoIjkBean implements Serializable {
     /**
      * titie
      */
-    private String title;
+
     private boolean showNavIcon = true;
 
 
@@ -98,5 +115,41 @@ public class VideoIjkBean implements Serializable {
 
 
 
+    private VideoBean(Parcel in) {
+        id=in.readInt();
+        scaleType = in.readString();
+        fullScreenOnly = in.readByte() != 0;
+        defaultRetryTime = in.readLong();
+        title = in.readString();
+        showNavIcon = in.readByte() != 0;
+        streamUrl=in.readString();
+
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(scaleType);
+        dest.writeByte((byte) (fullScreenOnly ? 1 : 0));
+        dest.writeLong(defaultRetryTime);
+        dest.writeString(title);
+        dest.writeString(streamUrl);
+        dest.writeByte((byte) (showNavIcon ? 1 : 0));
+    }
+
+    public static final Creator<VideoBean> CREATOR = new Creator<VideoBean>() {
+        public VideoBean createFromParcel(Parcel in) {
+            return new VideoBean(in);
+        }
+
+        public VideoBean[] newArray(int size) {
+            return new VideoBean[size];
+        }
+    };
 }
 

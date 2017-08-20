@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.android.videoplayersample"
+        applicationId "com.ebrightmoon.aplayer"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
@@ -22,17 +22,24 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.0'
     compile project(":videoplayer")
     compile 'com.google.code.gson:gson:2.2.4'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:preference-v7:23.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:preference-v7:25.0.1'
     //网络获取直播视频
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.retrofit2:converter-scalars:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'com.alibaba:fastjson:1.2.14'
+
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    compile 'com.github.jinsedeyuzhou:commonutils:e6a4271579'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+    compile 'com.android.support:multidex:1.0.1'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'

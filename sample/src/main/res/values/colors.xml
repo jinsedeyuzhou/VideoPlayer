@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!--Primarycolor-->
+    <color name="colorPrimary">@color/palette500</color>
+    <color name="colorPrimaryDark">@color/palette700</color>
+    <color name="colorAccent">@color/accentA200</color>
+    <color name="colorFallbackMajor">@color/fallbackA100</color>
+    <color name="colorFallbackMinor">@color/fallbackA400</color>
+
+    <!--palette-indigo-->
+    <color name="palette50">#ede7f6</color>
+    <color name="palette100">#d1c4e9</color>
+    <color name="palette200">#b39ddb</color>
+    <color name="palette300">#9575cd</color>
+    <color name="palette400">#7e57c2</color>
+    <color name="palette500">#673ab7</color>
+    <color name="palette600">#5e35b1</color>
+    <color name="palette700">#512da8</color>
+    <color name="palette800">#4527a0</color>
+    <color name="palette900">#311b92</color>
+    <color name="paletteA100">#b388ff</color>
+    <color name="paletteA200">#7c4dff</color>
+    <color name="paletteA400">#651fff</color>
+    <color name="paletteA700">#6200ea</color>
+
+    <!--accent color-->
+    <color name="accentA200">#FFFF00</color>
+
+    <!--fallback color-->
+    <color name="fallbackA100">#FFFF8D</color>
+    <color name="fallbackA400">#FFEA00</color>
+    <color name="fallbackwA700">#FFD600</color>
+
+    <!-- 常用颜色 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#008000</color>
+    <color name="blue">#0000FF</color>
+    <color name="orange">#FFA500</color>
+    <color name="grey">#808080</color>
+    <!-- 暗红色 -->
+    <color name="kermesinus">#bb0d18</color>
+    <!-- 暗灰色 -->
+    <color name="darkgrey">#A9A9A9</color>
+    <!-- 象牙色 -->
+    <color name="ivory">#FFFFF0</color>
+    <!-- 淡灰色 -->
+    <color name="gainsboro">#DCDCDC</color>
+    <!-- 暗蓝色 -->
+    <color name="darkblue">#00008B</color>
+    <!-- 暗绿色 -->
+    <color name="darkgreen">#006400</color>
+    <!-- 暗灰蓝色 -->
+    <color name="darkslateblue">#483D8B</color>
+    <!-- 水蓝色 -->
+    <color name="aqua">#66ccff</color>
+    <!-- 浅黑 -->
+    <color name="somber">#666666</color>
+    <color name="fragment_container">#fff2f3f4</color>
+
 </resources>

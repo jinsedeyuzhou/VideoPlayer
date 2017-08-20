@@ -1,4 +1,4 @@
-package com.android.videoplayersample.net;
+package com.ebrightmoon.aplayer.net;
 
 
 import retrofit2.Call;

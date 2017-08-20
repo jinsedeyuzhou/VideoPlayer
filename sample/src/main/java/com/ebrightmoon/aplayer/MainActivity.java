@@ -1,9 +1,11 @@
-package com.android.videoplayersample;
+package com.ebrightmoon.aplayer;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.android.videoplayersample.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     @Override

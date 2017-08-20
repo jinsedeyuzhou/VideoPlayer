@@ -5,14 +5,14 @@
 
 
     <application
-        android:name=".VideoApplication"
+        android:name="com.ebrightmoon.aplayer.base.PlayerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.ebrightmoon.aplayer.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,12 +20,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".VideoViewActivity"
+        <activity android:name="com.ebrightmoon.aplayer.VideoViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             />
-        <activity android:name=".LiveActivity"
+        <activity android:name="com.ebrightmoon.aplayer.LiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             />

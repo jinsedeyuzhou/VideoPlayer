@@ -1,4 +1,4 @@
-package com.android.videoplayersample.bean;
+package com.ebrightmoon.aplayer.bean;
 
 /**
  * Created by Berkeley on 10/28/16.

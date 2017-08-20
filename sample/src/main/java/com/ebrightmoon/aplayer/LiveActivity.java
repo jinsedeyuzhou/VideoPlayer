@@ -1,4 +1,4 @@
-package com.android.videoplayersample;
+package com.ebrightmoon.aplayer;
 
 /**
  * Created by Berkeley on 12/16/16.
@@ -17,8 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.android.videoplayersample.bean.LiveBean;
-import com.android.videoplayersample.net.ApiServiceUtils;
+import com.android.videoplayersample.R;
+import com.ebrightmoon.aplayer.bean.LiveBean;
+import com.ebrightmoon.aplayer.net.ApiServiceUtils;
 import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer;
 
 import java.util.List;

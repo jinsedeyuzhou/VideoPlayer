@@ -1,4 +1,4 @@
-package com.android.videoplayersample;
+package com.ebrightmoon.aplayer;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.android.videoplayersample.R;
 import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerDanmaku;
 
 /**
