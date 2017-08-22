@@ -17,9 +17,10 @@ public abstract class PlayerActivity
     protected PlayerApplication app;
     protected Context mContext;
 
-    public abstract void initData();
+
 
     public abstract void initView();
+    public abstract void initData();
 
     public boolean isAppOnForeground() {
         // Returns a list of application processes that are running on the

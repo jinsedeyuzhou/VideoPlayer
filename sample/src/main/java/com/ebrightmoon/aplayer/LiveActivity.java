@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.android.videoplayersample.R;
 import com.ebrightmoon.aplayer.bean.LiveBean;
 import com.ebrightmoon.aplayer.net.ApiServiceUtils;
 import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer;

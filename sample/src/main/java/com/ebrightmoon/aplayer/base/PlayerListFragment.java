@@ -5,7 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.videoplayersample.R;
+import com.ebrightmoon.aplayer.R;
+import com.yuxuan.common.base.BaseFragment;
 
 
 public abstract class PlayerListFragment
