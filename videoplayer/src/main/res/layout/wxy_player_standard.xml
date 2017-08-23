@@ -66,9 +66,11 @@
         android:indeterminateOnly="true"
         android:visibility="gone" />
 
-    <include layout="@layout/player_controlbar" />
+    <include layout="@layout/player_controlbar_standard" />
 
     <include layout="@layout/player_toolbar" />
+    <include layout="@layout/player_media_quality"/>
+    <include layout="@layout/player_media_list"/>
 
     <ProgressBar
         android:id="@+id/bottom_progressbar"

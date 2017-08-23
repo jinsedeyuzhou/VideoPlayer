@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/player_controlbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#66000000"
+    >
+
+    <SeekBar
+        android:id="@+id/app_land_seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="46dp"
+        android:focusable="true"
+        android:maxHeight="2dp"
+        android:minHeight="2dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:progressDrawable="@drawable/player_bg_seek"
+        android:thumb="@drawable/player_bg_thumb"
+        android:thumbOffset="10dp"
+        android:visibility="gone"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_gravity="bottom"
+        android:paddingRight="15dp"
+        android:background=""
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/app_video_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/player_pause_play" />
+
+
+        <TextView
+            android:id="@+id/app_video_currentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="06:21"
+            android:textColor="@android:color/white"
+            android:textSize="12dp" />
+
+        <SeekBar
+            android:id="@+id/app_video_seekBar"
+            style="@style/SeekBarAppTheme"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:id="@+id/tv_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:text="/"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/app_video_endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:10"
+            android:textColor="@android:color/white"
+            android:textSize="12dp" />
+
+        <View
+            android:id="@+id/place_holder"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/app_video_quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@drawable/player_txt_selector"
+            android:text="自动"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/app_video_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@drawable/player_txt_selector"
+            android:text="选集"
+            android:padding="8dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:visibility="gone"
+            />
+        <ImageView
+            android:id="@+id/app_video_fullscreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_fullscreen_white_24dp" />
+    </LinearLayout>
+
+</FrameLayout>
+

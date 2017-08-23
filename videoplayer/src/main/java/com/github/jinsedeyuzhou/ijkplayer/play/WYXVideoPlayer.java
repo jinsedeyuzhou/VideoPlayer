@@ -54,16 +54,14 @@ import static com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils.generateTime;
  * Created by Berkeley on 11/2/16.
  */
 public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener, View.OnTouchListener, SeekBar.OnSeekBarChangeListener,
-        IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener
-
-{
+        IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener {
 
     private static final String TAG = WYXVideoPlayer.class.getSimpleName();
-    private Context mContext;
-    private Activity activity;
+    protected Context mContext;
+    protected Activity activity;
     private View controlbar;
     private SeekBar seekBar;
-    private IjkVideoView mVideoView;
+    protected IjkVideoView mVideoView;
     private ImageView mVideoReplay;
     private ImageView mVideoPlay;
     private ImageView mVideoFullscreen;
@@ -88,7 +86,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     private ImageView mVideoFinishIcon;
     private View live_box;
     private ImageView mVideoLock;
-    private ImageView mVideoShare;
 
 
     //屏幕宽度
@@ -127,7 +124,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     //是否支持该设备
     private boolean playerSupport;
     //当前位置
-    private int currentPosition;
+    protected int currentPosition;
     //是否是仅仅全屏
     private boolean fullScreenOnly;
     private long pauseTime;
@@ -166,6 +163,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
                     break;
                 case PlayStateParams.MESSAGE_SEEK_NEW_POSITION:
                     if (!isLive && newPosition >= 0) {
+                        gestureTouch.setVisibility(View.GONE);
                         mVideoView.seekTo((int) newPosition);
                         newPosition = -1;
                     }
@@ -205,7 +203,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         init(context);
     }
 
-    private void init(Context context) {
+    public void init(Context context) {
         this.mContext = context;
         activity = (Activity) mContext;
         initView();
@@ -217,7 +215,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         return R.layout.wxy_player;
     }
 
-    private void initView() {
+    public void initView() {
         View.inflate(mContext, getLayoutId(), this);
         //播放控制
         live_box = findViewById(R.id.app_video_box);
@@ -249,7 +247,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         top_box = (RelativeLayout) findViewById(R.id.app_video_top_box);
         mVideoFinish = (ImageView) findViewById(R.id.app_video_finish);
         mVideoLock = (ImageView) findViewById(R.id.app_video_lock);
-        mVideoShare = (ImageView) findViewById(R.id.app_video_share);
         topTitle = (MarqueeTextView) findViewById(R.id.app_video_title);
 
         //status
@@ -277,9 +274,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     }
 
 
-    private void initAction() {
+    public void initAction() {
         mVideoLock.setOnClickListener(this);
-        mVideoShare.setOnClickListener(this);
         mVideoFinish.setOnClickListener(this);
         mVideoFullscreen.setOnClickListener(this);
         mVideoReplay.setOnClickListener(this);
@@ -298,7 +294,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
     }
 
-    private void initMediaPlayer() {
+    public void initMediaPlayer() {
         try {
             IjkMediaPlayer.loadLibrariesOnce(null);
             IjkMediaPlayer.native_profileBegin("libijkplayer.so");
@@ -399,9 +395,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         } else if (id == R.id.app_video_lock) {
             toggleLockState();
         }
-//        else if (id == R.id.app_video_share) {
-//
-//        }
     }
 
     private void toggleLockState() {
@@ -413,7 +406,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             isLock = true;
             orientationEventListener.disable();
             mVideoLock.setImageResource(R.drawable.video_lock);
-            hide(true);
         }
     }
 
@@ -554,7 +546,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         @Override
         public boolean onDoubleTap(MotionEvent e) {
 //            mVideoView.toggleAspectRatio();
-            return true;
+            onPauseResume();
+            return super.onDoubleTap(e);
         }
 
         @Override
@@ -606,7 +599,10 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             Log.d(TAG, "onSingleTapUp:" + isShowing);
-            if (isLock) {
+
+            if (hideFrameLayout()) {
+                ;
+            } else if (isLock) {
                 if (mVideoLock.getVisibility() == View.VISIBLE)
                     mVideoLock.setVisibility(View.GONE);
                 else
@@ -619,6 +615,14 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             return true;
         }
     }
+
+    public boolean hideFrameLayout() {
+
+        return false;
+
+    }
+
+
 
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
@@ -655,7 +659,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             mVideoView.start();
             mVideoPlay.setSelected(true);
         }
-
         onPauseResume();
     }
 
@@ -755,34 +758,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         }
     }
 
-//    public void doOnConfigurationChanged(final boolean portrait) {
-//        if (mVideoView != null) {
-//            handler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    tryFullScreen(!portrait);
-//                    if (portrait) {
-//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-//                        layoutParams.height = initHeight;
-////                        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-////                        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-//                        setLayoutParams(layoutParams);
-//                        requestLayout();
-//                    } else {
-//                        int heightPixels = ((Activity) mContext).getResources().getDisplayMetrics().heightPixels;
-//                        int widthPixels = ((Activity) mContext).getResources().getDisplayMetrics().widthPixels;
-//                        ViewGroup.LayoutParams layoutParams = getLayoutParams();
-//                        layoutParams.height = screenWidthPixels;
-////                        layoutParams.width = widthPixels;
-//                        setLayoutParams(layoutParams);
-//                    }
-//                    updateFullScreenButton();
-//                }
-//            });
-//
-//        }
-//    }
-
 
     private void tryFullScreen(boolean fullScreen) {
         if (activity instanceof AppCompatActivity) {
@@ -804,6 +779,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     private void setFullScreen(boolean fullScreen) {
         if (activity != null) {
             WindowManager.LayoutParams attrs = activity.getWindow().getAttributes();
+
             if (fullScreen) {
                 attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                 activity.getWindow().setAttributes(attrs);
@@ -906,8 +882,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     }
 
     public void hide(boolean force) {
-//        if (!isShowContoller)
-//            return;
         if (force || isShowing) {
             showBottomControl(false);
             top_box.setVisibility(View.GONE);

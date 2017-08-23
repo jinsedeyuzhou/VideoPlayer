@@ -72,10 +72,10 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
     public void onClick(View v) {
         super.onClick(v);
         int id=v.getId();
-         if (id == R.id.app_video_share) {
-             resolveDanmakuShow();
-             mDanmaKuShow=!mDanmaKuShow;
-        }
+//         if (id == R.id.app_video_share) {
+//             resolveDanmakuShow();
+//             mDanmaKuShow=!mDanmaKuShow;
+//        }
     }
 
     @Override

@@ -67,6 +67,20 @@ public class PlayStateParams {
     public  static final int MESSAGE_RESTART_PLAY = 5;
     public  static final int MESSAGE_HIDE_NETWORK = 6;
     public  static final int MESSAGE_UPDATE_PAUSE_ONRESUME= 7;
+    /**=====================视频质量=======================================*/
+    // 默认显示/隐藏选择分辨率界面时间
+    public static final int DEFAULT_QUALITY_TIME = 300;
+    /**
+     * 依次分别为：流畅、清晰、高清、超清和1080P
+     */
+    public static final int MEDIA_QUALITY_SMOOTH = 0;
+    public static final int MEDIA_QUALITY_MEDIUM = 1;
+    public static final int MEDIA_QUALITY_HIGH = 2;
+    public static final int MEDIA_QUALITY_SUPER = 3;
+    public static final int MEDIA_QUALITY_BD = 4;
+
+
+
 
 
 

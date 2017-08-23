@@ -70,4 +70,12 @@
 
     <string name="small_problem">Player encountered a small problem</string>
     <string name="not_support">player not support this device</string>
+
+    <string-array name="media_quality">
+        <item>流畅</item>
+        <item>清晰</item>
+        <item>高清</item>
+        <item>超清</item>
+        <item>1080P</item>
+    </string-array>
 </resources>
