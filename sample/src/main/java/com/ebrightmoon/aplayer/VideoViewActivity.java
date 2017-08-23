@@ -29,8 +29,8 @@ public class VideoViewActivity extends FragmentActivity {
         setContentView(R.layout.activity_video);
         player = (WYXVideoPlayerStandard) findViewById(R.id.layout_video);
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
-        mInputDamaku = (EditText) findViewById(R.id.et_input_danmaku);
-        mSendDanmaku = (Button) findViewById(R.id.btn_send_danmaku);
+//        mInputDamaku = (EditText) findViewById(R.id.et_input_danmaku);
+//        mSendDanmaku = (Button) findViewById(R.id.btn_send_danmaku);
 //        mSendDanmaku.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

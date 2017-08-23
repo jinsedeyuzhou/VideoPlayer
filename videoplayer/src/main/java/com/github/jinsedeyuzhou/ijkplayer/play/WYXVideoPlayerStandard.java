@@ -56,15 +56,12 @@ public class WYXVideoPlayerStandard extends WYXVideoPlayer {
     public void init(Context context) {
         super.init(context);
 
-
         mLandSeekBar = (SeekBar) findViewById(R.id.app_land_seekBar);
         mSeparator = (TextView) findViewById(R.id.tv_separator);
         mPlaceHolder = findViewById(R.id.place_holder);
         mVideoLists = (TextView) findViewById(R.id.app_video_list);
-
         initMediaQuality();
         initMediaLists();
-
     }
 
 
@@ -219,20 +216,28 @@ public class WYXVideoPlayerStandard extends WYXVideoPlayer {
 
     //======================================================================//
 
-    public void toggleDanmakuView(boolean isShow) {
+    public void toggleQualityView(boolean isShow) {
         if (isShow) {
-            mLandSeekBar.setVisibility(VISIBLE);
-            mSeparator.setVisibility(VISIBLE);
-            mVideoLists.setVisibility(VISIBLE);
-            mTvMediaQuality.setVisibility(VISIBLE);
-            mPlaceHolder.setVisibility(GONE);
+            mLandSeekBar.setVisibility(View.VISIBLE);
+            mSeparator.setVisibility(View.VISIBLE);
+            mVideoLists.setVisibility(View.VISIBLE);
+            mTvMediaQuality.setVisibility(View.VISIBLE);
+            mPlaceHolder.setVisibility(View.VISIBLE);
+            seekBar.setVisibility(View.GONE);
         } else {
-            mLandSeekBar.setVisibility(VISIBLE);
-            mSeparator.setVisibility(VISIBLE);
-            mVideoLists.setVisibility(VISIBLE);
-            mTvMediaQuality.setVisibility(VISIBLE);
-            mPlaceHolder.setVisibility(GONE);
+            mLandSeekBar.setVisibility(View.GONE);
+            mSeparator.setVisibility(View.GONE);
+            mVideoLists.setVisibility(View.GONE);
+            mTvMediaQuality.setVisibility(View.GONE);
+            mPlaceHolder.setVisibility(View.GONE);
+            seekBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    protected void doOnConfigurationChanged(boolean portrait) {
+        super.doOnConfigurationChanged(portrait);
+        toggleQualityView(!portrait);
     }
 
     @Override

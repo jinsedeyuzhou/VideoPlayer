@@ -60,7 +60,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     protected Context mContext;
     protected Activity activity;
     private View controlbar;
-    private SeekBar seekBar;
+    protected SeekBar seekBar;
     protected IjkVideoView mVideoView;
     private ImageView mVideoReplay;
     private ImageView mVideoPlay;
@@ -623,7 +623,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     }
 
 
-
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
             mVideoPlay.setSelected(true);
@@ -724,16 +723,16 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
     /**
      * 当竖横屏切换时处理视频窗口
-     *
      * @param portrait
      */
-    private void doOnConfigurationChanged(final boolean portrait) {
+    protected void doOnConfigurationChanged(final boolean portrait) {
 
         if (mVideoView != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     tryFullScreen(!portrait);
+//                    updateLayout(!portrait);
                     ViewGroup.LayoutParams params = getLayoutParams();
                     if (null == params)
                         return;
@@ -753,11 +752,21 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
                     }
                     updateFullScreenButton();
                 }
+
+
             });
 
         }
     }
-
+    private void updateLayout(boolean fullScreen) {
+        if (fullScreen)
+        {
+            seekBar.setVisibility(View.GONE);
+        }else
+        {
+            seekBar.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void tryFullScreen(boolean fullScreen) {
         if (activity instanceof AppCompatActivity) {

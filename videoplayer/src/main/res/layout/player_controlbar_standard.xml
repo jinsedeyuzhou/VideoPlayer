@@ -3,6 +3,7 @@
     android:id="@+id/player_controlbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
     android:background="#66000000"
     >
 
@@ -28,7 +29,6 @@
         android:layout_height="46dp"
         android:layout_gravity="bottom"
         android:paddingRight="15dp"
-        android:background=""
         android:paddingLeft="15dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
