@@ -397,9 +397,6 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         };
         //关闭重力感应
         hideAll();
-        if (fullScreenOnly) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
         portrait = WindowUtils.isPortrait(activity);
         if (!playerSupport) {
             showStatus(activity.getResources().getString(R.string.not_support));
@@ -1557,6 +1554,8 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     }
 
     public boolean onBackPressed() {
+        if (fullScreenOnly)
+            return false;
         if (WindowUtils.isLandscape(mContext)) {
             if (!isLock) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1575,6 +1574,8 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (fullScreenOnly)
+            return super.onKeyDown(keyCode, event);
         if (WindowUtils.isLandscape(mContext)) {
 
             if (!isLock) {
