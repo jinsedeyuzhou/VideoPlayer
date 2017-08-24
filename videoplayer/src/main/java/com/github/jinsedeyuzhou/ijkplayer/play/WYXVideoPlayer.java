@@ -1219,6 +1219,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     }
 
     public boolean onBackPressed() {
+        if (fullScreenOnly)
+            return false;
         if (WindowUtils.isLandscape(mContext)) {
             if (!isLock) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1237,6 +1239,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (fullScreenOnly)
+            return super.onKeyDown(keyCode,event);
         if (WindowUtils.isLandscape(mContext)) {
 
             if (!isLock) {
