@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 
 import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerStandard;
 
+
 /**
  * Created by Berkeley on 11/9/16.
  */
@@ -28,6 +29,7 @@ public class VideoViewActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         player = (WYXVideoPlayerStandard) findViewById(R.id.layout_video);
+//        player.setFullScreenOnly(true);
         player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
 //        mInputDamaku = (EditText) findViewById(R.id.et_input_danmaku);
 //        mSendDanmaku = (Button) findViewById(R.id.btn_send_danmaku);

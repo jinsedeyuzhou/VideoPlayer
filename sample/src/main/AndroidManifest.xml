@@ -29,6 +29,9 @@
             android:name="com.ebrightmoon.aplayer.LiveActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
+        <activity android:name=".IjkFullscreenActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
 
         <!--<activity android:name=".page.HomeActivity"-->
             <!--android:theme="@style/AppTheme.NoActionBar"-->

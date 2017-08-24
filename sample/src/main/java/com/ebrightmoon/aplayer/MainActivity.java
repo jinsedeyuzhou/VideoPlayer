@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         findViewById(R.id.btn_surfaceview).setOnClickListener(this);
         findViewById(R.id.videoview).setOnClickListener(this);
+        findViewById(R.id.fullscreen).setOnClickListener(this);
     }
 
     @Override
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         } else if (i == R.id.videoview) {
             intent = new Intent(getApplicationContext(), VideoViewActivity.class);
+            startActivity(intent);
+        }else if (i==R.id.fullscreen)
+        {
+            intent = new Intent(getApplicationContext(), IjkFullscreenActivity.class);
             startActivity(intent);
         }
 

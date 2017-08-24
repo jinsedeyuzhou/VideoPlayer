@@ -31,7 +31,7 @@ public class PlayStateParams {
 
 
     /**
-    播放出错
+     * 播放出错
      */
     public static final int STATE_ERROR = -1;
     /**
@@ -60,39 +60,36 @@ public class PlayStateParams {
     public static final int STATE_PLAYBACK_COMPLETED = 5;
 
 
-    public static final int MESSAGE_SHOW_PROGRESS = 1;
-    public static final int MESSAGE_FADE_OUT = 2;
-    public  static final int MESSAGE_SEEK_NEW_POSITION = 3;
-    public  static final int MESSAGE_HIDE_CENTER_BOX = 4;
-    public  static final int MESSAGE_RESTART_PLAY = 5;
-    public  static final int MESSAGE_HIDE_NETWORK = 6;
-    public  static final int MESSAGE_UPDATE_PAUSE_ONRESUME= 7;
-    /**=====================视频质量=======================================*/
+    public static final int MESSAGE_SHOW_PROGRESS = 201;
+    public static final int MESSAGE_FADE_OUT = 202;
+    public static final int MESSAGE_SEEK_NEW_POSITION = 203;
+    public static final int MESSAGE_HIDE_CENTER_BOX = 204;
+    public static final int MESSAGE_RESTART_PLAY = 205;
+    public static final int MESSAGE_HIDE_NETWORK = 206;
+    public static final int MESSAGE_UPDATE_PAUSE_ONRESUME = 207;
+    /**
+     * =====================视频质量=======================================
+     */
     // 默认显示/隐藏选择分辨率界面时间
     public static final int DEFAULT_QUALITY_TIME = 300;
     /**
      * 依次分别为：流畅、清晰、高清、超清和1080P
      */
-    public static final int MEDIA_QUALITY_SMOOTH = 0;
-    public static final int MEDIA_QUALITY_MEDIUM = 1;
-    public static final int MEDIA_QUALITY_HIGH = 2;
-    public static final int MEDIA_QUALITY_SUPER = 3;
-    public static final int MEDIA_QUALITY_BD = 4;
+    public static final int MEDIA_QUALITY_SMOOTH = 100;
+    public static final int MEDIA_QUALITY_MEDIUM = 101;
+    public static final int MEDIA_QUALITY_HIGH = 102;
+    public static final int MEDIA_QUALITY_SUPER = 103;
+    public static final int MEDIA_QUALITY_BD = 104;
 
 
-
-
-
-
-
-
-
-    /**====================ijk状态码表 开始=================================*/
+    /**
+     * ====================ijk状态码表 开始=================================
+     */
     /*
      * Do not change these values without updating their counterparts in native
      */
     // 无效变量
-    public  static final int INVALID_VALUE = -1;
+    public static final int INVALID_VALUE = -1;
     public static final int MEDIA_INFO_UNKNOWN = 1;//未知信息
     public static final int MEDIA_INFO_STARTED_AS_NEXT = 2;//播放下一条
     public static final int MEDIA_INFO_VIDEO_RENDERING_START = 3;//视频开始整备中
@@ -108,7 +105,7 @@ public class PlayStateParams {
     public static final int MEDIA_INFO_UNSUPPORTED_SUBTITLE = 901;//不支持字幕
     public static final int MEDIA_INFO_SUBTITLE_TIMED_OUT = 902;//字幕超时
 
-    public static final int MEDIA_INFO_VIDEO_INTERRUPT= -10000;//数据连接中断
+    public static final int MEDIA_INFO_VIDEO_INTERRUPT = -10000;//数据连接中断
     public static final int MEDIA_INFO_VIDEO_ROTATION_CHANGED = 10001;//视频方向改变
     public static final int MEDIA_INFO_AUDIO_RENDERING_START = 10002;//音频开始整备中
 

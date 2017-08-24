@@ -358,9 +358,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         };
         //关闭重力感应
         hideAll();
-        if (fullScreenOnly) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
         portrait = WindowUtils.isPortrait(activity);
         if (!playerSupport) {
             showStatus(activity.getResources().getString(R.string.not_support));
@@ -397,6 +394,9 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         }
     }
 
+    /**
+     * 切换屏幕
+     */
     private void toggleLockState() {
         if (isLock) {
             isLock = false;
@@ -406,6 +406,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             isLock = true;
             orientationEventListener.disable();
             mVideoLock.setImageResource(R.drawable.video_lock);
+            hide(false);
+            mVideoLock.setVisibility(View.VISIBLE);
         }
     }
 
@@ -600,9 +602,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         public boolean onSingleTapUp(MotionEvent e) {
             Log.d(TAG, "onSingleTapUp:" + isShowing);
 
-            if (hideFrameLayout()) {
-                ;
-            } else if (isLock) {
+            if (isLock) {
                 if (mVideoLock.getVisibility() == View.VISIBLE)
                     mVideoLock.setVisibility(View.GONE);
                 else
@@ -616,12 +616,18 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         }
     }
 
-    public boolean hideFrameLayout() {
-
-        return false;
-
+    /**
+     * 横竖屏切换时布局改变
+     *
+     * @param b
+     */
+    private void toggleConfigurationChanged(boolean b) {
+        if (!b) {
+            mVideoLock.setVisibility(View.GONE);
+        } else if (b && isShowing) {
+            mVideoLock.setVisibility(View.VISIBLE);
+        }
     }
-
 
     private void updatePausePlay() {
         if (mVideoView.isPlaying()) {
@@ -710,7 +716,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
             loading.setVisibility(View.VISIBLE);
         } else if (newStatus == PlayStateParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
-            bottomProgress.setVisibility(View.VISIBLE);
+//            bottomProgress.setVisibility(View.VISIBLE);
             loading.setVisibility(View.GONE);
             handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
@@ -723,6 +729,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
     /**
      * 当竖横屏切换时处理视频窗口
+     *
      * @param portrait
      */
     protected void doOnConfigurationChanged(final boolean portrait) {
@@ -732,7 +739,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
                 @Override
                 public void run() {
                     tryFullScreen(!portrait);
-//                    updateLayout(!portrait);
+                    toggleConfigurationChanged(!portrait);
                     ViewGroup.LayoutParams params = getLayoutParams();
                     if (null == params)
                         return;
@@ -758,15 +765,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
 
         }
     }
-    private void updateLayout(boolean fullScreen) {
-        if (fullScreen)
-        {
-            seekBar.setVisibility(View.GONE);
-        }else
-        {
-            seekBar.setVisibility(View.VISIBLE);
-        }
-    }
+
 
     private void tryFullScreen(boolean fullScreen) {
         if (activity instanceof AppCompatActivity) {
@@ -813,10 +812,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         Log.d(TAG, "hideAll");
         mReplay.setVisibility(View.GONE);
         loading.setVisibility(View.GONE);
-        top_box.setVisibility(View.GONE);
-        mVideoFullscreen.setVisibility(View.INVISIBLE);
         mVideoStaus.setVisibility(View.GONE);
-        mVideoLock.setVisibility(View.GONE);
         showBottomControl(false);
 
     }
@@ -828,10 +824,7 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
      */
     private void showBottomControl(boolean show) {
 
-        mVideoPlay.setVisibility(show ? View.VISIBLE : View.GONE);
-        currentTime.setVisibility(show ? View.VISIBLE : View.GONE);
-        endTime.setVisibility(show ? View.VISIBLE : View.GONE);
-        seekBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        top_box.setVisibility(show ? View.VISIBLE : View.GONE);
         controlbar.setVisibility(show ? View.VISIBLE : View.GONE);
         mVideoLock.setVisibility(!portrait && show ? View.VISIBLE : View.GONE);
         bottomProgress.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -893,8 +886,6 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
     public void hide(boolean force) {
         if (force || isShowing) {
             showBottomControl(false);
-            top_box.setVisibility(View.GONE);
-            mVideoFullscreen.setVisibility(View.INVISIBLE);
             isShowing = false;
         }
 
@@ -905,12 +896,8 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
         if (!isShowContoller)
             return;
         if (!isShowing) {
-            top_box.setVisibility(View.VISIBLE);
             if (!isLive) {
                 showBottomControl(true);
-            }
-            if (!fullScreenOnly) {
-                mVideoFullscreen.setVisibility(View.VISIBLE);
             }
             isShowing = true;
         }
@@ -1192,6 +1179,19 @@ public class WYXVideoPlayer extends FrameLayout implements View.OnClickListener,
      */
     public void setLive(boolean isLive) {
         this.isLive = isLive;
+    }
+
+    /**
+     * 仅仅全屏
+     *
+     * @param fullScreenOnly
+     */
+    public void setFullScreenOnly(boolean fullScreenOnly) {
+        this.fullScreenOnly = fullScreenOnly;
+        doOnConfigurationChanged(true);
+        orientationEventListener.disable();
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        mVideoFullscreen.setVisibility(View.GONE);
     }
 
     /**

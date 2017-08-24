@@ -3,6 +3,7 @@
     android:id="@+id/app_video_box"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     android:background="#000">
 
     <com.github.jinsedeyuzhou.ijkplayer.media.IjkVideoView

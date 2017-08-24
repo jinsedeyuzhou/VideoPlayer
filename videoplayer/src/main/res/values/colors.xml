@@ -34,4 +34,10 @@
     <color name="background_gray_light">#ffbababa</color>
 
     <color name="recover_screen_text">#f06292</color>
+
+    <color name="bg_playing">#3d9ffa</color>
+    <color name="bg_normal">#191919</color>
+    <color name="bg_next">#32597d</color>
+    <color name="bg_feed_pressed">#3d9ffa</color>
+    <color name="bg_feed_normal">#FAFAFA</color>
 </resources>
