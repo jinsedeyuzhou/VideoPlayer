@@ -173,7 +173,7 @@ Email:jinsedeyuzhou@sina.com
 
 ## License
 
-** Copyright (C) dou361, The Framework Open Source Project**
+**Copyright (C) dou361, The Framework Open Source Project**
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -188,6 +188,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 (Frequently Asked Questions)FAQ
-##Bugs Report and Help
+## Bugs Report and Help
 
 If you find any bug when using project, please report here. Thanks for helping us building a better one.
