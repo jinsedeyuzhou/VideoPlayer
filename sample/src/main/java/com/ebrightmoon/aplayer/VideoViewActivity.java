@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerStandard;
+import com.github.jinsedeyuzhou.ijkplayer.play.EMPlayerStandard;
 
 
 /**
@@ -18,7 +18,7 @@ import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerStandard;
 public class VideoViewActivity extends FragmentActivity {
 
     private FrameLayout layout_video;
-    private WYXVideoPlayerStandard player;
+    private EMPlayerStandard player;
     private int mporit;
     private int initHeight;
     private EditText mInputDamaku;
@@ -28,9 +28,10 @@ public class VideoViewActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
-        player = (WYXVideoPlayerStandard) findViewById(R.id.layout_video);
+        player = (EMPlayerStandard) findViewById(R.id.layout_video);
 //        player.setFullScreenOnly(true);
-        player.play("http://gslb.miaopai.com/stream/4YUE0MlhLclpX3HIeA273g__.mp4?yx=&refer=weibo_app");
+//        player.play("http://192.168.0.57:8089/bdpf/suggestpicture/download?fid=6599");
+        player.play("http://flv2.bn.netease.com/videolib3/1611/28/nNTov5571/SD/nNTov5571-mobile.mp4");
 //        mInputDamaku = (EditText) findViewById(R.id.et_input_danmaku);
 //        mSendDanmaku = (Button) findViewById(R.id.btn_send_danmaku);
 //        mSendDanmaku.setOnClickListener(new View.OnClickListener() {

@@ -4,22 +4,22 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 
-import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayer;
+import com.github.jinsedeyuzhou.ijkplayer.play.EMPlayer;
 
 public class IjkFullscreenActivity extends AppCompatActivity {
 
     private static final String VIDEO_URL = "http://flv2.bn.netease.com/videolib3/1611/28/nNTov5571/SD/nNTov5571-mobile.mp4";
     private static final String IMAGE_URL = "http://vimg3.ws.126.net/image/snapshot/2016/11/C/T/VC628QHCT.jpg";
-    private  WYXVideoPlayer mPlayerView;
+    private EMPlayer mPlayerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        mPlayerView = new WYXVideoPlayer(this);
         setContentView(R.layout.activity_fullscreen);
-         mPlayerView = (WYXVideoPlayer) findViewById(R.id.fullscreen);
+         mPlayerView = (EMPlayer) findViewById(R.id.fullscreen);
         mPlayerView.play(VIDEO_URL);
-        mPlayerView.setFullScreenOnly(true);
+//        mPlayerView.setFullScreenOnly(true);
 //        mPlayerView.init()
 //                .alwaysFullScreen()
 //                .enableOrientation()

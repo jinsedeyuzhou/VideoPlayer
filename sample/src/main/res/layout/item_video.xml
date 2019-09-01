@@ -5,7 +5,7 @@
     >
 
 
-    <include layout="@layout/wxy_player"
+    <include layout="@layout/em_player"
         android:layout_width="match_parent"
         android:layout_height="210dp"
         />

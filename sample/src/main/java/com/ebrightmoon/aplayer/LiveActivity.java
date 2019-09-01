@@ -19,7 +19,7 @@ import android.widget.FrameLayout;
 
 import com.ebrightmoon.aplayer.bean.LiveBean;
 import com.ebrightmoon.aplayer.net.ApiServiceUtils;
-import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerStandard;
+import com.github.jinsedeyuzhou.ijkplayer.play.EMPlayerStandard;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class LiveActivity extends FragmentActivity {
 
     private static final String TAG = "LiveActivity";
     private View rootView;
-    private WYXVideoPlayerStandard player;
+    private EMPlayerStandard player;
     private String liveUrl = "http://pull5.a8.com/live/1477621558925497.flv";
 
     private String title = "我是傻逼";
@@ -65,7 +65,7 @@ public class LiveActivity extends FragmentActivity {
         wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "liveTAG");
 
 
-        player = new WYXVideoPlayerStandard(this);
+        player = new EMPlayerStandard(this);
 
         player.setLive(true);
         if (player.getParent() != null)

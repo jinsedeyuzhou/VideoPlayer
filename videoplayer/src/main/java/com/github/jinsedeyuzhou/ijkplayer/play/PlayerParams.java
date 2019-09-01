@@ -3,7 +3,7 @@ package com.github.jinsedeyuzhou.ijkplayer.play;
 /**
  * Created by Berkeley on 10/26/16.
  */
-public class PlayStateParams {
+public class PlayerParams {
     /**
      * fitParent:scale the video uniformly (maintain the video's aspect ratio) so that both dimensions (width and height) of the video will be equal to or **less** than the corresponding dimension of the view. like ImageView's `CENTER_INSIDE`.等比缩放,画面填满view。
      */

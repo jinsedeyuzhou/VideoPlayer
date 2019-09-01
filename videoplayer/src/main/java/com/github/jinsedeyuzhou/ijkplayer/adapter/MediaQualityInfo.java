@@ -1,7 +1,7 @@
 package com.github.jinsedeyuzhou.ijkplayer.adapter;
 
 
-import com.github.jinsedeyuzhou.ijkplayer.play.WYXVideoPlayerStandard;
+import com.github.jinsedeyuzhou.ijkplayer.play.EMPlayerStandard;
 
 /**
  * Created by Rukey7 on 2016/10/29.
@@ -13,13 +13,13 @@ public final class MediaQualityInfo {
     private String desc;
     private boolean isSelect;
 
-    public MediaQualityInfo(@WYXVideoPlayerStandard.MediaQuality int index, String desc, boolean isSelect) {
+    public MediaQualityInfo(@EMPlayerStandard.MediaQuality int index, String desc, boolean isSelect) {
         this.index = index;
         this.desc = desc;
         this.isSelect = isSelect;
     }
 
-    public @WYXVideoPlayerStandard.MediaQuality
+    public @EMPlayerStandard.MediaQuality
     int getIndex() {
         return index;
     }

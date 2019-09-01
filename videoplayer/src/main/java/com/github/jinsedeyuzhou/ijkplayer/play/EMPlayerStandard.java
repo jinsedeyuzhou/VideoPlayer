@@ -65,20 +65,21 @@ import java.util.List;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_BD;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_HIGH;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_MEDIUM;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_SMOOTH;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_SUPER;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_BD;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_HIGH;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_MEDIUM;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_SMOOTH;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_SUPER;
 import static com.github.jinsedeyuzhou.ijkplayer.utils.StringUtils.generateTime;
 
 /**
  * Created by Berkeley on 11/2/16.
+ * 高清，流畅   视频列表
  */
-public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickListener, View.OnTouchListener, SeekBar.OnSeekBarChangeListener,
+public class EMPlayerStandard extends FrameLayout implements View.OnClickListener, View.OnTouchListener, SeekBar.OnSeekBarChangeListener,
         IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener {
 
-    private static final String TAG = WYXVideoPlayerStandard.class.getSimpleName();
+    private static final String TAG = EMPlayerStandard.class.getSimpleName();
     protected Context mContext;
     protected Activity activity;
     private View controlbar;
@@ -155,7 +156,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     private boolean fullScreenOnly;
     private long pauseTime;
     //播放状态
-    private int status = PlayStateParams.STATE_IDLE;
+    private int status = PlayerParams.STATE_IDLE;
     //是否允许移动播放
     private boolean isAllowModible;
     //是否开启网络监听
@@ -184,49 +185,49 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case PlayStateParams.MESSAGE_FADE_OUT:
+                case PlayerParams.MESSAGE_FADE_OUT:
                     hide(false);
                     break;
-                case PlayStateParams.MESSAGE_HIDE_CENTER_BOX:
+                case PlayerParams.MESSAGE_HIDE_CENTER_BOX:
                     gestureTouch.setVisibility(View.GONE);
                     break;
-                case PlayStateParams.MESSAGE_SEEK_NEW_POSITION:
+                case PlayerParams.MESSAGE_SEEK_NEW_POSITION:
                     if (!isLive && newPosition >= 0) {
                         gestureTouch.setVisibility(View.GONE);
                         mVideoView.seekTo((int) newPosition);
                         newPosition = -1;
                     }
                     break;
-                case PlayStateParams.MESSAGE_SHOW_PROGRESS:
+                case PlayerParams.MESSAGE_SHOW_PROGRESS:
                     setProgress();
                     if (!isDragging) {
-                        msg = obtainMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+                        msg = obtainMessage(PlayerParams.MESSAGE_SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000);
                     }
                     updatePausePlay();
                     break;
-                case PlayStateParams.MESSAGE_RESTART_PLAY:
+                case PlayerParams.MESSAGE_RESTART_PLAY:
                     play(url);
                     break;
-                case PlayStateParams.MESSAGE_HIDE_NETWORK:
+                case PlayerParams.MESSAGE_HIDE_NETWORK:
                     mVideoNetTie.setVisibility(View.GONE);
                     break;
             }
         }
     };
 
-    public WYXVideoPlayerStandard(Context context) {
+    public EMPlayerStandard(Context context) {
         super(context);
         init(context);
     }
 
 
-    public WYXVideoPlayerStandard(Context context, AttributeSet attrs) {
+    public EMPlayerStandard(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public WYXVideoPlayerStandard(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EMPlayerStandard(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -243,7 +244,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     }
 
     public int getLayoutId() {
-        return R.layout.wxy_player_standard;
+        return R.layout.em_player_standard;
     }
 
     public void initView() {
@@ -510,7 +511,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     public void onStartTrackingTouch(SeekBar seekBar) {
         isDragging = true;
         show(3600000);
-        handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        handler.removeMessages(PlayerParams.MESSAGE_SHOW_PROGRESS);
         if (instantSeeking) {
             audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
         }
@@ -522,10 +523,10 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
             mVideoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
         }
         show(defaultTimeout);
-        handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        handler.removeMessages(PlayerParams.MESSAGE_SHOW_PROGRESS);
         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
         isDragging = false;
-        handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_SHOW_PROGRESS, 1000);
+        handler.sendEmptyMessageDelayed(PlayerParams.MESSAGE_SHOW_PROGRESS, 1000);
     }
 
     @Override
@@ -541,14 +542,14 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             mVideoView.setLayoutParams(layoutParams);
         }
-        statusChange(PlayStateParams.STATE_PLAYBACK_COMPLETED);
+        statusChange(PlayerParams.STATE_PLAYBACK_COMPLETED);
         if (completionListener != null)
             completionListener.completion(iMediaPlayer);
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        statusChange(PlayStateParams.STATE_ERROR);
+        statusChange(PlayerParams.STATE_ERROR);
         if (onErrorListener != null)
             onErrorListener.onError(what, extra);
         return true;
@@ -559,11 +560,11 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         switch (what) {
             case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
                 Log.d(TAG, "MEDIA_INFO_BUFFERING_START");
-                statusChange(PlayStateParams.STATE_PREPARING);
+                statusChange(PlayerParams.STATE_PREPARING);
                 break;
             case IMediaPlayer.MEDIA_INFO_BUFFERING_END:
                 Log.d(TAG, "MEDIA_INFO_BUFFERING_END");
-                statusChange(PlayStateParams.STATE_PLAYING);
+                statusChange(PlayerParams.STATE_PLAYING);
                 break;
             case IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH:
                 //显示 下载速度
@@ -571,7 +572,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
                 break;
             case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
                 Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
-                statusChange(PlayStateParams.STATE_PLAYING);
+                statusChange(PlayerParams.STATE_PLAYING);
                 break;
         }
         if (onInfoListener != null)
@@ -686,18 +687,18 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     }
 
     private void doPauseResume() {
-        if (status == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
+        if (status == PlayerParams.STATE_PLAYBACK_COMPLETED) {
             mReplay.setVisibility(View.GONE);
             mVideoView.seekTo(0);
             mVideoView.start();
             mVideoPlay.setSelected(true);
         } else if (mVideoView.isPlaying()) {
-            statusChange(PlayStateParams.STATE_PAUSED);
+            statusChange(PlayerParams.STATE_PAUSED);
             isAutoPause = true;
             mVideoView.pause();
             mVideoPlay.setSelected(false);
         } else {
-            statusChange(PlayStateParams.STATE_PLAYING);
+            statusChange(PlayerParams.STATE_PLAYING);
             mVideoView.start();
             mVideoPlay.setSelected(true);
         }
@@ -725,40 +726,40 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
      */
     private void statusChange(int newStatus) {
         status = newStatus;
-        if (!isLive && newStatus == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
+        if (!isLive && newStatus == PlayerParams.STATE_PLAYBACK_COMPLETED) {
             Log.d(TAG, "STATE_PLAYBACK_COMPLETED");
             orientationEventListener.disable();
             hideAll();
             endVideo();
             isShowContoller = false;
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.removeMessages(PlayerParams.MESSAGE_SHOW_PROGRESS);
             handler.removeCallbacksAndMessages(null);
             handler.sendEmptyMessage(9);
-        } else if (newStatus == PlayStateParams.STATE_ERROR) {
+        } else if (newStatus == PlayerParams.STATE_ERROR) {
             orientationEventListener.disable();
             Log.d(TAG, "STATE_ERROR");
             hideAll();
             if (isLive) {
                 showStatus(activity.getResources().getString(R.string.small_problem));
                 if (defaultRetryTime > 0) {
-                    handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_RESTART_PLAY, defaultRetryTime);
+                    handler.sendEmptyMessageDelayed(PlayerParams.MESSAGE_RESTART_PLAY, defaultRetryTime);
                 }
             } else {
                 showStatus(activity.getResources().getString(R.string.small_problem));
             }
-            handler.removeMessages(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.removeMessages(PlayerParams.MESSAGE_SHOW_PROGRESS);
             handler.removeCallbacksAndMessages(null);
-        } else if (newStatus == PlayStateParams.STATE_PREPARING) {
+        } else if (newStatus == PlayerParams.STATE_PREPARING) {
             Log.d(TAG, "STATE_PREPARING");
             loading.setVisibility(View.VISIBLE);
-        } else if (newStatus == PlayStateParams.STATE_PLAYING) {
+        } else if (newStatus == PlayerParams.STATE_PLAYING) {
             Log.d(TAG, "STATE_PLAYING");
 //            bottomProgress.setVisibility(View.VISIBLE);
             loading.setVisibility(View.GONE);
-            handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+            handler.sendEmptyMessage(PlayerParams.MESSAGE_SHOW_PROGRESS);
             isShowContoller = true;
-        } else if (newStatus == PlayStateParams.STATE_PAUSED) {
-            handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+        } else if (newStatus == PlayerParams.STATE_PAUSED) {
+            handler.removeMessages(PlayerParams.MESSAGE_FADE_OUT);
         }
 
 
@@ -925,11 +926,11 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         volume = -1;
         brightness = -1f;
         if (newPosition >= 0) {
-            handler.removeMessages(PlayStateParams.MESSAGE_SEEK_NEW_POSITION);
-            handler.sendEmptyMessage(PlayStateParams.MESSAGE_SEEK_NEW_POSITION);
+            handler.removeMessages(PlayerParams.MESSAGE_SEEK_NEW_POSITION);
+            handler.sendEmptyMessage(PlayerParams.MESSAGE_SEEK_NEW_POSITION);
         }
-        handler.removeMessages(PlayStateParams.MESSAGE_HIDE_CENTER_BOX);
-        handler.sendEmptyMessageDelayed(PlayStateParams.MESSAGE_HIDE_CENTER_BOX, 500);
+        handler.removeMessages(PlayerParams.MESSAGE_HIDE_CENTER_BOX);
+        handler.sendEmptyMessageDelayed(PlayerParams.MESSAGE_HIDE_CENTER_BOX, 500);
 
     }
 
@@ -952,9 +953,9 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
             isShowing = true;
         }
 
-        handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+        handler.removeMessages(PlayerParams.MESSAGE_FADE_OUT);
         if (timeout != 0) {
-            handler.sendMessageDelayed(handler.obtainMessage(PlayStateParams.MESSAGE_FADE_OUT), timeout);
+            handler.sendMessageDelayed(handler.obtainMessage(PlayerParams.MESSAGE_FADE_OUT), timeout);
         }
     }
 
@@ -1164,7 +1165,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     private boolean mIsShowQuality = false;
     // 当前选中的分辨率
     private
-    @WYXVideoPlayerStandard.MediaQuality
+    @EMPlayerStandard.MediaQuality
     int mCurSelectQuality = MEDIA_QUALITY_SMOOTH;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -1201,7 +1202,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
      *                {@link #,#MEDIA_QUALITY_MEDIUM,#MEDIA_QUALITY_HIGH,#MEDIA_QUALITY_SUPER,#MEDIA_QUALITY_BD}
      * @return
      */
-    public void setMediaQuality(@WYXVideoPlayerStandard.MediaQuality int quality) {
+    public void setMediaQuality(@EMPlayerStandard.MediaQuality int quality) {
         if (mCurSelectQuality == quality || mVideoSource.get(quality) == null) {
             return;
         }
@@ -1400,7 +1401,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         } else {
             isShowlist = true;
             ViewCompat.animate(mFlMediaList).translationX(0).setDuration(DEFAULT_QUALITY_TIME);
-            handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+            handler.removeMessages(PlayerParams.MESSAGE_FADE_OUT);
             mMediaList.setTextColor(mContext.getResources().getColor(R.color.bg_feed_pressed));
             showBottomControl(false);
         }
@@ -1549,7 +1550,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         }
         onProgressSlide(percent);
         showBottomControl(true);
-        handler.sendEmptyMessage(PlayStateParams.MESSAGE_SHOW_PROGRESS);
+        handler.sendEmptyMessage(PlayerParams.MESSAGE_SHOW_PROGRESS);
         endGesture();
     }
 
@@ -1594,7 +1595,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
 
     public void setShowContoller(boolean isShowContoller) {
         this.isShowContoller = isShowContoller;
-        handler.removeMessages(PlayStateParams.MESSAGE_FADE_OUT);
+        handler.removeMessages(PlayerParams.MESSAGE_FADE_OUT);
         showBottomControl(isShowContoller);
     }
 
@@ -1663,7 +1664,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
                     mVideoView.seekTo(0);
                     mVideoView.start();
                 }
-                if (status == PlayStateParams.STATE_PLAYBACK_COMPLETED) {
+                if (status == PlayerParams.STATE_PLAYBACK_COMPLETED) {
                     mReplay.setVisibility(View.GONE);
                     mVideoView.seekTo(0);
                     mVideoView.start();
@@ -1686,13 +1687,13 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
         Log.d(TAG, "onPause" + status);
         pauseTime = System.currentTimeMillis();
         show(0);//把系统状态栏显示出来
-        if (status == PlayStateParams.STATE_PLAYING) {
+        if (status == PlayerParams.STATE_PLAYING) {
             mVideoView.pause();
             isAutoPause = true;
             if (!isLive) {
                 currentPosition = mVideoView.getCurrentPosition();
             }
-            statusChange(PlayStateParams.STATE_PAUSED);
+            statusChange(PlayerParams.STATE_PAUSED);
         }
 
     }
@@ -1732,7 +1733,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
     public void onResume() {
         Log.d(TAG, "onResume" + status);
         pauseTime = 0;
-        if (status == PlayStateParams.STATE_PAUSED) {
+        if (status == PlayerParams.STATE_PAUSED) {
             if (isLive) {
                 mVideoView.seekTo(0);
             } else if (isAutoPause) {
@@ -1743,7 +1744,7 @@ public class WYXVideoPlayerStandard extends FrameLayout implements View.OnClickL
                 }
                 mVideoView.start();
                 isAutoPause = false;
-                statusChange(PlayStateParams.STATE_PLAYING);
+                statusChange(PlayerParams.STATE_PLAYING);
             }
 
         }

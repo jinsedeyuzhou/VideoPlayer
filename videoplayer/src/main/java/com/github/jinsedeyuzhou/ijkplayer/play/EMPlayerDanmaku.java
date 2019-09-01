@@ -38,7 +38,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  * Created by wyy on 2017/4/16.
  */
 
-public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
+public class EMPlayerDanmaku extends EMPlayer {
     private DanmakuView mDanmakuView;
     private DanmakuContext mDanmakuContext;
     private BaseDanmakuParser mParser;//解析器对象
@@ -46,18 +46,18 @@ public class WYXVideoPlayerDanmaku extends WYXVideoPlayer {
     private boolean mDanmaKuShow = true;
 
 
-    public WYXVideoPlayerDanmaku(Context context) {
+    public EMPlayerDanmaku(Context context) {
         super(context);
         initDanmaku();
     }
 
 
-    public WYXVideoPlayerDanmaku(Context context, AttributeSet attrs) {
+    public EMPlayerDanmaku(Context context, AttributeSet attrs) {
         super(context, attrs);
         initDanmaku();
     }
 
-    public WYXVideoPlayerDanmaku(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EMPlayerDanmaku(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initDanmaku();
     }

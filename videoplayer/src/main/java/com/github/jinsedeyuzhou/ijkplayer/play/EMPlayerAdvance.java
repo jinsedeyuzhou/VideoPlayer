@@ -25,30 +25,30 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.DEFAULT_QUALITY_TIME;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_BD;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_HIGH;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_MEDIUM;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_SMOOTH;
-import static com.github.jinsedeyuzhou.ijkplayer.play.PlayStateParams.MEDIA_QUALITY_SUPER;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.DEFAULT_QUALITY_TIME;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_BD;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_HIGH;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_MEDIUM;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_SMOOTH;
+import static com.github.jinsedeyuzhou.ijkplayer.play.PlayerParams.MEDIA_QUALITY_SUPER;
 
 /**
  * Created by Berkeley on 8/23/17.
  */
 
-public class WYXVideoPlayerAdvance extends WYXVideoPlayer {
+public class EMPlayerAdvance extends EMPlayer {
     private LinearLayout mContainerTools;
     private SeekBar mLandSeekBar;
     private TextView mSeparator;
     private View mPlaceHolder;
     private TextView mVideoLists;
 
-    public WYXVideoPlayerAdvance(Context context) {
+    public EMPlayerAdvance(Context context) {
         super(context);
     }
 
 
-    public WYXVideoPlayerAdvance(Context context, AttributeSet attrs) {
+    public EMPlayerAdvance(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -242,7 +242,7 @@ public class WYXVideoPlayerAdvance extends WYXVideoPlayer {
 
 
     public int getLayoutId() {
-        return R.layout.wxy_player_standard;
+        return R.layout.em_player_standard;
     }
 
     @Override
