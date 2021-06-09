@@ -7,27 +7,27 @@ import android.content.Context;
  * 设置全局变量或者获取应用Context 嵌入的app中App中配置
  */
 
-public class WYXApplication {
+public class EMApplication {
 
     private static Context mContext;
-    private static WYXApplication mInstance;
+    private static EMApplication mInstance;
 
     public static void initApp(Context context) {
         mContext = context;
-        mInstance = new WYXApplication();
+        mInstance = new EMApplication();
 
 
     }
-    WYXApplication() {
+    EMApplication() {
         mInstance = this;
     }
     public static Context getAppContext() {
         return mContext;
     }
 
-    public static synchronized WYXApplication getInstance() {
+    public static synchronized EMApplication getInstance() {
         if (null == mInstance) {
-            mInstance = new WYXApplication();
+            mInstance = new EMApplication();
         }
         return mInstance;
     }
